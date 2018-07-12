@@ -133,7 +133,7 @@ socket.on('state',function(celestial) {
     var player = players[id];
     context.fillStyle = player.color;
     context.beginPath();
-    context.arc(player.loc.x-viewer.x,player.loc.y-viewer.y, 10, 0, 2 * Math.PI);
+    context.arc(player.loc.x-viewer.x,player.loc.y-viewer.y, player.size, 0, 2 * Math.PI);
     context.fill();
   }
   for (var id in planets) {
