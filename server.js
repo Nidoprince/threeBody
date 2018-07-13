@@ -23,13 +23,13 @@ var controlSpeed = 0.1;
 //  response.sendFile(path.join(__dirname, 'index.html'))
 //});
 
-app.use(express.static('publicWeb'))
-app.use('/static', express.static(__dirname + '/public'));
+app.use(express.static('static'))
+app.use('/static', express.static(__dirname + '/static'));
 app.get('/', function(req, res) {
   console.log(__dirname)
-  res.sendFile('index.html', {root: __dirname})
+  res.sendFile(path.join(__dirname, 'index.html'))
 });
-app.listen(process.env.PORT || 5000)
+app.listen(process.env.PORT || 5000);
 
 //Starts the server.
 server.listen(5000, function() {
