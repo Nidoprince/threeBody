@@ -26,7 +26,7 @@ var controlSpeed = 0.1;
 app.use(express.static('publicWeb'))
 app.get('/', function(req, res) {
   console.log(__dirname)
-  res.sendFile('static/index.html', {root: __dirname})
+  res.sendFile('index.html', {root: __dirname})
 });
 app.listen(process.env.PORT || 9000)
 
