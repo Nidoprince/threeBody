@@ -24,11 +24,12 @@ var controlSpeed = 0.1;
 //});
 
 app.use(express.static('publicWeb'))
+app.use('/static', express.static(__dirname + '/public'));
 app.get('/', function(req, res) {
   console.log(__dirname)
   res.sendFile('index.html', {root: __dirname})
 });
-app.listen(process.env.PORT || 9000)
+app.listen(process.env.PORT || 5000)
 
 //Starts the server.
 server.listen(5000, function() {
