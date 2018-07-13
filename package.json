@@ -4,6 +4,7 @@
   "description": "online multiplayer game",
   "main": "index.js",
   "scripts": {
+    "start": "node server.js",
     "test": "test"
   },
   "author": "Micah",

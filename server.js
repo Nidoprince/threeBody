@@ -15,13 +15,21 @@ var gravitationalConstant = 0.05;
 var universeSpeed = 1;
 var controlSpeed = 0.1;
 
-app.set('port', 5000);
-app.use('/static', express.static(__dirname + '/static'));
+//app.set('port', 5000);
+//app.use('/static', express.static(__dirname + '/static'));
 
 //Routing
-app.get('/', function(request, response) {
-  response.sendFile(path.join(__dirname, 'index.html'))
-});
+//app.get('/', function(request, response) {
+//  response.sendFile(path.join(__dirname, 'index.html'))
+//});
+
+app.use(express.static('publicWeb'))
+app.get('/', function(req, res) {
+  console.log(__dirname)
+  res.sendFile('static/index.html', {root: __dirname})
+  )
+};
+app.listen(process.env.PORT || 9000)
 
 //Starts the server.
 server.listen(5000, function() {
