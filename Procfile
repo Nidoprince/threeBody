@@ -1,1 +1,1 @@
-web: coffee akagiWeb.coffee
+web: node server.js
