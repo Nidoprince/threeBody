@@ -27,8 +27,7 @@ app.use(express.static('publicWeb'))
 app.get('/', function(req, res) {
   console.log(__dirname)
   res.sendFile('static/index.html', {root: __dirname})
-  )
-};
+});
 app.listen(process.env.PORT || 9000)
 
 //Starts the server.
