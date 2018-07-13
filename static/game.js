@@ -1,6 +1,3 @@
-var socketIO = require('socket.io');
-var io = socketIO(server);
-
 var viewerSpeed = 3;
 var myPlayer = null;
 

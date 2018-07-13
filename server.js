@@ -5,8 +5,8 @@ var path = require('path');
 var socketIO = require('socket.io');
 
 var app = express();
-var server = http.Server(app);
-var io = socketIO(server);
+//var server = http.Server(app);
+var io = socketIO(app);
 var lastUpdateTime = (new Date()).getTime();
 
 var planets = {};
