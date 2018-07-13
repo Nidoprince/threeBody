@@ -5,7 +5,7 @@ var path = require('path');
 var socketIO = require('socket.io');
 
 var app = express();
-//var server = http.Server(app);
+var server = http.Server(app);
 
 var lastUpdateTime = (new Date()).getTime();
 
@@ -33,14 +33,14 @@ app.get('/', function(req, res) {
 
 
 //Starts the server.
-app.listen(process.env.PORT || 5000, function() {
+server.listen(process.env.PORT || 5000, function() {
   console.log('Starting server on port 5000')
   planets[0] = new Planet(100,100,1,0,10);
   planets[1] = new Planet(400,120,0,0,30,'blue');
   planets[2] = new Planet(200,300,0,0.1,10);
 });
 
-var io = socketIO(app);
+var io = socketIO(server);
 
 //Add the WebSocket handlers
 //io.on('connection', function(socket) {
