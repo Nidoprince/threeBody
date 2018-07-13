@@ -1,5 +1,6 @@
 var viewerSpeed = 3;
 var myPlayer = null;
+var zoomRatio = 1.1;
 
 var socket = io();
 socket.on('message', function(data) {
@@ -19,26 +20,46 @@ var viewer = {
   right: false,
   space: false,
   x: 0,
-  y: 0
+  y: 0,
+  zoom: 0
 }
 
 viewerUpdate = function()
 {
   if(viewer.up)
   {
-    viewer.y -= viewerSpeed;
+    viewer.y -= viewerSpeed*Math.pow(zoomRatio,viewer.zoom);
   }
   if(viewer.down)
   {
-    viewer.y +=  viewerSpeed;
+    viewer.y +=  viewerSpeed*Math.pow(zoomRatio,viewer.zoom);
   }
   if(viewer.right)
   {
-    viewer.x +=  viewerSpeed;
+    viewer.x +=  viewerSpeed*Math.pow(zoomRatio,viewer.zoom);
   }
   if(viewer.left)
   {
-    viewer.x -= viewerSpeed;
+    viewer.x -= viewerSpeed*Math.pow(zoomRatio,viewer.zoom);
+  }
+  if(viewer.reduce && viewer.zoom > -20)
+  {
+    viewer.zoom -= 1;
+    viewer.x+=800*(Math.pow(zoomRatio,viewer.zoom+1)-Math.pow(zoomRatio,viewer.zoom))
+    viewer.y+=400*(Math.pow(zoomRatio,viewer.zoom+1)-Math.pow(zoomRatio,viewer.zoom))
+  }
+  if(viewer.increase && viewer.zoom < 20)
+  {
+    viewer.zoom += 1;
+    viewer.x-=800*(Math.pow(zoomRatio,viewer.zoom)-Math.pow(zoomRatio,viewer.zoom-1))
+    viewer.y-=400*(Math.pow(zoomRatio,viewer.zoom)-Math.pow(zoomRatio,viewer.zoom-1))
+  }
+  if(viewer.resetZoom)
+  {
+    var preZoom = viewer.zoom;
+    viewer.zoom = 0;
+    viewer.x = viewer.x+800*Math.pow(zoomRatio,preZoom)-800;
+    viewer.y = viewer.y+400*Math.pow(zoomRatio,preZoom)-400;
   }
 
 }
@@ -72,6 +93,15 @@ document.addEventListener('keydown', function(event) {
     case 32: //Space
       viewer.space = true;
       break;
+    case 221: //Right Bracket
+      viewer.increase = true;
+      break;
+    case 219: //Left Bracket
+      viewer.reduce = true;
+      break;
+    case 220: //Backslash
+      viewer.resetZoom = true;
+      break;
   }
 });
 document.addEventListener('keyup', function(event) {
@@ -103,6 +133,15 @@ document.addEventListener('keyup', function(event) {
     case 32: //Space
       viewer.space = false;
       break;
+    case 221: //Right Bracket
+      viewer.increase = false;
+      break;
+    case 219: //Left Bracket
+      viewer.reduce = false;
+      break;
+    case 220: //Backslash
+      viewer.resetZoom = false;
+      break;
   }
 });
 
@@ -119,8 +158,8 @@ socket.on('state',function(celestial) {
   viewerUpdate();
   if(viewer.space && myPlayer)
   {
-    viewer.x = myPlayer.loc.x - 800;
-    viewer.y = myPlayer.loc.y - 400;
+    viewer.x = myPlayer.loc.x - 800*Math.pow(zoomRatio,viewer.zoom);
+    viewer.y = myPlayer.loc.y - 400*Math.pow(zoomRatio,viewer.zoom);
   }
   context.clearRect(0,0,1600,800);
   players = celestial[1]
@@ -133,14 +172,14 @@ socket.on('state',function(celestial) {
     var player = players[id];
     context.fillStyle = player.color;
     context.beginPath();
-    context.arc(player.loc.x-viewer.x,player.loc.y-viewer.y, player.size, 0, 2 * Math.PI);
+    context.arc((player.loc.x-viewer.x)/Math.pow(zoomRatio,viewer.zoom),(player.loc.y-viewer.y)/Math.pow(zoomRatio,viewer.zoom), player.size/Math.pow(zoomRatio,viewer.zoom), 0, 2 * Math.PI);
     context.fill();
   }
   for (var id in planets) {
     var planet = planets[id];
     context.fillStyle = planet.color;
     context.beginPath();
-    context.arc(planet.loc.x-viewer.x,planet.loc.y-viewer.y, planet.size, 0, 2 * Math.PI);
+    context.arc((planet.loc.x-viewer.x)/Math.pow(zoomRatio,viewer.zoom),(planet.loc.y-viewer.y)/Math.pow(zoomRatio,viewer.zoom), planet.size/Math.pow(zoomRatio,viewer.zoom), 0, 2 * Math.PI);
     context.fill();
   }
 });
