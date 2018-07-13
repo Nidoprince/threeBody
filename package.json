@@ -1,9 +1,6 @@
 {
   "name": "multiplayergame",
   "version": "1.0.0",
-  "engines": {
-    "node": "6.2.0"
-  },
   "description": "online multiplayer game",
   "main": "index.js",
   "scripts": {
