@@ -161,6 +161,11 @@ socket.on('state',function(celestial) {
     viewer.x = myPlayer.loc.x - 800*Math.pow(zoomRatio,viewer.zoom);
     viewer.y = myPlayer.loc.y - 400*Math.pow(zoomRatio,viewer.zoom);
   }
+  if(myPlayer && myPlayer.controllingPlanet)
+  {
+    viewer.x += myPlayer.controllingPlanet.vel.x;
+    viewer.y += myPlayer.controllingPlanet.vel.y;
+  }
   context.clearRect(0,0,1600,800);
   players = celestial[1]
   planets = celestial[0]

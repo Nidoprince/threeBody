@@ -1,10 +1,15 @@
 var gravitationalConstant = 0.05;
 var bouncyness = 0.9;
 var playerBounce = false;
+var groundTouchError = 1;
+var jumpForce = 100;
 
 var universeSpeed = 1;
 var controlSpeed = 0.1;
+var walkSpeed = 5;
 var maxSpeed = 10;
+var friction = 0.1;
+var airResistance = 0.0001;
 
 
 
@@ -22,6 +27,7 @@ class Player
     this.color = color;
     this.size = size;
     this.density = density;
+    this.controllingPlanet = false;
   }
 
   mass()
@@ -30,6 +36,80 @@ class Player
   }
 
   updateVelocity(planets)
+  {
+    var closestPlanetDistance = Number.MAX_SAFE_INTEGER;
+    var closestPlanet = false;
+    for(var id in planets)
+    {
+      var planet = planets[id];
+      //Check for closestPlanet
+      if(Vector.distance(this.loc,planet.loc) < closestPlanetDistance)
+      {
+        closestPlanetDistance = Vector.distance(this.loc,planet.loc);
+        closestPlanet = planet;
+      }
+      //Gravitational Attraction
+      var dir = this.loc.direction(planet.loc);
+      var dist = Vector.distance(this.loc,planet.loc);
+      var force = gravitationalConstant*this.mass()*planet.mass()/(dist*dist);
+      var acc = dir.normalize(force/this.mass());
+      this.vel = this.vel.addVector(acc);
+      //Bounce off each other.
+      if(Vector.distance(this.loc,planet.loc) <= this.size+planet.size && playerBounce)
+      {
+        var stepOne = Vector.dotProduct(this.vel.subVector(planet.oldVel),this.loc.subVector(planet.loc))/Math.pow((this.loc.subVector(planet.loc).magnitude()),2);
+        var stepTwo = 2*planet.mass()/(this.mass()+planet.mass());
+        var direction = this.loc.subVector(planet.loc);
+        this.vel = this.vel.subVector(direction.multiplyScaler(stepOne*stepTwo*bouncyness));
+      }
+      this.vel = this.vel.speedLimit(maxSpeed);
+    }
+    if(closestPlanetDistance < closestPlanet.size*1.2)
+    {
+      this.controllingPlanet = closestPlanet;
+      this.updateVelocityAtmosphere(planets)
+    }
+    else
+    {
+      this.controllingPlanet = false;
+      this.updateVelocitySpace(planets)
+    }
+
+  }
+  updateVelocityAtmosphere(planets)
+  {
+    console.log("GravityOnly")
+    console.log(this.vel)
+    if(Vector.distance(this.loc,this.controllingPlanet.loc) <= this.size+this.controllingPlanet.size+groundTouchError*this.controllingPlanet.vel.magnitude())
+    {
+      var jumpDirection = this.controllingPlanet.loc.direction(this.loc);
+      if(this.upHeld)
+      {
+        this.vel = this.vel.addVector(jumpDirection.normalize(jumpForce));
+      }
+      if(this.leftHeld)
+      {
+        this.vel = this.vel.addVector(jumpDirection.rotate(3*Math.PI/2).normalize(walkSpeed));
+      }
+      if(this.rightHeld)
+      {
+        this.vel = this.vel.addVector(jumpDirection.rotate(Math.PI/2).normalize(walkSpeed));
+      }
+      //Friction
+      console.log("Friction:")
+      console.log(this.vel.subVector(this.vel.multiplyScaler(friction)))
+      this.vel = this.vel.subVector(this.vel.multiplyScaler(friction));
+    }
+    else
+    {
+      console.log("InTheAir")
+    }
+    //Air Resistance
+    console.log("AirResistance:")
+    console.log(this.vel.subVector(this.vel.multiplyScaler(airResistance*this.vel.magnitude())));
+    this.vel = this.vel.subVector(this.vel.multiplyScaler(airResistance*this.vel.magnitude()));
+  }
+  updateVelocitySpace(planets)
   {
     var x = 0;
     var y = 0;
@@ -51,25 +131,6 @@ class Player
     }
     var deltaVector = new Vector(x,y);
     this.vel = this.vel.addVector(deltaVector.normalize(controlSpeed))
-    for(var id in planets)
-    {
-      var planet = planets[id];
-      //Gravitational Attraction
-      var dir = this.loc.direction(planet.loc);
-      var dist = Vector.distance(this.loc,planet.loc);
-      var force = gravitationalConstant*this.mass()*planet.mass()/(dist*dist);
-      var acc = dir.normalize(force/this.mass());
-      this.vel = this.vel.addVector(acc);
-      //Bounce off each other.
-      if(Vector.distance(this.loc,planet.loc) <= this.size+planet.size && playerBounce)
-      {
-        var stepOne = Vector.dotProduct(this.vel.subVector(planet.oldVel),this.loc.subVector(planet.loc))/Math.pow((this.loc.subVector(planet.loc).magnitude()),2);
-        var stepTwo = 2*planet.mass()/(this.mass()+planet.mass());
-        var direction = this.loc.subVector(planet.loc);
-        this.vel = this.vel.subVector(direction.multiplyScaler(stepOne*stepTwo*bouncyness));
-      }
-      this.vel = this.vel.speedLimit(maxSpeed);
-    }
   }
 
   updatePlayer(timeDifferential,planets)
