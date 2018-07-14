@@ -23,9 +23,9 @@ app.get('/', function(req, res) {
 //Starts the server.
 server.listen(process.env.PORT || 5000, function() {
   console.log('Starting server on port 5000')
-  planets[0] = new space.Planet(100,100,1,0,10);
-  planets[1] = new space.Planet(400,120,0,0,30,'blue');
-  planets[2] = new space.Planet(200,300,0,0.1,10);
+  planets[0] = new space.Planet(0,5000,5,0,1000,'red','rgba(255,0,0,0.1)',2);
+  planets[1] = new space.Planet(-4330,-2500,-5/2,8.66/2,1000,'blue','rgba(0,0,255,0.1)',2);
+  planets[2] = new space.Planet(4330,-2500,-5/2,-8.66/2,1000,'yellow','rgba(255,255,0,0.1)',2);
 });
 
 var io = socketIO(server);

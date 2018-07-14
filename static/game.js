@@ -48,7 +48,7 @@ viewerUpdate = function()
     viewer.x+=800*(Math.pow(zoomRatio,viewer.zoom+1)-Math.pow(zoomRatio,viewer.zoom))
     viewer.y+=400*(Math.pow(zoomRatio,viewer.zoom+1)-Math.pow(zoomRatio,viewer.zoom))
   }
-  if(viewer.increase && viewer.zoom < 20)
+  if(viewer.increase && viewer.zoom < 100)
   {
     viewer.zoom += 1;
     viewer.x-=800*(Math.pow(zoomRatio,viewer.zoom)-Math.pow(zoomRatio,viewer.zoom-1))
@@ -180,6 +180,10 @@ socket.on('state',function(celestial) {
     context.fillStyle = planet.color;
     context.beginPath();
     context.arc((planet.loc.x-viewer.x)/Math.pow(zoomRatio,viewer.zoom),(planet.loc.y-viewer.y)/Math.pow(zoomRatio,viewer.zoom), planet.size/Math.pow(zoomRatio,viewer.zoom), 0, 2 * Math.PI);
+    context.fill();
+    context.fillStyle = planet.atmosphereColor;
+    context.beginPath();
+    context.arc((planet.loc.x-viewer.x)/Math.pow(zoomRatio,viewer.zoom),(planet.loc.y-viewer.y)/Math.pow(zoomRatio,viewer.zoom), 1.2*planet.size/Math.pow(zoomRatio,viewer.zoom), 0, 2 * Math.PI);
     context.fill();
   }
 });

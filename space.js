@@ -1,7 +1,11 @@
 var gravitationalConstant = 0.05;
+var bouncyness = 0.9;
+var playerBounce = false;
 
 var universeSpeed = 1;
 var controlSpeed = 0.1;
+var maxSpeed = 10;
+
 
 
 class Player
@@ -57,13 +61,14 @@ class Player
       var acc = dir.normalize(force/this.mass());
       this.vel = this.vel.addVector(acc);
       //Bounce off each other.
-      if(Vector.distance(this.loc,planet.loc) <= this.size+planet.size)
+      if(Vector.distance(this.loc,planet.loc) <= this.size+planet.size && playerBounce)
       {
         var stepOne = Vector.dotProduct(this.vel.subVector(planet.oldVel),this.loc.subVector(planet.loc))/Math.pow((this.loc.subVector(planet.loc).magnitude()),2);
         var stepTwo = 2*planet.mass()/(this.mass()+planet.mass());
         var direction = this.loc.subVector(planet.loc);
-        this.vel = this.vel.subVector(direction.multiplyScaler(stepOne*stepTwo));
+        this.vel = this.vel.subVector(direction.multiplyScaler(stepOne*stepTwo*bouncyness));
       }
+      this.vel = this.vel.speedLimit(maxSpeed);
     }
   }
 
@@ -83,7 +88,7 @@ class Player
 
 class Planet
 {
-  constructor(startX,startY,startXD,startYD,size,color = 'red',density = 1)
+  constructor(startX,startY,startXD,startYD,size,color = 'red',atmosphereColor = "rgba(255,0,0,0.1)",density = 1)
   {
     this.loc = new Vector(startX,startY);
     this.vel = new Vector(startXD,startYD);
@@ -91,6 +96,7 @@ class Planet
     this.size = size;
     this.density = density;
     this.color = color;
+    this.atmosphereColor = atmosphereColor;
   }
 
   updateLocation(timeDifferential)
@@ -118,7 +124,7 @@ class Planet
           var stepOne = Vector.dotProduct(this.vel.subVector(planet.oldVel),this.loc.subVector(planet.loc))/Math.pow((this.loc.subVector(planet.loc).magnitude()),2);
           var stepTwo = 2*planet.mass()/(this.mass()+planet.mass());
           var direction = this.loc.subVector(planet.loc);
-          this.vel = this.vel.subVector(direction.multiplyScaler(stepOne*stepTwo));
+          this.vel = this.vel.subVector(direction.multiplyScaler(stepOne*stepTwo*bouncyness));
         }
       }
     }
