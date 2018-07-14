@@ -78,8 +78,8 @@ class Player
   }
   updateVelocityAtmosphere(planets)
   {
-    console.log("GravityOnly")
-    console.log(this.vel)
+    //console.log("GravityOnly")
+    //console.log(this.vel)
     if(Vector.distance(this.loc,this.controllingPlanet.loc) <= this.size+this.controllingPlanet.size+groundTouchError*this.controllingPlanet.vel.magnitude())
     {
       var jumpDirection = this.controllingPlanet.loc.direction(this.loc);
@@ -96,17 +96,17 @@ class Player
         this.vel = this.vel.addVector(jumpDirection.rotate(Math.PI/2).normalize(walkSpeed));
       }
       //Friction
-      console.log("Friction:")
-      console.log(this.vel.subVector(this.vel.multiplyScaler(friction)))
+      //console.log("Friction:")
+      //console.log(this.vel.subVector(this.vel.multiplyScaler(friction)))
       this.vel = this.vel.subVector(this.vel.multiplyScaler(friction));
     }
-    else
-    {
-      console.log("InTheAir")
-    }
+    //else
+    //{
+      //console.log("InTheAir")
+    //}
     //Air Resistance
-    console.log("AirResistance:")
-    console.log(this.vel.subVector(this.vel.multiplyScaler(airResistance*this.vel.magnitude())));
+    //console.log("AirResistance:")
+    //console.log(this.vel.subVector(this.vel.multiplyScaler(airResistance*this.vel.magnitude())));
     this.vel = this.vel.subVector(this.vel.multiplyScaler(airResistance*this.vel.magnitude()));
   }
   updateVelocitySpace(planets)
