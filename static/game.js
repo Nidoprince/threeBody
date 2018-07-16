@@ -49,21 +49,21 @@ viewerUpdate = function()
   if(viewer.reduce && viewer.zoom > -20)
   {
     viewer.zoom -= 1;
-    viewer.x+=800*(Math.pow(zoomRatio,viewer.zoom+1)-Math.pow(zoomRatio,viewer.zoom))
-    viewer.y+=400*(Math.pow(zoomRatio,viewer.zoom+1)-Math.pow(zoomRatio,viewer.zoom))
+    //viewer.x+=800*(Math.pow(zoomRatio,viewer.zoom+1)-Math.pow(zoomRatio,viewer.zoom))
+    //viewer.y+=400*(Math.pow(zoomRatio,viewer.zoom+1)-Math.pow(zoomRatio,viewer.zoom))
   }
   if(viewer.increase && viewer.zoom < 100)
   {
     viewer.zoom += 1;
-    viewer.x-=800*(Math.pow(zoomRatio,viewer.zoom)-Math.pow(zoomRatio,viewer.zoom-1))
-    viewer.y-=400*(Math.pow(zoomRatio,viewer.zoom)-Math.pow(zoomRatio,viewer.zoom-1))
+    //viewer.x-=800*(Math.pow(zoomRatio,viewer.zoom)-Math.pow(zoomRatio,viewer.zoom-1))
+    //viewer.y-=400*(Math.pow(zoomRatio,viewer.zoom)-Math.pow(zoomRatio,viewer.zoom-1))
   }
   if(viewer.resetZoom)
   {
-    var preZoom = viewer.zoom;
+    //var preZoom = viewer.zoom;
     viewer.zoom = 0;
-    viewer.x = viewer.x+800*Math.pow(zoomRatio,preZoom)-800;
-    viewer.y = viewer.y+400*Math.pow(zoomRatio,preZoom)-400;
+    //viewer.x = viewer.x+800*Math.pow(zoomRatio,preZoom)-800;
+    //viewer.y = viewer.y+400*Math.pow(zoomRatio,preZoom)-400;
   }
   if(viewer.velocityTrigger)
   {
@@ -186,8 +186,8 @@ socket.on('state',function(celestial) {
   viewerUpdate();
   if(viewer.space && myPlayer)
   {
-    viewer.x = myPlayer.loc.x - 800*Math.pow(zoomRatio,viewer.zoom);
-    viewer.y = myPlayer.loc.y - 400*Math.pow(zoomRatio,viewer.zoom);
+    viewer.x = myPlayer.loc.x// - 800*Math.pow(zoomRatio,viewer.zoom);
+    viewer.y = myPlayer.loc.y// - 400*Math.pow(zoomRatio,viewer.zoom);
   }
   if(myPlayer && myPlayer.controllingPlanet)
   {
@@ -226,18 +226,18 @@ socket.on('state',function(celestial) {
     var player = players[id];
     context.fillStyle = player.color;
     context.beginPath();
-    context.arc((player.loc.x-viewer.x)/Math.pow(zoomRatio,viewer.zoom),(player.loc.y-viewer.y)/Math.pow(zoomRatio,viewer.zoom), player.size/Math.pow(zoomRatio,viewer.zoom), 0, 2 * Math.PI);
+    context.arc((player.loc.x-viewer.x)/Math.pow(zoomRatio,viewer.zoom)+800,(player.loc.y-viewer.y)/Math.pow(zoomRatio,viewer.zoom)+400, player.size/Math.pow(zoomRatio,viewer.zoom), 0, 2 * Math.PI);
     context.fill();
   }
   for (var id in planets) {
     var planet = planets[id];
     context.fillStyle = planet.color;
     context.beginPath();
-    context.arc((planet.loc.x-viewer.x)/Math.pow(zoomRatio,viewer.zoom),(planet.loc.y-viewer.y)/Math.pow(zoomRatio,viewer.zoom), planet.size/Math.pow(zoomRatio,viewer.zoom), 0, 2 * Math.PI);
+    context.arc((planet.loc.x-viewer.x)/Math.pow(zoomRatio,viewer.zoom)+800,(planet.loc.y-viewer.y)/Math.pow(zoomRatio,viewer.zoom)+400, planet.size/Math.pow(zoomRatio,viewer.zoom), 0, 2 * Math.PI);
     context.fill();
     context.fillStyle = planet.atmosphereColor;
     context.beginPath();
-    context.arc((planet.loc.x-viewer.x)/Math.pow(zoomRatio,viewer.zoom),(planet.loc.y-viewer.y)/Math.pow(zoomRatio,viewer.zoom), 1.2*planet.size/Math.pow(zoomRatio,viewer.zoom), 0, 2 * Math.PI);
+    context.arc((planet.loc.x-viewer.x)/Math.pow(zoomRatio,viewer.zoom)+800,(planet.loc.y-viewer.y)/Math.pow(zoomRatio,viewer.zoom)+400, 1.2*planet.size/Math.pow(zoomRatio,viewer.zoom), 0, 2 * Math.PI);
     context.fill();
   }
   if(myPlayer && viewer.showVelocity)
