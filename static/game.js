@@ -1,6 +1,6 @@
 var viewerSpeed = 3;
 var myPlayer = null;
-var zoomRatio = 1.1;
+var zoomRatio = 1.05;
 
 var socket = io();
 socket.on('message', function(data) {
@@ -52,7 +52,7 @@ viewerUpdate = function()
     //viewer.x+=800*(Math.pow(zoomRatio,viewer.zoom+1)-Math.pow(zoomRatio,viewer.zoom))
     //viewer.y+=400*(Math.pow(zoomRatio,viewer.zoom+1)-Math.pow(zoomRatio,viewer.zoom))
   }
-  if(viewer.increase && viewer.zoom < 100)
+  if(viewer.increase && viewer.zoom < 150)
   {
     viewer.zoom += 1;
     //viewer.x-=800*(Math.pow(zoomRatio,viewer.zoom)-Math.pow(zoomRatio,viewer.zoom-1))
