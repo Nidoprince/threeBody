@@ -197,9 +197,11 @@ socket.on('state',function(celestial) {
   context.clearRect(0,0,1600,800);
   for(var i = 0; i < 100 +10*(viewer.zoom+20); i++)
   {
+    var xS = (5001*i+Math.floor(Math.abs(viewer.x)/20))%1600;
+    var yS = (333*i*i+Math.floor(Math.abs(viewer.y)/30))%800;
     context.fillStyle = "rgba(255,255,255,0."+(Math.abs(i*i+i)%5+4).toString()+")";
     context.beginPath();
-    context.arc((5001*i+Math.floor(Math.abs(viewer.x)/20))%1600,(333*i*i+Math.floor(Math.abs(viewer.y)/30))%800,Math.abs(i*i+i)%5,0,2*Math.PI);
+    context.arc(xS,yS,Math.abs(i*i+i)%5,0,2*Math.PI);
     context.fill();
   }
   players = celestial[1];
