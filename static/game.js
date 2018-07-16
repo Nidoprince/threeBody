@@ -25,6 +25,9 @@ var viewer = {
   velocityToggle: false,
   velocityTrigger: false,
   showVelocity: true,
+  focusToggle: false,
+  focusTrigger: false,
+  focusPlayer: false,
   log: false
 }
 
@@ -77,6 +80,18 @@ viewerUpdate = function()
       viewer.velocityToggle = false;
     }
   }
+  if(viewer.focusTrigger)
+  {
+    viewer.focusToggle = true;
+  }
+  else
+  {
+    if(viewer.focusToggle)
+    {
+      viewer.focusPlayer = ! viewer.focusPlayer;
+      viewer.focusToggle = false;
+    }
+  }
 
 }
 
@@ -99,6 +114,9 @@ document.addEventListener('keydown', function(event) {
       break;
     case 76: //l
       viewer.log = true;
+      break;
+    case 70: //F
+      viewer.focusTrigger = true;
       break;
     case 38: //Up Arrow
       viewer.up = true;
@@ -146,6 +164,9 @@ document.addEventListener('keyup', function(event) {
     case 76: //l
       viewer.log = false;
       break;
+    case 70: //F
+      viewer.focusTrigger = false;
+      break;
     case 38: //Up Arrow
       viewer.up = false;
       break;
@@ -184,7 +205,7 @@ canvas.height = 800;
 var context = canvas.getContext('2d');
 socket.on('state',function(celestial) {
   viewerUpdate();
-  if(viewer.space && myPlayer)
+  if(myPlayer && (viewer.space || viewer.focusPlayer))
   {
     viewer.x = myPlayer.loc.x// - 800*Math.pow(zoomRatio,viewer.zoom);
     viewer.y = myPlayer.loc.y// - 400*Math.pow(zoomRatio,viewer.zoom);
