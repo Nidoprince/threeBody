@@ -1,15 +1,15 @@
 var gravitationalConstant = 0.05;
 var bouncyness = 0.9;
 var playerBounce = false;
-var groundTouchError = 1;
+var groundTouchError = 0;
 var jumpForce = 100;
 
 var universeSpeed = 1;
 var controlSpeed = 0.1;
 var walkSpeed = 5;
-var maxSpeed = 10;
-var friction = 0.1;
-var airResistance = 0.0001;
+var maxSpeed = 15;
+var friction = 0.2;
+var airResistance = 0.001;
 
 
 
@@ -28,6 +28,10 @@ class Player
     this.size = size;
     this.density = density;
     this.controllingPlanet = false;
+    this.inAir = false;
+    this.velocityComponents = new Map();
+    this.velocityComponents.set("Base",this.vel.copy());
+    this.testValue = "test";
   }
 
   mass()
@@ -35,8 +39,15 @@ class Player
     return this.size*this.density;
   }
 
+  tellVelocityComponent()
+  {
+    return this.velocityComponents
+  }
   updateVelocity(planets)
   {
+    this.velocityComponents = new Map();
+    this.velocityComponents.set("Base  ", this.vel.copy());
+    //console.log(this.velocityComponents);
     var closestPlanetDistance = Number.MAX_SAFE_INTEGER;
     var closestPlanet = false;
     for(var id in planets)
@@ -53,6 +64,7 @@ class Player
       var dist = Vector.distance(this.loc,planet.loc);
       var force = gravitationalConstant*this.mass()*planet.mass()/(dist*dist);
       var acc = dir.normalize(force/this.mass());
+      this.velocityComponents.set("Grav "+id, acc.copy());
       this.vel = this.vel.addVector(acc);
       //Bounce off each other.
       if(Vector.distance(this.loc,planet.loc) <= this.size+planet.size && playerBounce)
@@ -78,36 +90,47 @@ class Player
   }
   updateVelocityAtmosphere(planets)
   {
-    //console.log("GravityOnly")
-    //console.log(this.vel)
-    if(Vector.distance(this.loc,this.controllingPlanet.loc) <= this.size+this.controllingPlanet.size+groundTouchError*this.controllingPlanet.vel.magnitude())
+    if(!this.inAir)
     {
       var jumpDirection = this.controllingPlanet.loc.direction(this.loc);
       if(this.upHeld)
       {
+        this.velocityComponents.set("Jump  ",jumpDirection.normalize(jumpForce).copy());
         this.vel = this.vel.addVector(jumpDirection.normalize(jumpForce));
       }
-      if(this.leftHeld)
+      else
       {
+        this.velocityComponents.set("Jump  ",new Vector(0,0));
+      }
+      if(this.leftHeld && !this.rightHeld)
+      {
+        this.velocityComponents.set("RolLft",jumpDirection.rotate(3*Math.PI/2).normalize(walkSpeed).copy());
         this.vel = this.vel.addVector(jumpDirection.rotate(3*Math.PI/2).normalize(walkSpeed));
       }
-      if(this.rightHeld)
+      else if(this.rightHeld && !this.leftHeld)
       {
+        this.velocityComponents.set("RolRgt",jumpDirection.rotate(Math.PI/2).normalize(walkSpeed).copy());
         this.vel = this.vel.addVector(jumpDirection.rotate(Math.PI/2).normalize(walkSpeed));
       }
+      else
+      {
+        this.velocityComponents.set("NoRoll",new Vector(0,0));
+      }
       //Friction
-      //console.log("Friction:")
-      //console.log(this.vel.subVector(this.vel.multiplyScaler(friction)))
+      this.velocityComponents.set("Frictn",this.vel.multiplyScaler(friction).negate().copy());
       this.vel = this.vel.subVector(this.vel.multiplyScaler(friction));
     }
-    //else
-    //{
+    else
+    {
       //console.log("InTheAir")
-    //}
+      this.velocityComponents.set("Jump  ",new Vector(0,0));
+      this.velocityComponents.set("NoRoll",new Vector(0,0));
+      this.velocityComponents.set("Frictn",new Vector(0,0));
+    }
     //Air Resistance
-    //console.log("AirResistance:")
-    //console.log(this.vel.subVector(this.vel.multiplyScaler(airResistance*this.vel.magnitude())));
+    this.velocityComponents.set("AirRes",this.vel.multiplyScaler(airResistance*this.vel.magnitude()).negate().copy());
     this.vel = this.vel.subVector(this.vel.multiplyScaler(airResistance*this.vel.magnitude()));
+    this.velocityComponents.set("SpCtrl",new Vector(0,0));
   }
   updateVelocitySpace(planets)
   {
@@ -130,6 +153,11 @@ class Player
       y += 1;
     }
     var deltaVector = new Vector(x,y);
+    this.velocityComponents.set("Jump  ",new Vector(0,0));
+    this.velocityComponents.set("NoRoll",new Vector(0,0));
+    this.velocityComponents.set("Frictn",new Vector(0,0));
+    this.velocityComponents.set("AirRes",new Vector(0,0));
+    this.velocityComponents.set("SpCtrl",deltaVector.normalize(controlSpeed).copy());
     this.vel = this.vel.addVector(deltaVector.normalize(controlSpeed))
   }
 
@@ -144,6 +172,11 @@ class Player
         this.loc = planet.loc.addVector(planet.loc.direction(this.loc).normalize(planet.size+this.size))
       }
     }
+    if(this.controllingPlanet)
+    {
+      this.inAir = Vector.distance(this.loc,this.controllingPlanet.loc) > this.size+this.controllingPlanet.size+groundTouchError;
+    }
+    this.velocityComponents = [...this.velocityComponents];
   }
 }
 

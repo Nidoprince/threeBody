@@ -21,7 +21,11 @@ var viewer = {
   space: false,
   x: 0,
   y: 0,
-  zoom: 0
+  zoom: 0,
+  velocityToggle: false,
+  velocityTrigger: false,
+  showVelocity: true,
+  log: false
 }
 
 viewerUpdate = function()
@@ -61,6 +65,18 @@ viewerUpdate = function()
     viewer.x = viewer.x+800*Math.pow(zoomRatio,preZoom)-800;
     viewer.y = viewer.y+400*Math.pow(zoomRatio,preZoom)-400;
   }
+  if(viewer.velocityTrigger)
+  {
+    viewer.velocityToggle = true;
+  }
+  else
+  {
+    if(viewer.velocityToggle)
+    {
+      viewer.showVelocity = ! viewer.showVelocity;
+      viewer.velocityToggle = false;
+    }
+  }
 
 }
 
@@ -77,6 +93,12 @@ document.addEventListener('keydown', function(event) {
       break;
     case 83: //S
       movement.down = true;
+      break;
+    case 86: //V
+      viewer.velocityTrigger = true;
+      break;
+    case 76: //l
+      viewer.log = true;
       break;
     case 38: //Up Arrow
       viewer.up = true;
@@ -117,6 +139,12 @@ document.addEventListener('keyup', function(event) {
       break;
     case 83: //S
       movement.down = false;
+      break;
+    case 86: //V
+      viewer.velocityTrigger = false;
+      break;
+    case 76: //l
+      viewer.log = false;
       break;
     case 38: //Up Arrow
       viewer.up = false;
@@ -167,8 +195,8 @@ socket.on('state',function(celestial) {
     viewer.y += myPlayer.controllingPlanet.vel.y;
   }
   context.clearRect(0,0,1600,800);
-  players = celestial[1]
-  planets = celestial[0]
+  players = celestial[1];
+  planets = celestial[0];
   for (var id in players) {
     if(id == socket.id)
     {
@@ -190,5 +218,21 @@ socket.on('state',function(celestial) {
     context.beginPath();
     context.arc((planet.loc.x-viewer.x)/Math.pow(zoomRatio,viewer.zoom),(planet.loc.y-viewer.y)/Math.pow(zoomRatio,viewer.zoom), 1.2*planet.size/Math.pow(zoomRatio,viewer.zoom), 0, 2 * Math.PI);
     context.fill();
+  }
+  if(myPlayer && viewer.showVelocity)
+  {
+    var toMap = new Map(myPlayer.velocityComponents)
+    var velPieces = toMap.size;
+    for (var [key,value] of toMap)
+    {
+      context.fillStyle = "white";
+      context.font = "bold 16px Arial";
+      context.fillText(key + " - x: " + value.x.toFixed(3) + " y: "+value.y.toFixed(3) +" m: "+Math.sqrt(value.x*value.x+value.y*value.y).toFixed(3),1300,810-50*velPieces);
+      velPieces -= 1;
+      if(viewer.log)
+      {
+        console.log((new Date()).getTime()+" "+key + " - x: " + value.x.toFixed(3) + " y: "+value.y.toFixed(3) +" m: "+Math.sqrt(value.x*value.x+value.y*value.y).toFixed(3));
+      }
+    }
   }
 });
