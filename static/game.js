@@ -194,16 +194,28 @@ socket.on('state',function(celestial) {
     viewer.x += myPlayer.controllingPlanet.vel.x;
     viewer.y += myPlayer.controllingPlanet.vel.y;
   }
+
   context.clearRect(0,0,1600,800);
+
+  //Make Stars
+  var time = (new Date()).getTime();
   for(var i = 0; i < 100 +10*(viewer.zoom+20); i++)
   {
     var xS = (5001*i+Math.floor(Math.abs(viewer.x)/20))%1600;
     var yS = (333*i*i+Math.floor(Math.abs(viewer.y)/30))%800;
-    context.fillStyle = "rgba(255,255,255,0."+(Math.abs(i*i+i)%5+4).toString()+")";
+    if((time+2001*i)%100000 <= 500)
+    {
+      context.fillStyle = "rgba(255,255,255,0."+((Math.abs(i*i+i)%60)+49).toString()+")";
+    }
+    else
+    {
+      context.fillStyle = "rgba(255,255,255,0."+((Math.abs(i*i+i)%60)+20).toString()+")";
+    }
     context.beginPath();
     context.arc(xS,yS,Math.abs(i*i+i)%5,0,2*Math.PI);
     context.fill();
   }
+
   players = celestial[1];
   planets = celestial[0];
   for (var id in players) {
