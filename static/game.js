@@ -195,6 +195,14 @@ socket.on('state',function(celestial) {
     viewer.y += myPlayer.controllingPlanet.vel.y;
   }
   context.clearRect(0,0,1600,800);
+  for(var i = 0; i < 100 +10*(viewer.zoom+20); i++)
+  {
+    var time = (Math.floor((new Date()).getTime()/100)+i)%2000-1000;
+    context.fillStyle = "rgba(255,255,255,0."+((100-(time*time)/10000)*7+200).toString()+")";
+    context.beginPath();
+    context.arc((5001*i+Math.floor(Math.abs(viewer.x)/20))%1600,(333*i*i+Math.floor(Math.abs(viewer.y)/30))%800,Math.abs(i*i+i)%5,0,2*Math.PI);
+    context.fill();
+  }
   players = celestial[1];
   planets = celestial[0];
   for (var id in players) {
