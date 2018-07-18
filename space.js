@@ -12,6 +12,119 @@ var friction = 0.2;
 var airResistance = 0.001;
 
 
+class Ship
+{
+  constructor(x,y,color,planets,type="baseRocket",size = 20,density=1)
+  {
+    this.loc = new Vector(x,y);
+    this.vel = new Vector(0,0);
+    this.color = color;
+    this.size = size;
+    this.density = density;
+    this.type = type;
+    this.parked = true;
+    this.driver = false;
+    var closestPlanetDistance = Number.MAX_SAFE_INTEGER;
+    var closestPlanet = false;
+    for (var id in planets)
+    {
+      var planet = planets[id];
+      //Check for closestPlanet
+      if(Vector.distance(this.loc,planet.loc) < closestPlanetDistance)
+      {
+        closestPlanetDistance = Vector.distance(this.loc,planet.loc);
+        closestPlanet = planet;
+      }
+    }
+    if(closestPlanet && closestPlanetDistance <= closestPlanet.size+this.size+5)
+    {
+      this.parked = closestPlanet;
+      this.loc = this.parked.loc.addVector(planet.loc.direction(this.loc).normalize(planet.size+this.size));
+      this.direction = this.parked.loc.direction(this.loc);
+      this.vel = this.parked.vel.copy();
+      console.log(this.parked)
+      console.log(this.direction)
+      console.log(this.loc)
+      console.log(this.parked.loc)
+    }
+    else
+    {
+      this.parked = false;
+      this.direction = (new Vector(1,0)).rotate(Math.random()*2*Math.PI);
+    }
+  }
+
+  mass()
+  {
+    return this.size*this.density;
+  }
+
+  updateVelocity(planets)
+  {
+    if(this.driver)
+    {
+      this.updateVelocityControlled(planets);
+    }
+    else if(this.parked)
+    {
+      this.updateVelocityParked(planets);
+    }
+    else
+    {
+      this.updateVelocityFree(planets);
+    }
+  }
+
+  updateVelocityParked(planets)
+  {
+    this.vel = this.parked.vel.copy();
+  }
+  updateVelocityFree(planets)
+  {
+    for(var id in planets)
+    {
+      var planet = planets[id];
+      //Gravitational Attraction
+      var dir = this.loc.direction(planet.loc);
+      var dist = Vector.distance(this.loc,planet.loc);
+      var force = gravitationalConstant*this.mass()*planet.mass()/(dist*dist);
+      var acc = dir.normalize(force/this.mass());
+      this.vel = this.vel.addVector(acc);
+      //Bounce off each other.
+      if(Vector.distance(this.loc,planet.loc) <= this.size+planet.size)
+      {
+        var stepOne = Vector.dotProduct(this.vel.subVector(planet.oldVel),this.loc.subVector(planet.loc))/Math.pow((this.loc.subVector(planet.loc).magnitude()),2);
+        var stepTwo = 2*planet.mass()/(this.mass()+planet.mass());
+        var direction = this.loc.subVector(planet.loc);
+        this.vel = this.vel.subVector(direction.multiplyScaler(stepOne*stepTwo*bouncyness));
+      }
+      //Air Resistance
+      if(Vector.distance(this.loc,planet.loc) <= this.size+planet.size*1.2)
+      {
+        this.vel = this.vel.subVector(this.vel.multiplyScaler(airResistance*this.vel.magnitude()));
+      }
+    }
+  }
+
+  updateShip(timeDifferential,planets)
+  {
+    this.loc = this.loc.addVector(this.vel.multiplyScaler(timeDifferential*universeSpeed));
+    if(!this.parked)
+    {
+      this.direction = this.direction.rotate((this.vel.angle()-this.direction.angle())/60*timeDifferential*universeSpeed);
+    }
+    for(var id in planets)
+    {
+      var planet = planets[id];
+      if(Vector.distance(this.loc,planet.loc)<planet.size+this.size)
+      {
+        this.vel = this.vel.addVector(planet.loc.addVector(planet.loc.direction(this.loc).normalize(planet.size+this.size)).subVector(this.loc));
+        this.loc = planet.loc.addVector(planet.loc.direction(this.loc).normalize(planet.size+this.size));
+      }
+    }
+  }
+}
+
 
 class Player
 {
@@ -169,7 +282,7 @@ class Player
       var planet = planets[id];
       if(Vector.distance(this.loc,planet.loc)<planet.size+this.size)
       {
-        this.loc = planet.loc.addVector(planet.loc.direction(this.loc).normalize(planet.size+this.size))
+        this.loc = planet.loc.addVector(planet.loc.direction(this.loc).normalize(planet.size+this.size));
       }
     }
     if(this.controllingPlanet)
@@ -328,6 +441,27 @@ class Vector
 	   return(new Vector(tempX,tempY));
    }
 
+   //Get angle of the vector, with (0,-1) as 0, going clockwise
+   angle()
+   {
+     if(this.x >= 0 && this.y <= 0)
+     {
+       return Math.atan2(this.x,-this.y);
+     }
+     else if(this.x >= 0 && this.y > 0)
+     {
+       return Math.PI/2+Math.atan2(this.y,this.x);
+     }
+     else if(this.y > 0)
+     {
+       return Math.PI + Math.atan2(-this.x,this.y);
+     }
+     else
+     {
+       return Math.PI*3/2 + Math.atan2(-this.y,-this.x);
+     }
+   }
+
    getX()
    {
 	   return this.x;
@@ -360,3 +494,4 @@ class Vector
 module.exports.Vector = Vector;
 module.exports.Player = Player;
 module.exports.Planet = Planet;
+module.exports.Ship = Ship;

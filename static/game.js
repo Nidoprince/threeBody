@@ -239,6 +239,7 @@ socket.on('state',function(celestial) {
 
   players = celestial[1];
   planets = celestial[0];
+  ships = celestial[2];
   for (var id in players) {
     if(id == socket.id)
     {
@@ -260,6 +261,10 @@ socket.on('state',function(celestial) {
     context.beginPath();
     context.arc((planet.loc.x-viewer.x)/Math.pow(zoomRatio,viewer.zoom)+800,(planet.loc.y-viewer.y)/Math.pow(zoomRatio,viewer.zoom)+400, 1.2*planet.size/Math.pow(zoomRatio,viewer.zoom), 0, 2 * Math.PI);
     context.fill();
+  }
+  for (var id in ships) {
+    var ship = ships[id];
+    shipDrawer(ship,context);
   }
   if(myPlayer && viewer.showVelocity)
   {
