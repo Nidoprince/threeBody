@@ -2,6 +2,10 @@ var viewerSpeed = 3;
 var myPlayer = null;
 var zoomRatio = 1.05;
 
+var colorSelected = false;
+var cursorMove = 0;
+var cursorLoc = 0;
+
 var socket = io();
 socket.on('message', function(data) {
   console.log(data);
@@ -22,13 +26,33 @@ var viewer = {
   x: 0,
   y: 0,
   zoom: 0,
-  velocityToggle: false,
-  velocityTrigger: false,
-  showVelocity: true,
-  focusToggle: false,
-  focusTrigger: false,
+  velocity: false,
+  showVelocity: false,
+  focus: false,
   focusPlayer: false,
-  log: false
+  log: false,
+  enter: false
+}
+var trigger = {
+  up: false,
+  down: false,
+  left: false,
+  right: false,
+  space: false,
+  velocity: false,
+  focus: false,
+  enter: false,
+  reset()
+  {
+    this.up = false;
+    this.down = false;
+    this.left = false;
+    this.right = false;
+    this.space = false;
+    this.velocity = false;
+    this.focus = false;
+    this.enter = false;
+  }
 }
 
 viewerUpdate = function()
@@ -52,47 +76,28 @@ viewerUpdate = function()
   if(viewer.reduce && viewer.zoom > -20)
   {
     viewer.zoom -= 1;
-    //viewer.x+=800*(Math.pow(zoomRatio,viewer.zoom+1)-Math.pow(zoomRatio,viewer.zoom))
-    //viewer.y+=400*(Math.pow(zoomRatio,viewer.zoom+1)-Math.pow(zoomRatio,viewer.zoom))
   }
   if(viewer.increase && viewer.zoom < 150)
   {
     viewer.zoom += 1;
-    //viewer.x-=800*(Math.pow(zoomRatio,viewer.zoom)-Math.pow(zoomRatio,viewer.zoom-1))
-    //viewer.y-=400*(Math.pow(zoomRatio,viewer.zoom)-Math.pow(zoomRatio,viewer.zoom-1))
   }
   if(viewer.resetZoom)
   {
-    //var preZoom = viewer.zoom;
     viewer.zoom = 0;
-    //viewer.x = viewer.x+800*Math.pow(zoomRatio,preZoom)-800;
-    //viewer.y = viewer.y+400*Math.pow(zoomRatio,preZoom)-400;
   }
-  if(viewer.velocityTrigger)
+  if(trigger.velocity)
   {
-    viewer.velocityToggle = true;
+    viewer.showVelocity = ! viewer.showVelocity;
   }
-  else
+  if(trigger.focus)
   {
-    if(viewer.velocityToggle)
-    {
-      viewer.showVelocity = ! viewer.showVelocity;
-      viewer.velocityToggle = false;
-    }
+    viewer.focusPlayer = ! viewer.focusPlayer;
   }
-  if(viewer.focusTrigger)
+  if(cursorLoc)
   {
-    viewer.focusToggle = true;
+    viewer.space = true;
+    cursorLoc = false;
   }
-  else
-  {
-    if(viewer.focusToggle)
-    {
-      viewer.focusPlayer = ! viewer.focusPlayer;
-      viewer.focusToggle = false;
-    }
-  }
-
 }
 
 document.addEventListener('keydown', function(event) {
@@ -110,13 +115,13 @@ document.addEventListener('keydown', function(event) {
       movement.down = true;
       break;
     case 86: //V
-      viewer.velocityTrigger = true;
+      viewer.velocity = true;
       break;
     case 76: //l
       viewer.log = true;
       break;
     case 70: //F
-      viewer.focusTrigger = true;
+      viewer.focus = true;
       break;
     case 38: //Up Arrow
       viewer.up = true;
@@ -133,6 +138,9 @@ document.addEventListener('keydown', function(event) {
     case 32: //Space
       viewer.space = true;
       break;
+    case 13: //Enter
+      viewer.enter = true;
+      break;
     case 221: //Right Bracket
       viewer.increase = true;
       break;
@@ -147,40 +155,91 @@ document.addEventListener('keydown', function(event) {
 document.addEventListener('keyup', function(event) {
   switch (event.keyCode) {
     case 65: //A
+      if(movement.left)
+      {
+        trigger.left = true;
+      }
       movement.left = false;
       break;
     case 87: //W
+      if(movement.up)
+      {
+        trigger.up = true;
+      }
       movement.up = false;
       break;
     case 68: //D
+      if(movement.right)
+      {
+        trigger.right = true;
+      }
       movement.right = false;
       break;
     case 83: //S
+      if(movement.down)
+      {
+        trigger.down = true;
+      }
       movement.down = false;
       break;
     case 86: //V
-      viewer.velocityTrigger = false;
+      if(viewer.velocity)
+      {
+        trigger.velocity = true;
+      }
+      viewer.velocity = false;
       break;
     case 76: //l
       viewer.log = false;
       break;
     case 70: //F
-      viewer.focusTrigger = false;
+      if(viewer.focus)
+      {
+        trigger.focus = true;
+      }
+      viewer.focus = false;
       break;
     case 38: //Up Arrow
+      if(viewer.up)
+      {
+        trigger.up = true;
+      }
       viewer.up = false;
       break;
     case 40: //Down Arrow
+      if(viewer.down)
+      {
+        trigger.down = true;
+      }
       viewer.down = false;
       break;
     case 37: //Left Arrow
+      if(viewer.left)
+      {
+        trigger.left = true;
+      }
       viewer.left = false;
       break;
     case 39: //Right Arrow
+      if(viewer.right)
+      {
+        trigger.right = true;
+      }
       viewer.right = false;
       break;
     case 32: //Space
+      if(viewer.space)
+      {
+        trigger.space = true;
+      }
       viewer.space = false;
+      break;
+    case 13: //Enter
+      if(viewer.enter)
+      {
+        trigger.enter = true;
+      }
+      viewer.enter = false;
       break;
     case 221: //Right Bracket
       viewer.increase = false;
@@ -194,7 +253,7 @@ document.addEventListener('keyup', function(event) {
   }
 });
 
-socket.emit('new player');
+//socket.emit('new player');
 setInterval(function() {
   socket.emit('movement', movement);
 }, 1000/60);
@@ -204,19 +263,19 @@ canvas.width = 1600;
 canvas.height = 800;
 var context = canvas.getContext('2d');
 socket.on('state',function(celestial) {
+  context.clearRect(0,0,1600,800);
+  if(colorSelected){
   viewerUpdate();
   if(myPlayer && (viewer.space || viewer.focusPlayer))
   {
-    viewer.x = myPlayer.loc.x// - 800*Math.pow(zoomRatio,viewer.zoom);
-    viewer.y = myPlayer.loc.y// - 400*Math.pow(zoomRatio,viewer.zoom);
+    viewer.x = myPlayer.loc.x;
+    viewer.y = myPlayer.loc.y;
   }
   if(myPlayer && myPlayer.controllingPlanet)
   {
     viewer.x += myPlayer.controllingPlanet.vel.x;
     viewer.y += myPlayer.controllingPlanet.vel.y;
   }
-
-  context.clearRect(0,0,1600,800);
 
   //Make Stars
   var time = (new Date()).getTime();
@@ -281,5 +340,52 @@ socket.on('state',function(celestial) {
         console.log((new Date()).getTime()+" "+key + " - x: " + value.x.toFixed(3) + " y: "+value.y.toFixed(3) +" m: "+Math.sqrt(value.x*value.x+value.y*value.y).toFixed(3));
       }
     }
+  }}
+  else {
+    context.fillStyle = "white"
+    context.font = "bold 30px Arial";
+    context.fillText("Please select a faction:",400,200);
+    context.fillStyle = "red";
+    context.fillText("Radical Extermination Deployment",500,350);
+    context.fillStyle = "blue";
+    context.fillText("Bombastic Lizards Using Explosives",500,450);
+    context.fillStyle = "yellow";
+    context.fillText("Yammering Ecentric Llama Lovers Of Woe",500,550);
+    context.fillStyle = "green";
+    context.fillText("Generally Really Entrancingly Entertaining Nomads",500,650);
+    context.fillStyle = "white"
+    context.fillText("->",400,350+100*cursorLoc);
+    if(viewer.up || movement.up)
+    {
+      cursorMove--;
+    }
+    if(cursorMove <= -10 || trigger.up)
+    {
+      cursorLoc -= 1;
+      if(cursorLoc < 0)
+      {
+        cursorLoc = 3;
+      }
+      cursorMove = 0;
+    }
+    if(viewer.down || movement.down)
+    {
+      cursorMove++;
+    }
+    if(cursorMove >= 10 || trigger.down)
+    {
+      cursorLoc += 1;
+      if(cursorLoc > 3)
+      {
+        cursorLoc = 0;
+      }
+      cursorMove = 0;
+    }
+    if(viewer.space || viewer.enter)
+    {
+      socket.emit("new player",cursorLoc);
+      colorSelected = true;
+    }
   }
+  trigger.reset();
 });

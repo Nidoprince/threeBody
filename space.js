@@ -42,10 +42,6 @@ class Ship
       this.loc = this.parked.loc.addVector(planet.loc.direction(this.loc).normalize(planet.size+this.size));
       this.direction = this.parked.loc.direction(this.loc);
       this.vel = this.parked.vel.copy();
-      console.log(this.parked)
-      console.log(this.direction)
-      console.log(this.loc)
-      console.log(this.parked.loc)
     }
     else
     {
@@ -128,10 +124,27 @@ class Ship
 
 class Player
 {
-  constructor(x,y,color = 'green',size = 10,density = 1)
+  constructor(x,y,color, planets, size = 10,density = 1)
   {
-    this.loc = new Vector(x,y);
-    this.vel = new Vector(0,0);
+    this.color = color;
+    this.controllingPlanet = false;
+    for (var id in planets)
+    {
+      if(planets[id].color == this.color)
+      {
+        this.controllingPlanet = planets[id];
+      }
+    }
+    if(this.controllingPlanet)
+    {
+      this.loc = this.controllingPlanet.loc.addVector((new Vector(this.controllingPlanet.size,0)).rotate(Math.random()*Math.PI*2));
+      this.vel = this.controllingPlanet.vel.copy();
+    }
+    else
+    {
+      this.loc = new Vector(x,y);
+      this.vel = new Vector(0,0);
+    }
     this.actingVel = new Vector(0,0);
     this.leftHeld = false;
     this.rightHeld = false;
@@ -140,7 +153,6 @@ class Player
     this.color = color;
     this.size = size;
     this.density = density;
-    this.controllingPlanet = false;
     this.inAir = false;
     this.velocityComponents = new Map();
     this.velocityComponents.set("Base",this.vel.copy());

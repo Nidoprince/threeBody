@@ -35,8 +35,9 @@ var io = socketIO(server);
 
 var players = {};
 io.on('connection', function(socket) {
-  socket.on('new player', function() {
-    players[socket.id] = new space.Player(300,300);
+  socket.on('new player', function(faction) {
+    var colors = ["red","blue","yellow","green"];
+    players[socket.id] = new space.Player(300,300,colors[faction],planets);
   });
   socket.on('disconnect', function() {
     delete players[socket.id];
