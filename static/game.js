@@ -11,11 +11,12 @@ socket.on('message', function(data) {
   console.log(data);
 });
 
-var movement = {
+var playerControl = {
   up: false,
   down: false,
   left: false,
-  right: false
+  right: false,
+  e: false
 }
 var viewer = {
   up: false,
@@ -42,6 +43,7 @@ var trigger = {
   velocity: false,
   focus: false,
   enter: false,
+  e: false,
   reset()
   {
     this.up = false;
@@ -52,6 +54,7 @@ var trigger = {
     this.velocity = false;
     this.focus = false;
     this.enter = false;
+    this.e = false;
   }
 }
 
@@ -103,16 +106,16 @@ viewerUpdate = function()
 document.addEventListener('keydown', function(event) {
   switch (event.keyCode) {
     case 65: //A
-      movement.left = true;
+      playerControl.left = true;
       break;
     case 87: //W
-      movement.up = true;
+      playerControl.up = true;
       break;
     case 68: //D
-      movement.right = true;
+      playerControl.right = true;
       break;
     case 83: //S
-      movement.down = true;
+      playerControl.down = true;
       break;
     case 86: //V
       viewer.velocity = true;
@@ -122,6 +125,9 @@ document.addEventListener('keydown', function(event) {
       break;
     case 70: //F
       viewer.focus = true;
+      break;
+    case 69: //E
+      playerControl.e = true;
       break;
     case 38: //Up Arrow
       viewer.up = true;
@@ -155,32 +161,32 @@ document.addEventListener('keydown', function(event) {
 document.addEventListener('keyup', function(event) {
   switch (event.keyCode) {
     case 65: //A
-      if(movement.left)
+      if(playerControl.left)
       {
         trigger.left = true;
       }
-      movement.left = false;
+      playerControl.left = false;
       break;
     case 87: //W
-      if(movement.up)
+      if(playerControl.up)
       {
         trigger.up = true;
       }
-      movement.up = false;
+      playerControl.up = false;
       break;
     case 68: //D
-      if(movement.right)
+      if(playerControl.right)
       {
         trigger.right = true;
       }
-      movement.right = false;
+      playerControl.right = false;
       break;
     case 83: //S
-      if(movement.down)
+      if(playerControl.down)
       {
         trigger.down = true;
       }
-      movement.down = false;
+      playerControl.down = false;
       break;
     case 86: //V
       if(viewer.velocity)
@@ -198,6 +204,13 @@ document.addEventListener('keyup', function(event) {
         trigger.focus = true;
       }
       viewer.focus = false;
+      break;
+    case 69: //E
+      if(playerControl.e)
+      {
+        trigger.e = true;
+      }
+      playerControl.e = false;
       break;
     case 38: //Up Arrow
       if(viewer.up)
@@ -255,7 +268,7 @@ document.addEventListener('keyup', function(event) {
 
 //socket.emit('new player');
 setInterval(function() {
-  socket.emit('movement', movement);
+  socket.emit('playerControl', playerControl);
 }, 1000/60);
 
 var canvas = document.getElementById('canvas');
@@ -305,10 +318,13 @@ socket.on('state',function(celestial) {
       myPlayer = players[id];
     }
     var player = players[id];
-    context.fillStyle = player.color;
-    context.beginPath();
-    context.arc((player.loc.x-viewer.x)/Math.pow(zoomRatio,viewer.zoom)+800,(player.loc.y-viewer.y)/Math.pow(zoomRatio,viewer.zoom)+400, player.size/Math.pow(zoomRatio,viewer.zoom), 0, 2 * Math.PI);
-    context.fill();
+    if(!player.inSpaceShip)
+    {
+      context.fillStyle = player.color;
+      context.beginPath();
+      context.arc((player.loc.x-viewer.x)/Math.pow(zoomRatio,viewer.zoom)+800,(player.loc.y-viewer.y)/Math.pow(zoomRatio,viewer.zoom)+400, player.size/Math.pow(zoomRatio,viewer.zoom), 0, 2 * Math.PI);
+      context.fill();
+    }
   }
   for (var id in planets) {
     var planet = planets[id];
@@ -355,7 +371,7 @@ socket.on('state',function(celestial) {
     context.fillText("Generally Really Entrancingly Entertaining Nomads",500,650);
     context.fillStyle = "white"
     context.fillText("->",400,350+100*cursorLoc);
-    if(viewer.up || movement.up)
+    if(viewer.up || playerControl.up)
     {
       cursorMove--;
     }
@@ -368,7 +384,7 @@ socket.on('state',function(celestial) {
       }
       cursorMove = 0;
     }
-    if(viewer.down || movement.down)
+    if(viewer.down || playerControl.down)
     {
       cursorMove++;
     }

@@ -27,8 +27,10 @@ server.listen(process.env.PORT || 5000, function() {
   planets[0] = new space.Planet(0,5000,5,0,1000,'red','rgba(255,0,0,0.1)',2);
   planets[1] = new space.Planet(-4330,-2500,-5/2,8.66/2,1000,'blue','rgba(0,0,255,0.1)',2);
   planets[2] = new space.Planet(4330,-2500,-5/2,-8.66/2,1000,'yellow','rgba(255,255,0,0.1)',2);
-  ships[0] = new space.Ship(0,0,"red",planets);
-  ships[1] = new space.Ship(1000,5000,"blue",planets);
+  ships[0] = new space.Ship(0,0,"green",planets);
+  ships[1] = new space.Ship(1000,5000,"red",planets);
+  ships[2] = new space.Ship(-4330,-1500,"blue",planets);
+  ships[3] = new space.Ship(4330,-1500,"yellow",planets);
 });
 
 var io = socketIO(server);
@@ -42,12 +44,13 @@ io.on('connection', function(socket) {
   socket.on('disconnect', function() {
     delete players[socket.id];
   });
-  socket.on('movement', function(data) {
+  socket.on('playerControl', function(data) {
     var player = players[socket.id] || {};
     player.leftHeld = data.left;
     player.upHeld = data.up;
     player.rightHeld = data.right;
     player.downHeld = data.down;
+    player.ePressed = data.e;
   });
 });
 
@@ -62,14 +65,6 @@ setInterval(function() {
   {
     planets[id].updateLocation(timeDifferential);
   }
-  for (var id in players)
-  {
-    players[id].updateVelocity(planets);
-  }
-  for (var id in players)
-  {
-    players[id].updatePlayer(timeDifferential,planets);
-  }
   for (var id in ships)
   {
     ships[id].updateVelocity(planets);
@@ -77,6 +72,14 @@ setInterval(function() {
   for (var id in ships)
   {
     ships[id].updateShip(timeDifferential,planets);
+  }
+  for (var id in players)
+  {
+    players[id].updateVelocity(planets);
+  }
+  for (var id in players)
+  {
+    players[id].updatePlayer(timeDifferential,planets,ships);
   }
   lastUpdateTime = currentTime;
   io.sockets.emit('state', [planets,players,ships]);

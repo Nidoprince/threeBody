@@ -183,5 +183,12 @@ var shipDrawer = function(ship, drawOn)
     drawOn.lineTo(angleRight.x,angleRight.y);
     drawOn.closePath();
     drawOn.fill();
+    if(ship.driver)
+    {
+      drawOn.fillStyle = ship.driverColor;
+      drawOn.beginPath();
+      drawOn.arc(penLoc.x,penLoc.y,ship.size/(6*zoomMult), 0, 2 * Math.PI);
+      drawOn.fill();
+    }
   }
 }

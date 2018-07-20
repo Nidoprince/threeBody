@@ -2,19 +2,22 @@ var gravitationalConstant = 0.05;
 var bouncyness = 0.9;
 var playerBounce = false;
 var groundTouchError = 0;
-var jumpForce = 100;
+var similarEnoughVelocities = 0.3;
+var fallingAngle = Math.PI/4;
+var jumpForce = 15;
 
+var shipSpeedLimit = 60;
 var universeSpeed = 1;
 var controlSpeed = 0.1;
 var walkSpeed = 5;
-var maxSpeed = 15;
+var maxSpeed = 10;
 var friction = 0.2;
 var airResistance = 0.001;
 
 
 class Ship
 {
-  constructor(x,y,color,planets,type="baseRocket",size = 20,density=1)
+  constructor(x,y,color,planets,type="baseRocket",size = 40,density=1,thrust = 0.3,turnRate = 0.02,edgeThrust = 0.05,slowRate = 0.001)
   {
     this.loc = new Vector(x,y);
     this.vel = new Vector(0,0);
@@ -22,8 +25,15 @@ class Ship
     this.size = size;
     this.density = density;
     this.type = type;
+    this.thrust = thrust;
+    this.turnRate = turnRate;
+    this.edgeThrust = edgeThrust;
+    this.slowRate = slowRate;
     this.parked = true;
     this.driver = false;
+    this.driverColor = false;
+    this.controlInput = new Vector(0,0);
+    this.controlRotation = 0;
     var closestPlanetDistance = Number.MAX_SAFE_INTEGER;
     var closestPlanet = false;
     for (var id in planets)
@@ -69,8 +79,40 @@ class Ship
     {
       this.updateVelocityFree(planets);
     }
+    this.vel = this.vel.speedLimit(shipSpeedLimit);
   }
-
+  shipControl(up,down,left,right)
+  {
+    this.controlInput = new Vector(0,0);
+    this.controlRotation = 0;
+    //Thrust
+    if(up)
+    {
+      this.controlInput = this.direction.multiplyScaler(this.thrust);
+    }
+    //Rotation
+    if(right && !left)
+    {
+      this.controlRotation = this.turnRate;
+      this.controlInput = this.controlInput.addVector(this.direction.rotate(Math.PI/2).multiplyScaler(this.edgeThrust));
+    }
+    else if(left && !right)
+    {
+      this.controlRotation = -1*this.turnRate;
+      this.controlInput = this.controlInput.addVector(this.direction.rotate(-1*Math.PI/2).multiplyScaler(this.edgeThrust));
+    }
+    //Slow
+    if(down)
+    {
+      this.controlInput = this.controlInput.subVector(this.vel.multiplyScaler(this.slowRate))
+    }
+    return this.vel.copy();
+  }
+  updateVelocityControlled(planets)
+  {
+    this.vel = this.vel.addVector(this.controlInput);
+    this.updateVelocityFree(planets);
+  }
   updateVelocityParked(planets)
   {
     this.vel = this.parked.vel.copy();
@@ -105,9 +147,25 @@ class Ship
   updateShip(timeDifferential,planets)
   {
     this.loc = this.loc.addVector(this.vel.multiplyScaler(timeDifferential*universeSpeed));
+    if(this.parked)
+    {
+      var angleFromStraight = this.parked.loc.direction(this.loc).angle();-this.direction.angle();
+      if(Math.abs(angleFromStraight) > fallingAngle && Math.abs(angleFromStraight) < Math.PI/2)
+      {
+        this.direction = this.direction.rotate(angleFromStraight/10*timeDifferential*universeSpeed);
+      }
+      if(this.vel.x != this.parked.vel.x || this.vel.y != this.parked.vel.y)
+      {
+        this.parked = false;
+      }
+    }
     if(!this.parked)
     {
-      this.direction = this.direction.rotate((this.vel.angle()-this.direction.angle())/60*timeDifferential*universeSpeed);
+      this.direction = this.direction.rotate((this.vel.angle()-this.direction.angle())/120*timeDifferential*universeSpeed);
+    }
+    if(this.driver)
+    {
+      this.direction = this.direction.rotate(this.controlRotation*timeDifferential*universeSpeed);
     }
     for(var id in planets)
     {
@@ -116,6 +174,12 @@ class Ship
       {
         this.vel = this.vel.addVector(planet.loc.addVector(planet.loc.direction(this.loc).normalize(planet.size+this.size)).subVector(this.loc));
         this.loc = planet.loc.addVector(planet.loc.direction(this.loc).normalize(planet.size+this.size));
+      }
+      if(Vector.distance(this.loc,planet.loc)<planet.size+this.size+groundTouchError && Vector.distance(this.vel,planet.vel)<similarEnoughVelocities)
+      {
+        this.parked = planet;
+        this.loc = this.parked.loc.addVector(planet.loc.direction(this.loc).normalize(planet.size+this.size));
+        this.vel = this.parked.vel.copy();
       }
     }
   }
@@ -150,13 +214,14 @@ class Player
     this.rightHeld = false;
     this.upHeld = false;
     this.rightHeld = false;
+    this.ePressed = false;
     this.color = color;
     this.size = size;
     this.density = density;
     this.inAir = false;
     this.velocityComponents = new Map();
     this.velocityComponents.set("Base",this.vel.copy());
-    this.testValue = "test";
+    this.inSpaceShip = false;
   }
 
   mass()
@@ -168,11 +233,45 @@ class Player
   {
     return this.velocityComponents
   }
+  enterOrExitSpaceship(ships)
+  {
+    if(this.inSpaceShip)
+    {
+      this.inSpaceShip.driver = false;
+      this.inSpaceShip = false;
+    }
+    else
+    {
+      for (var id in ships)
+      {
+        var ship = ships[id];
+        if(Vector.distance(this.loc,ship.loc) < this.size+ship.size)
+        {
+          this.inSpaceShip = ship;
+          this.inSpaceShip.driver = true;
+          this.inSpaceShip.driverColor = this.color;
+          this.loc = this.inSpaceShip.loc.copy();
+          break;
+        }
+      }
+    }
+  }
   updateVelocity(planets)
   {
     this.velocityComponents = new Map();
+    if(this.inSpaceShip)
+    {
+      this.vel = this.inSpaceShip.shipControl(this.upHeld,this.downHeld,this.leftHeld,this.rightHeld);
+      this.velocityComponents.set("Ship  ",this.vel.copy());
+    }
+    else
+    {
+      this.updateVelocitySelf(planets);
+    }
+  }
+  updateVelocitySelf(planets)
+  {
     this.velocityComponents.set("Base  ", this.vel.copy());
-    //console.log(this.velocityComponents);
     var closestPlanetDistance = Number.MAX_SAFE_INTEGER;
     var closestPlanet = false;
     for(var id in planets)
@@ -286,7 +385,7 @@ class Player
     this.vel = this.vel.addVector(deltaVector.normalize(controlSpeed))
   }
 
-  updatePlayer(timeDifferential,planets)
+  updatePlayer(timeDifferential,planets,ships)
   {
     this.loc = this.loc.addVector(this.vel.multiplyScaler(universeSpeed*timeDifferential));
     for(var id in planets)
@@ -302,6 +401,10 @@ class Player
       this.inAir = Vector.distance(this.loc,this.controllingPlanet.loc) > this.size+this.controllingPlanet.size+groundTouchError;
     }
     this.velocityComponents = [...this.velocityComponents];
+    if(this.ePressed)
+    {
+      this.enterOrExitSpaceship(ships);
+    }
   }
 }
 
