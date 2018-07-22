@@ -1,4 +1,4 @@
-var viewerSpeed = 3;
+const viewerSpeed = 3;
 var myPlayer = null;
 var zoomRatio = 1.05;
 

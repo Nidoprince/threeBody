@@ -190,5 +190,59 @@ var shipDrawer = function(ship, drawOn)
       drawOn.arc(penLoc.x,penLoc.y,ship.size/(6*zoomMult), 0, 2 * Math.PI);
       drawOn.fill();
     }
+    if(ship.controlRotation > 0)
+    {
+      angleLeft = tipPoint.addVector(shipDir.negate().rotate(Math.PI/6).normalize(ship.size/(2.5*zoomMult)));
+      drawOn.fillStyle = "red";
+      drawOn.beginPath();
+      drawOn.arc(angleLeft.x,angleLeft.y,ship.size/(9*zoomMult),0,2*Math.PI)
+      drawOn.fill();
+      angleLeft = tipPoint.addVector(shipDir.negate().rotate(Math.PI/6).normalize(ship.size/(3*zoomMult)));
+      drawOn.fillStyle = "orange";
+      drawOn.beginPath();
+      drawOn.arc(angleLeft.x,angleLeft.y,ship.size/(13*zoomMult),0,2*Math.PI)
+      drawOn.fill();
+      angleLeft = tipPoint.addVector(shipDir.negate().rotate(Math.PI/6).normalize(ship.size/(4*zoomMult)));
+      drawOn.fillStyle = "white";
+      drawOn.beginPath();
+      drawOn.arc(angleLeft.x,angleLeft.y,ship.size/(20*zoomMult),0,2*Math.PI)
+      drawOn.fill();
+    }
+    if(ship.controlRotation < 0)
+    {
+      angleRight = tipPoint.addVector(shipDir.negate().rotate(-Math.PI/6).normalize(ship.size/(2.5*zoomMult)));
+      drawOn.fillStyle = "red";
+      drawOn.beginPath();
+      drawOn.arc(angleRight.x,angleRight.y,ship.size/(9*zoomMult),0,2*Math.PI)
+      drawOn.fill();
+      angleRight = tipPoint.addVector(shipDir.negate().rotate(-Math.PI/6).normalize(ship.size/(3*zoomMult)));
+      drawOn.fillStyle = "orange";
+      drawOn.beginPath();
+      drawOn.arc(angleRight.x,angleRight.y,ship.size/(13*zoomMult),0,2*Math.PI)
+      angleRight = tipPoint.addVector(shipDir.negate().rotate(-Math.PI/6).normalize(ship.size/(4*zoomMult)));
+      drawOn.fill();
+      drawOn.fillStyle = "white";
+      drawOn.beginPath();
+      drawOn.arc(angleRight.x,angleRight.y,ship.size/(20*zoomMult),0,2*Math.PI)
+      drawOn.fill();
+    }
+    var shipControl = new Vector(ship.controlInput.x,ship.controlInput.y);
+    if(Math.abs(shipControl.angle()-shipDir.angle())<Math.PI/3 && shipControl.magnitude()>0)
+    {
+      let engineLoc = penLoc.addVector(shipDir.negate().normalize(ship.size*1.2/zoomMult));
+      drawOn.fillStyle = "red";
+      drawOn.beginPath();
+      drawOn.arc(engineLoc.x,engineLoc.y,ship.size/(4*zoomMult),0,2*Math.PI)
+      drawOn.fill();
+      engineLoc = penLoc.addVector(shipDir.negate().normalize(ship.size*1.1/zoomMult));
+      drawOn.fillStyle = "orange";
+      drawOn.beginPath();
+      drawOn.arc(engineLoc.x,engineLoc.y,ship.size/(8*zoomMult),0,2*Math.PI)
+      drawOn.fill();
+      drawOn.fillStyle = "white";
+      drawOn.beginPath();
+      drawOn.arc(engineLoc.x,engineLoc.y,ship.size/(15*zoomMult),0,2*Math.PI)
+      drawOn.fill();
+    }
   }
 }

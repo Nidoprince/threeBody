@@ -1,18 +1,18 @@
-var gravitationalConstant = 0.05;
-var bouncyness = 0.9;
-var playerBounce = false;
-var groundTouchError = 0;
-var similarEnoughVelocities = 0.3;
-var fallingAngle = Math.PI/4;
-var jumpForce = 15;
+const gravitationalConstant = 0.05;
+const bouncyness = 0.9;
+const playerBounce = false;
+const groundTouchError = 0;
+const similarEnoughVelocities = 0.3;
+const fallingAngle = Math.PI/4;
+const jumpForce = 15;
 
-var shipSpeedLimit = 60;
-var universeSpeed = 1;
-var controlSpeed = 0.1;
-var walkSpeed = 5;
-var maxSpeed = 10;
-var friction = 0.2;
-var airResistance = 0.001;
+const shipSpeedLimit = 60;
+const universeSpeed = 1;
+const controlSpeed = 0.1;
+const walkSpeed = 5;
+const maxSpeed = 10;
+const friction = 0.2;
+const airResistance = 0.001;
 
 
 class Ship
@@ -161,7 +161,7 @@ class Ship
     }
     if(!this.parked)
     {
-      this.direction = this.direction.rotate((this.vel.angle()-this.direction.angle())/120*timeDifferential*universeSpeed);
+      this.direction = this.direction.rotate((this.vel.angle()-this.direction.angle())/240*timeDifferential*universeSpeed);
     }
     if(this.driver)
     {
