@@ -419,7 +419,7 @@ class Player
     for(var id in planets)
     {
       var planet = planets[id];
-      if(Vector.distance(this.loc,planet.loc)<planet.size+this.size)
+      if(Vector.distance(this.loc,planet.loc)<planet.size+this.size && !this.inSpaceShip)
       {
         this.loc = planet.loc.addVector(planet.loc.direction(this.loc).normalize(planet.size+this.size));
       }
@@ -444,6 +444,10 @@ class Player
         this.inventory.pop();
       }
     }
+    if(this.inSpaceShip)
+    {
+      this.loc = this.inSpaceShip.loc.copy();
+    }
   }
 }
 
@@ -458,6 +462,15 @@ class Planet
     this.density = density;
     this.color = color;
     this.atmosphereColor = atmosphereColor;
+    this.fuelSources = [];
+  }
+
+  spawnFuel()
+  {
+    if(Math.random() < 0.0002*(10-this.fuelSources.length))
+    {
+      this.fuelSources.push(Math.random()*Math.PI*2);
+    }
   }
 
   updateLocation(timeDifferential)

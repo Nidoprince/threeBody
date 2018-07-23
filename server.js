@@ -66,6 +66,7 @@ setInterval(function() {
   for (var id in planets)
   {
     planets[id].updateVelocity(planets);
+    planets[id].spawnFuel();
   }
   for (var id in planets)
   {
