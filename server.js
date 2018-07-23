@@ -11,8 +11,9 @@ var server = http.Server(app);
 
 var lastUpdateTime = (new Date()).getTime();
 
-var planets = {};
-var ships = {};
+var planets = [];
+var ships = [];
+var asteroids = [];
 
 app.use(express.static('static'))
 app.use('/static', express.static(__dirname + '/static'));
@@ -24,13 +25,16 @@ app.get('/', function(req, res) {
 //Starts the server.
 server.listen(process.env.PORT || 5000, function() {
   console.log('Starting server on port 5000')
-  planets[0] = new space.Planet(0,5000,5,0,1000,'red','rgba(255,0,0,0.1)',2);
-  planets[1] = new space.Planet(-4330,-2500,-5/2,8.66/2,1000,'blue','rgba(0,0,255,0.1)',2);
-  planets[2] = new space.Planet(4330,-2500,-5/2,-8.66/2,1000,'yellow','rgba(255,255,0,0.1)',2);
-  ships[0] = new space.Ship(0,0,"green",planets);
-  ships[1] = new space.Ship(1000,5000,"red",planets);
-  ships[2] = new space.Ship(-4330,-1500,"blue",planets);
-  ships[3] = new space.Ship(4330,-1500,"yellow",planets);
+  planets.push(new space.Planet(0,5000,5,0,1000,'red','rgba(255,0,0,0.1)',2));
+  planets.push(new space.Planet(-4330,-2500,-5/2,8.66/2,1000,'blue','rgba(0,0,255,0.1)',2));
+  planets.push(new space.Planet(4330,-2500,-5/2,-8.66/2,1000,'yellow','rgba(255,255,0,0.1)',2));
+  ships.push(new space.Ship(100,100,"green",planets));
+  ships.push(new space.Ship(1000,5000,"red",planets));
+  ships.push(new space.Ship(-4330,-1500,"blue",planets));
+  ships.push(new space.Ship(4330,-1500,"yellow",planets));
+  asteroids.push(new space.Asteroid(10000,0,0,4,100));
+  asteroids.push(new space.Asteroid(0,0,0,0,100));
+
 });
 
 var io = socketIO(server);
@@ -51,12 +55,14 @@ io.on('connection', function(socket) {
     player.rightHeld = data.right;
     player.downHeld = data.down;
     player.ePressed = data.e;
+    player.mHeld = data.m;
   });
 });
 
 setInterval(function() {
   var currentTime = (new Date()).getTime();
   var timeDifferential = (currentTime - lastUpdateTime)/17;
+  let planetoids = planets.concat(asteroids);
   for (var id in planets)
   {
     planets[id].updateVelocity(planets);
@@ -65,22 +71,30 @@ setInterval(function() {
   {
     planets[id].updateLocation(timeDifferential);
   }
-  for (var id in ships)
+  for (var id in asteroids)
   {
-    ships[id].updateVelocity(planets);
+    asteroids[id].updateVelocity(planets);
+  }
+  for (var id in asteroids)
+  {
+    asteroids[id].updateLocation(timeDifferential);
   }
   for (var id in ships)
   {
-    ships[id].updateShip(timeDifferential,planets);
+    ships[id].updateVelocity(planetoids);
+  }
+  for (var id in ships)
+  {
+    ships[id].updateShip(timeDifferential,planetoids);
   }
   for (var id in players)
   {
-    players[id].updateVelocity(planets);
+    players[id].updateVelocity(planetoids);
   }
   for (var id in players)
   {
-    players[id].updatePlayer(timeDifferential,planets,ships);
+    players[id].updatePlayer(timeDifferential,planetoids,ships);
   }
   lastUpdateTime = currentTime;
-  io.sockets.emit('state', [planets,players,ships]);
+  io.sockets.emit('state', [planets,players,ships,asteroids]);
 }, 1000/60);

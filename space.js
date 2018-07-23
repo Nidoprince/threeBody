@@ -62,7 +62,7 @@ class Ship
 
   mass()
   {
-    return this.size*this.density;
+    return this.size*this.density*this.size*3.14159265358979323646264338;
   }
 
   updateVelocity(planets)
@@ -215,6 +215,7 @@ class Player
     this.upHeld = false;
     this.rightHeld = false;
     this.ePressed = false;
+    this.mHeld = false;
     this.color = color;
     this.size = size;
     this.density = density;
@@ -222,11 +223,12 @@ class Player
     this.velocityComponents = new Map();
     this.velocityComponents.set("Base",this.vel.copy());
     this.inSpaceShip = false;
+    this.inventory = [];
   }
 
   mass()
   {
-    return this.size*this.density;
+    return this.size*this.density*this.size*3.14159265358979323646264338;
   }
 
   tellVelocityComponent()
@@ -252,6 +254,32 @@ class Player
           this.inSpaceShip.driverColor = this.color;
           this.loc = this.inSpaceShip.loc.copy();
           break;
+        }
+      }
+    }
+  }
+  mine(planetoids)
+  {
+    let asteroids = planetoids.filter(body => "contents" in body);
+    for (var id in asteroids)
+    {
+      let asteroid = asteroids[id];
+      if(Vector.distance(asteroid.loc,this.loc)<asteroid.size+this.inSpaceShip.size+10)
+      {
+        if(this.inventory.length == 0 || isNaN(this.inventory[this.inventory.length-1]))
+        {
+          if(this.inventory.length < 8)
+          {
+            this.inventory.push(0);
+          }
+        }
+        else if(this.inventory[this.inventory.length-1] < asteroid.mineTime)
+        {
+          this.inventory[this.inventory.length-1]++;
+        }
+        else
+        {
+          this.inventory[this.inventory.length-1] = asteroid.contents;
         }
       }
     }
@@ -405,6 +433,17 @@ class Player
     {
       this.enterOrExitSpaceship(ships);
     }
+    if(this.mHeld && this.inSpaceShip)
+    {
+      this.mine(planets)
+    }
+    else
+    {
+      if(!isNaN(this.inventory[this.inventory.length-1]))
+      {
+        this.inventory.pop();
+      }
+    }
   }
 }
 
@@ -463,6 +502,25 @@ class Planet
     return this.density*this.size*this.size*3.14159265358979;
   }
 }
+
+
+class Asteroid extends Planet
+{
+  constructor(x,y,xV,yV,size,contents = "iron",color = "brown",density = 1)
+  {
+    super(x,y,xV,yV,size,color,"rgba(0,0,0,0)",density);
+    this.contents = contents;
+    if(this.contents == "iron")
+    {
+      this.mineTime = 1000;
+    }
+    else
+    {
+      this.mineTime = 10000;
+    }
+  }
+}
+
 
 //For Holding 2d Data and Doing Vector Math
 class Vector
@@ -610,3 +668,4 @@ module.exports.Vector = Vector;
 module.exports.Player = Player;
 module.exports.Planet = Planet;
 module.exports.Ship = Ship;
+module.exports.Asteroid = Asteroid;
