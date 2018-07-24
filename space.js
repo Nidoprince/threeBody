@@ -67,13 +67,13 @@ class Ship
 
   updateVelocity(planets)
   {
-    if(this.driver)
-    {
-      this.updateVelocityControlled(planets);
-    }
-    else if(this.parked)
+    if(this.parked)
     {
       this.updateVelocityParked(planets);
+    }
+    else if(this.driver)
+    {
+      this.updateVelocityControlled(planets);
     }
     else
     {
@@ -154,7 +154,7 @@ class Ship
       {
         this.direction = this.direction.rotate(angleFromStraight/10*timeDifferential*universeSpeed);
       }
-      if(this.vel.x != this.parked.vel.x || this.vel.y != this.parked.vel.y)
+      if(Vector.distance(this.loc,this.parked.loc) > this.size+this.parked.size+5)
       {
         this.parked = false;
       }
@@ -162,10 +162,10 @@ class Ship
     if(!this.parked)
     {
       this.direction = this.direction.rotate((this.vel.angle()-this.direction.angle())/240*timeDifferential*universeSpeed);
-    }
-    if(this.driver)
-    {
-      this.direction = this.direction.rotate(this.controlRotation*timeDifferential*universeSpeed);
+      if(this.driver)
+      {
+        this.direction = this.direction.rotate(this.controlRotation*timeDifferential*universeSpeed);
+      }
     }
     for(var id in planets)
     {
@@ -175,12 +175,12 @@ class Ship
         this.vel = this.vel.addVector(planet.loc.addVector(planet.loc.direction(this.loc).normalize(planet.size+this.size)).subVector(this.loc));
         this.loc = planet.loc.addVector(planet.loc.direction(this.loc).normalize(planet.size+this.size));
       }
-      if(Vector.distance(this.loc,planet.loc)<planet.size+this.size+groundTouchError && Vector.distance(this.vel,planet.vel)<similarEnoughVelocities)
-      {
-        this.parked = planet;
-        this.loc = this.parked.loc.addVector(planet.loc.direction(this.loc).normalize(planet.size+this.size));
-        this.vel = this.parked.vel.copy();
-      }
+      //if(Vector.distance(this.loc,planet.loc)<planet.size+this.size+groundTouchError && Vector.distance(this.vel,planet.vel)<similarEnoughVelocities)
+      //{
+      //  this.parked = planet;
+      //  this.loc = this.parked.loc.addVector(planet.loc.direction(this.loc).normalize(planet.size+this.size));
+      //  this.vel = this.parked.vel.copy();
+      //}
     }
   }
 }
@@ -216,6 +216,7 @@ class Player
     this.rightHeld = false;
     this.ePressed = false;
     this.mHeld = false;
+    this.pPressed = false;
     this.color = color;
     this.size = size;
     this.density = density;
@@ -258,6 +259,20 @@ class Player
       }
     }
   }
+  toggleParkingBreak()
+  {
+    if(this.inSpaceShip.parked)
+    {
+      this.inSpaceShip.parked = false;
+    }
+    else
+    {
+      if(Vector.distance(this.controllingPlanet.loc,this.loc) < this.inSpaceShip.size+this.controllingPlanet.size+5)
+      {
+        this.inSpaceShip.parked = this.controllingPlanet;
+      }
+    }
+  }
   mine(planetoids)
   {
     let asteroids = planetoids.filter(body => "contents" in body);
@@ -286,6 +301,28 @@ class Player
   }
   updateVelocity(planets)
   {
+    var closestPlanetDistance = Number.MAX_SAFE_INTEGER;
+    var closestPlanet = false;
+    for(var id in planets)
+    {
+      var planet = planets[id];
+      //Check for closestPlanet
+      if(Vector.distance(this.loc,planet.loc) < closestPlanetDistance)
+      {
+        closestPlanetDistance = Vector.distance(this.loc,planet.loc);
+        closestPlanet = planet;
+      }
+    }
+
+    if(Vector.distance(closestPlanet.loc,this.loc) < closestPlanet.size*1.2+this.size+100)
+    {
+      this.controllingPlanet = closestPlanet;
+    }
+    else
+    {
+      this.controllingPlanet = false;
+    }
+
     this.velocityComponents = new Map();
     if(this.inSpaceShip)
     {
@@ -300,17 +337,9 @@ class Player
   updateVelocitySelf(planets)
   {
     this.velocityComponents.set("Base  ", this.vel.copy());
-    var closestPlanetDistance = Number.MAX_SAFE_INTEGER;
-    var closestPlanet = false;
     for(var id in planets)
     {
       var planet = planets[id];
-      //Check for closestPlanet
-      if(Vector.distance(this.loc,planet.loc) < closestPlanetDistance)
-      {
-        closestPlanetDistance = Vector.distance(this.loc,planet.loc);
-        closestPlanet = planet;
-      }
       //Gravitational Attraction
       var dir = this.loc.direction(planet.loc);
       var dist = Vector.distance(this.loc,planet.loc);
@@ -328,17 +357,14 @@ class Player
       }
       this.vel = this.vel.speedLimit(maxSpeed);
     }
-    if(closestPlanetDistance < closestPlanet.size*1.2)
+    if(this.controllingPlanet && Vector.distance(this.controllingPlanet.loc,this.loc) < this.controllingPlanet.size*1.2)
     {
-      this.controllingPlanet = closestPlanet;
       this.updateVelocityAtmosphere(planets)
     }
     else
     {
-      this.controllingPlanet = false;
       this.updateVelocitySpace(planets)
     }
-
   }
   updateVelocityAtmosphere(planets)
   {
@@ -433,7 +459,7 @@ class Player
     {
       this.enterOrExitSpaceship(ships);
     }
-    if(this.mHeld && this.inSpaceShip)
+    if(this.mHeld && this.inSpaceShip && this.controllingPlanet)
     {
       this.mine(planets)
     }
@@ -444,9 +470,13 @@ class Player
         this.inventory.pop();
       }
     }
-    if(this.inSpaceShip)
+    if(this.inSpaceShip && this.controllingPlanet)
     {
       this.loc = this.inSpaceShip.loc.copy();
+      if(this.pPressed)
+      {
+        this.toggleParkingBreak();
+      }
     }
   }
 }

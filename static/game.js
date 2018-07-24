@@ -15,6 +15,7 @@ socket.on('message', function(data) {
 //socket.emit('new player');
 setInterval(function() {
   socket.emit('playerControl', playerControl);
+  trigger.reset();
 }, 1000/60);
 
 var canvas = document.getElementById('canvas');
@@ -147,5 +148,4 @@ socket.on('state',function(celestial) {
       colorSelected = true;
     }
   }
-  trigger.reset();
 });

@@ -56,6 +56,7 @@ io.on('connection', function(socket) {
     player.downHeld = data.down;
     player.ePressed = data.e;
     player.mHeld = data.m;
+    player.pPressed = data.p;
   });
 });
 
