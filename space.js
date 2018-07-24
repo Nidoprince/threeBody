@@ -175,12 +175,6 @@ class Ship
         this.vel = this.vel.addVector(planet.loc.addVector(planet.loc.direction(this.loc).normalize(planet.size+this.size)).subVector(this.loc));
         this.loc = planet.loc.addVector(planet.loc.direction(this.loc).normalize(planet.size+this.size));
       }
-      //if(Vector.distance(this.loc,planet.loc)<planet.size+this.size+groundTouchError && Vector.distance(this.vel,planet.vel)<similarEnoughVelocities)
-      //{
-      //  this.parked = planet;
-      //  this.loc = this.parked.loc.addVector(planet.loc.direction(this.loc).normalize(planet.size+this.size));
-      //  this.vel = this.parked.vel.copy();
-      //}
     }
   }
 }
@@ -400,7 +394,6 @@ class Player
     }
     else
     {
-      //console.log("InTheAir")
       this.velocityComponents.set("Jump  ",new Vector(0,0));
       this.velocityComponents.set("NoRoll",new Vector(0,0));
       this.velocityComponents.set("Frictn",new Vector(0,0));
