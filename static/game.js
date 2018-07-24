@@ -12,7 +12,6 @@ socket.on('message', function(data) {
   console.log(data);
 });
 
-//socket.emit('new player');
 setInterval(function() {
   socket.emit('playerControl', playerControl);
   trigger.reset();
