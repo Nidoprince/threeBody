@@ -111,7 +111,7 @@ var planetDrawer = function(planet,drawOn)
   {
     drawOn.fillStyle = "grey";
     drawOn.beginPath();
-    let fuelLoc = (new Vector(planet.loc.x,planet.loc.y)).addVector((new Vector(0,planet.size*0.99)).rotate(fuel));
+    let fuelLoc = (new Vector(planet.loc.x,planet.loc.y)).addVector((new Vector(0,-planet.size*0.99)).rotate(fuel));
     drawOn.arc((fuelLoc.x-viewer.x)/zoomMult+800,(fuelLoc.y-viewer.y)/zoomMult+400, planet.size*0.015/zoomMult,0, 2 * Math.PI);
     drawOn.fill();
   }
@@ -131,6 +131,14 @@ var asteroidDrawer = function(asteroid,drawOn)
   drawOn.beginPath();
   drawOn.arc((asteroid.loc.x-viewer.x)/zoomMult+800,(asteroid.loc.y-viewer.y)/zoomMult+400, asteroid.size/zoomMult, 0, 2 * Math.PI);
   drawOn.fill();
+}
+
+var fuelBar = function(player,drawOn)
+{
+  drawOn.strokeStyle = "grey";
+  drawOn.fillStyle = "purple";
+  drawOn.strokeRect(29,29,32,502);
+  drawOn.fillRect(30,30+500-player.inSpaceShip.fuel/100,30,player.inSpaceShip.fuel/100);
 }
 
 var playerDrawer = function(player,drawOn)

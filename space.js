@@ -34,6 +34,8 @@ class Ship
     this.driverColor = false;
     this.controlInput = new Vector(0,0);
     this.controlRotation = 0;
+    this.fuel = 0;
+    this.fuelMax = 50000;
     var closestPlanetDistance = Number.MAX_SAFE_INTEGER;
     var closestPlanet = false;
     for (var id in planets)
@@ -86,25 +88,29 @@ class Ship
     this.controlInput = new Vector(0,0);
     this.controlRotation = 0;
     //Thrust
-    if(up)
+    if(up && this.fuel > 5)
     {
       this.controlInput = this.direction.multiplyScaler(this.thrust);
+      this.fuel -= 5;
     }
     //Rotation
-    if(right && !left)
+    if(right && !left && this.fuel > 1)
     {
       this.controlRotation = this.turnRate;
       this.controlInput = this.controlInput.addVector(this.direction.rotate(Math.PI/2).multiplyScaler(this.edgeThrust));
+      this.fuel -= 1;
     }
-    else if(left && !right)
+    else if(left && !right && this.fuel > 1)
     {
       this.controlRotation = -1*this.turnRate;
       this.controlInput = this.controlInput.addVector(this.direction.rotate(-1*Math.PI/2).multiplyScaler(this.edgeThrust));
+      this.fuel -= 1;
     }
     //Slow
-    if(down)
+    if(down && this.fuel > 3)
     {
       this.controlInput = this.controlInput.subVector(this.vel.multiplyScaler(this.slowRate))
+      this.fuel -= 3;
     }
     return this.vel.copy();
   }
@@ -186,6 +192,7 @@ class Player
   {
     this.color = color;
     this.controllingPlanet = false;
+    this.inventory = [];
     for (var id in planets)
     {
       if(planets[id].color == this.color)
@@ -202,6 +209,10 @@ class Player
     {
       this.loc = new Vector(x,y);
       this.vel = new Vector(0,0);
+      this.inventory.push("fuel");
+      this.inventory.push("fuel");
+      this.inventory.push("fuel");
+      this.inventory.push("fuel");
     }
     this.actingVel = new Vector(0,0);
     this.leftHeld = false;
@@ -218,7 +229,7 @@ class Player
     this.velocityComponents = new Map();
     this.velocityComponents.set("Base",this.vel.copy());
     this.inSpaceShip = false;
-    this.inventory = [];
+    this.currentlyLoading = false;
   }
 
   mass()
@@ -248,6 +259,18 @@ class Player
           this.inSpaceShip.driver = true;
           this.inSpaceShip.driverColor = this.color;
           this.loc = this.inSpaceShip.loc.copy();
+          this.inSpaceShip.fuel += this.inventory.filter(x => x == "fuel").length*3000;
+          let extrafuel = 0;
+          if(this.inSpaceShip.fuel > this.inSpaceShip.fuelMax)
+          {
+            extrafuel = Math.floor((this.inSpaceShip.fuel - this.inSpaceShip.fuelMax)/3000);
+            this.inSpaceShip.fuel = this.inSpaceShip.fuelMax;
+          }
+          this.inventory = this.inventory.filter(x => x != "fuel");
+          for (var i = 0; i< extrafuel; i++)
+          {
+            this.inventory.push("fuel");
+          }
           break;
         }
       }
@@ -267,7 +290,7 @@ class Player
       }
     }
   }
-  mine(planetoids)
+  mineAsteroids(planetoids)
   {
     let asteroids = planetoids.filter(body => "contents" in body);
     for (var id in asteroids)
@@ -280,7 +303,13 @@ class Player
           if(this.inventory.length < 8)
           {
             this.inventory.push(0);
+            this.currentlyLoading = asteroid.contents;
           }
+        }
+        else if(this.currentlyLoading != asteroid.contents)
+        {
+          this.currentlyLoading = asteroid.contents;
+          this.inventory[this.inventory.length-1] = 0;
         }
         else if(this.inventory[this.inventory.length-1] < asteroid.mineTime)
         {
@@ -289,9 +318,43 @@ class Player
         else
         {
           this.inventory[this.inventory.length-1] = asteroid.contents;
+          this.currentlyLoading = false;
         }
       }
     }
+  }
+  minePlanet()
+  {
+    this.controllingPlanet.fuelSources = this.controllingPlanet.fuelSources.filter(fuel =>
+    {
+      if(Math.abs(fuel-this.controllingPlanet.loc.direction(this.loc).angle()) < Math.PI/90)
+      {
+        if(this.inventory.length == 0 || isNaN(this.inventory[this.inventory.length-1]))
+        {
+          if(this.inventory.length < 8)
+          {
+            this.inventory.push(0);
+            this.currentlyLoading = "fuel";
+          }
+        }
+        else if(this.currentlyLoading != "fuel")
+        {
+          this.currentlyLoading = "fuel";
+          this.inventory[this.inventory.length-1] = 0;
+        }
+        else if(this.inventory[this.inventory.length-1] < this.controllingPlanet.mineTime)
+        {
+          this.inventory[this.inventory.length-1]++;
+        }
+        else
+        {
+          this.inventory[this.inventory.length-1] = "fuel";
+          this.currentlyLoading = false;
+          return false;
+        }
+      }
+      return true;
+    })
   }
   updateVelocity(planets)
   {
@@ -454,7 +517,11 @@ class Player
     }
     if(this.mHeld && this.inSpaceShip && this.controllingPlanet)
     {
-      this.mine(planets)
+      this.mineAsteroids(planets);
+    }
+    else if(this.mHeld && !this.inSpaceShip && this.controllingPlanet)
+    {
+      this.minePlanet();
     }
     else
     {
@@ -486,6 +553,7 @@ class Planet
     this.color = color;
     this.atmosphereColor = atmosphereColor;
     this.fuelSources = [];
+    this.mineTime = 200;
   }
 
   spawnFuel()

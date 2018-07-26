@@ -98,6 +98,10 @@ socket.on('state',function(celestial) {
         context.font = "bold 14px Arial";
         context.fillText(myPlayer.inventory[inv],50+inv*100,750)
       }
+      if(myPlayer.inSpaceShip)
+      {
+        fuelBar(myPlayer, context);
+      }
     }
   }
   else
