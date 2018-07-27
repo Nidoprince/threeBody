@@ -95,11 +95,17 @@ setInterval(function() {
   })
   for (var id in players)
   {
-    players[id].updateVelocity(planetoids);
+    if(players[id]!="dead")
+    {
+      players[id].updateVelocity(planetoids);
+    }
   }
   for (var id in players)
   {
-    players[id].updatePlayer(timeDifferential,planetoids,ships);
+    if(players[id]!="dead")
+    {
+      players[id].updatePlayer(timeDifferential,planetoids,ships);
+    }
   }
   for (var id in players)
   {
