@@ -36,6 +36,7 @@ class Ship
     this.controlRotation = 0;
     this.fuel = 0;
     this.fuelMax = 50000;
+    this.isDead = false;
     var closestPlanetDistance = Number.MAX_SAFE_INTEGER;
     var closestPlanet = false;
     for (var id in planets)
@@ -140,6 +141,10 @@ class Ship
         var stepOne = Vector.dotProduct(this.vel.subVector(planet.oldVel),this.loc.subVector(planet.loc))/Math.pow((this.loc.subVector(planet.loc).magnitude()),2);
         var stepTwo = 2*planet.mass()/(this.mass()+planet.mass());
         var direction = this.loc.subVector(planet.loc);
+        if(this.vel.magnitude() >= 10)
+        {
+          this.isDead = true;
+        }
         this.vel = this.vel.subVector(direction.multiplyScaler(stepOne*stepTwo*bouncyness));
       }
       //Air Resistance
@@ -226,6 +231,7 @@ class Player
     this.size = size;
     this.density = density;
     this.inAir = false;
+    this.isDead = false;
     this.velocityComponents = new Map();
     this.velocityComponents.set("Base",this.vel.copy());
     this.inSpaceShip = false;
@@ -358,6 +364,10 @@ class Player
   }
   updateVelocity(planets)
   {
+    if(this.inSpaceShip)
+    {
+      this.isDead = this.inSpaceShip.isDead;
+    }
     var closestPlanetDistance = Number.MAX_SAFE_INTEGER;
     var closestPlanet = false;
     for(var id in planets)

@@ -38,6 +38,18 @@ socket.on('state',function(celestial) {
       }
     }
 
+    if(myPlayer && myPlayer == "dead")
+    {
+      myPlayer = null;
+      colorSelected = false;
+      cursorLoc = 0;
+      cursorMove = 0;
+      socket.emit("dead");
+      viewer.space = false;
+      viewer.enter = false;
+      return(0);
+    }
+
     viewerUpdate();
     zoomMult = Math.pow(zoomRatio,viewer.zoom);
     if(myPlayer && (viewer.space || viewer.focusPlayer))

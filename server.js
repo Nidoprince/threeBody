@@ -48,6 +48,9 @@ io.on('connection', function(socket) {
   socket.on('disconnect', function() {
     delete players[socket.id];
   });
+  socket.on('dead', function() {
+    delete players[socket.id];
+  });
   socket.on('playerControl', function(data) {
     var player = players[socket.id] || {};
     player.leftHeld = data.left;
@@ -85,10 +88,11 @@ setInterval(function() {
   {
     ships[id].updateVelocity(planetoids);
   }
-  for (var id in ships)
+  ships = ships.filter(ship =>
   {
-    ships[id].updateShip(timeDifferential,planetoids);
-  }
+    ship.updateShip(timeDifferential,planetoids);
+    return !ship.isDead;
+  })
   for (var id in players)
   {
     players[id].updateVelocity(planetoids);
@@ -96,6 +100,13 @@ setInterval(function() {
   for (var id in players)
   {
     players[id].updatePlayer(timeDifferential,planetoids,ships);
+  }
+  for (var id in players)
+  {
+    if(players[id].isDead)
+    {
+      players[id] = "dead";
+    }
   }
   lastUpdateTime = currentTime;
   io.sockets.emit('state', [planets,players,ships,asteroids]);
