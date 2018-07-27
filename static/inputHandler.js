@@ -18,7 +18,7 @@ var viewer = {
   zoom: 0,
   velocity: false,
   showVelocity: false,
-  focus: false,
+  focus: true,
   focusPlayer: false,
   log: false,
   enter: false
