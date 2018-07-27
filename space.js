@@ -141,7 +141,7 @@ class Ship
         var stepOne = Vector.dotProduct(this.vel.subVector(planet.oldVel),this.loc.subVector(planet.loc))/Math.pow((this.loc.subVector(planet.loc).magnitude()),2);
         var stepTwo = 2*planet.mass()/(this.mass()+planet.mass());
         var direction = this.loc.subVector(planet.loc);
-        if(this.vel.magnitude() >= 10)
+        if(this.vel.magnitude() >= 30)
         {
           this.isDead = true;
         }
