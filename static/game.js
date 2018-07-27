@@ -106,7 +106,7 @@ socket.on('state',function(celestial) {
     {
       for (var inv in myPlayer.inventory)
       {
-        content.fillStyle = "white"
+        context.fillStyle = "white"
         context.font = "bold 14px Arial";
         context.fillText(myPlayer.inventory[inv],50+inv*100,750)
       }
