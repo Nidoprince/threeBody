@@ -25,10 +25,11 @@ socket.on('state',function(celestial) {
   context.clearRect(0,0,1600,800);
   if(colorSelected)
   {
-    players = celestial[1];
-    planets = celestial[0];
-    ships = celestial[2];
-    asteroids = celestial[3];
+    let players = celestial[1];
+    let planets = celestial[0];
+    let ships = celestial[2];
+    let asteroids = celestial[3];
+    let aliens = celestial[4];
 
     for (var id in players)
     {
@@ -81,6 +82,10 @@ socket.on('state',function(celestial) {
     for (var id in ships) {
       var ship = ships[id];
       shipDrawer(ship,context);
+    }
+    for (var id in aliens) {
+      var alien = aliens[id];
+      alienDrawer(alien,context);
     }
     if(myPlayer)
     {

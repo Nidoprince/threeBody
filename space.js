@@ -15,6 +15,70 @@ const friction = 0.2;
 const airResistance = 0.001;
 
 
+class Boid
+{
+  constructor(velocityMax, location)
+  {
+    this.loc = new Vector(location.x+(Math.random()*4000-2000),location.y+(Math.random()*4000-2000));
+    this.velMax = velocityMax;
+    this.vel = new Vector(Math.random()*5,Math.random()*5);
+  }
+  updateVelocity(flock)
+  {
+    let centralize = new Vector(0,0);
+    let fitIn = new Vector(0,0);
+    let personalSpace = new Vector(0,0);
+    for (var other of flock)
+    {
+      if(this.vel.x != other.vel.x || this.vel.y != other.vel.y)
+      {
+        centralize = centralize.addVector(other.loc);
+        fitIn = fitIn.addVector(other.vel);
+        if(Vector.distance(this.loc,other.loc)<10)
+        {
+          personalSpace = personalSpace.addVector(this.loc.fromTill(other.loc).negate());
+        }
+      }
+    }
+    centralize = this.loc.fromTill(centralize.multiplyScaler(1/(flock.length-1))).normalize(this.vel.magnitude()*0.05);
+    fitIn = fitIn.multiplyScaler(1/(10*(flock.length-1)));
+    this.vel = this.vel.addVector(centralize).addVector(fitIn).addVector(personalSpace);
+    this.vel = this.vel.speedLimit(this.velMax);
+  }
+  updateLocation(timeDifferential)
+  {
+    this.loc = this.loc.addVector(this.vel.multiplyScaler(timeDifferential*universeSpeed));
+  }
+}
+class Flock
+{
+  constructor(number, velocity, x, y, size, color, lifespan)
+  {
+    this.flock = [];
+    for (var i = 0; i < number;i++)
+    {
+      this.flock.push(new Boid(velocity, new Vector(x,y)));
+    }
+    this.size =  size;
+    this.color = color;
+    this.lifespan = lifespan;
+  }
+  updateVelocity()
+  {
+    for (var boid of this.flock)
+    {
+      boid.updateVelocity(this.flock);
+    }
+  }
+  updateLocation(timeDifferential)
+  {
+    for (var boid of this.flock)
+    {
+      boid.updateLocation(timeDifferential);
+    }
+    this.lifespan--;
+  }
+}
 class Ship
 {
   constructor(x,y,color,planets,type="baseRocket",size = 40,density=1,thrust = 0.3,turnRate = 0.02,edgeThrust = 0.05,slowRate = 0.001)
@@ -680,6 +744,11 @@ class Vector
      return this.addVector(vec.negate()).negate().normalize(1);
    }
 
+   fromTill(vec)
+   {
+     return this.addVector(vec.negate()).negate();
+   }
+
    //Changing length of Vector to size while preserving angle
    normalize(size)
    {
@@ -783,3 +852,4 @@ module.exports.Player = Player;
 module.exports.Planet = Planet;
 module.exports.Ship = Ship;
 module.exports.Asteroid = Asteroid;
+module.exports.Flock = Flock;

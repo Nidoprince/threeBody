@@ -14,6 +14,7 @@ var lastUpdateTime = (new Date()).getTime();
 var planets = [];
 var ships = [];
 var asteroids = [];
+var aliens = [];
 
 app.use(express.static('static'))
 app.use('/static', express.static(__dirname + '/static'));
@@ -34,6 +35,7 @@ server.listen(process.env.PORT || 5000, function() {
   ships.push(new space.Ship(4330,-1500,"yellow",planets));
   asteroids.push(new space.Asteroid(10000,0,0,4,100));
   asteroids.push(new space.Asteroid(0,0,0,0,100));
+  aliens.push(new space.Flock(50,3,100,100,5,"pink",3000));
 
 });
 
@@ -67,6 +69,10 @@ setInterval(function() {
   var currentTime = (new Date()).getTime();
   var timeDifferential = (currentTime - lastUpdateTime)/17;
   let planetoids = planets.concat(asteroids);
+  if(Math.random()*3000 < 1)
+  {
+    aliens.push(new space.Flock(10+Math.random()*70,5,Math.random()*20000-10000,Math.random()*20000-10000,5,["red","green","blue","pink","grey","purple","yellow","white","orange","darkgrey"][Math.floor(Math.random()*10)],1000+Math.random()*9000));
+  }
   for (var id in planets)
   {
     planets[id].updateVelocity(planets);
@@ -84,6 +90,15 @@ setInterval(function() {
   {
     asteroids[id].updateLocation(timeDifferential);
   }
+  for (var id in aliens)
+  {
+    aliens[id].updateVelocity();
+  }
+  aliens = aliens.filter(alien =>
+  {
+    alien.updateLocation(timeDifferential);
+    return alien.lifespan > 0;
+  })
   for (var id in ships)
   {
     ships[id].updateVelocity(planetoids);
@@ -115,5 +130,5 @@ setInterval(function() {
     }
   }
   lastUpdateTime = currentTime;
-  io.sockets.emit('state', [planets,players,ships,asteroids]);
+  io.sockets.emit('state', [planets,players,ships,asteroids,aliens]);
 }, 1000/60);

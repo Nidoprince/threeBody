@@ -104,7 +104,40 @@ var shipDrawer = function(ship, drawOn)
     }
   }
 }
-
+var boidDrawer = function(boid,drawOn,size)
+{
+  let loc = new Vector((boid.loc.x-viewer.x)/zoomMult+800,(boid.loc.y-viewer.y)/zoomMult+400);
+  let vel = new Vector(boid.vel.x,boid.vel.y);
+  drawOn.beginPath();
+  let tip = loc.addVector(vel.normalize(size/zoomMult));
+  drawOn.moveTo(tip.x,tip.y);
+  let leftBack = loc.addVector(vel.normalize(size/zoomMult).rotate(-Math.PI*5/6));
+  drawOn.lineTo(leftBack.x,leftBack.y);
+  let rightBack = loc.addVector(vel.normalize(size/zoomMult).rotate(Math.PI*5/6));
+  drawOn.lineTo(rightBack.x,rightBack.y);
+  drawOn.closePath();
+  drawOn.fill();
+}
+var flockDrawer = function(flock,drawOn)
+{
+  drawOn.fillStyle = flock.color;
+  for (var boid of flock.flock)
+  {
+    boidDrawer(boid,drawOn,flock.size);
+  }
+}
+var alienDrawer = function(alien,drawOn)
+{
+  if(alien.hasOwnProperty("flock"))
+  {
+    flockDrawer(alien,drawOn);
+  }
+  else
+  {
+    drawOn.fillStyle = "white"
+    drawOn.fillRect((alien.loc.x-5-viewer.x)/zoomMult+800,(alien.loc.y-5-viewer.y)/zoomMult+400,10/zoomMult,10/zoomMult);
+  }
+}
 var planetDrawer = function(planet,drawOn)
 {
   for(var fuel of planet.fuelSources)
