@@ -12,8 +12,21 @@
 //4           5
 var shipDrawer = function(ship, drawOn)
 {
-  var penLoc = new Vector((ship.loc.x-viewer.x)/zoomMult+800,(ship.loc.y-viewer.y)/zoomMult+400);
-  var shipDir = new Vector(ship.direction.x,ship.direction.y);
+  if("lifespan" in ship)
+  {
+    for(let particle of ship.particles)
+    {
+      drawOn.fillStyle = particle.color;
+      drawOn.beginPath();
+      drawOn.arc((particle.loc.x-viewer.x)/zoomMult+800,(particle.loc.y-viewer.y)/zoomMult+400, particle.size/zoomMult, 0, 2 * Math.PI);
+      drawOn.fill();
+    }
+  }
+  else
+  {
+    var penLoc = new Vector((ship.loc.x-viewer.x)/zoomMult+800,(ship.loc.y-viewer.y)/zoomMult+400);
+    var shipDir = new Vector(ship.direction.x,ship.direction.y);
+  }
   if(ship.type == "baseRocket")
   {
     drawOn.beginPath();
@@ -176,7 +189,7 @@ var fuelBar = function(player,drawOn)
 
 var playerDrawer = function(player,drawOn)
 {
-  if(!player.inSpaceShip)
+  if(!player.inSpaceShip && player != "dead")
   {
     drawOn.fillStyle = player.color;
     drawOn.beginPath();

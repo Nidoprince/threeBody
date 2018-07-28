@@ -14,6 +14,15 @@ const maxSpeed = 10;
 const friction = 0.2;
 const airResistance = 0.001;
 
+const gravityCalculator = function(body,attractor)
+{
+  let dir = body.loc.direction(attractor.loc);
+  let dist = Vector.distance(body.loc,attractor.loc);
+  let force = gravitationalConstant*body.mass()*attractor.mass()/(dist*dist);
+  let acc = dir.normalize(force/body.mass());
+  return acc;
+}
+
 
 class Boid
 {
@@ -50,6 +59,7 @@ class Boid
     this.loc = this.loc.addVector(this.vel.multiplyScaler(timeDifferential*universeSpeed));
   }
 }
+
 class Flock
 {
   constructor(number, velocity, x, y, size, color, lifespan)
@@ -79,6 +89,91 @@ class Flock
     this.lifespan--;
   }
 }
+class Particle
+{
+  constructor(loc,vel,size,lifespan,color,relative = false)
+  {
+    this.loc = loc.copy();
+    this.baseVel = vel.copy();
+    this.vel = vel.copy();
+    this.relative = relative;
+    if(this.relative)
+    {
+      this.vel = this.baseVel.addVector(this.relative.vel.copy());
+    }
+    this.startSize = size;
+    this.lifespan = lifespan;
+    this.startLife = lifespan;
+    this.color = color;
+  }
+  updateVelocity()
+  {
+    if(this.relative)
+    {
+      this.vel = this.baseVel.addVector(this.relative.vel.copy());
+    }
+    else
+    {
+      this.vel = this.baseVel.copy();
+    }
+  }
+  updateLocation(timeDifferential)
+  {
+    this.loc = this.loc.addVector(this.vel.multiplyScaler(timeDifferential*universeSpeed));
+    this.lifespan--;
+    this.size = this.lifespan/this.startLife*this.startSize;
+  }
+}
+class Explosion
+{
+  constructor(x,y,size,lifespan,relative = false,colors = ["red","yellow","orange"])
+  {
+    this.loc = new Vector(x,y);
+    this.relative = relative;
+    if(this.relative)
+    {
+      this.vel = this.relative.vel.copy();
+    }
+    else
+    {
+      this.vel = new Vector(x,y);
+    }
+    this.size = size;
+    this.lifespan = lifespan;
+    this.colors = colors;
+    this.particles = [];
+    this.spawnParticles(100);
+    this.type = "Explosion";
+  }
+  spawnParticles(numberOfParticles)
+  {
+    for(let i = 0;i<numberOfParticles;i++)
+    {
+      this.particles.push(new Particle(this.loc,(new Vector(0,-1)).rotate(Math.random()*Math.PI*2).multiplyScaler(0.1+Math.random()*0.5),this.size*(0.5+Math.random()),this.lifespan,this.colors[Math.floor(this.colors.length*Math.random())],this.relative));
+    }
+  }
+  updateVelocity()
+  {
+    if(this.relative)
+    {
+      this.vel = this.relative.vel.copy();
+    }
+    for (let x of this.particles)
+    {
+      x.updateVelocity()
+    }
+  }
+  updateLocation(timeDifferential)
+  {
+    this.loc = this.loc.addVector(this.vel.multiplyScaler(timeDifferential*universeSpeed));
+    this.lifespan--;
+    this.particles = this.particles.filter(particle =>
+    {
+      particle.updateLocation(timeDifferential);
+      return particle.lifespan > 0;
+    })
+  }
+}
 class Ship
 {
   constructor(x,y,color,planets,type="baseRocket",size = 40,density=1,thrust = 0.3,turnRate = 0.02,edgeThrust = 0.05,slowRate = 0.001)
@@ -101,6 +196,7 @@ class Ship
     this.fuel = 0;
     this.fuelMax = 50000;
     this.isDead = false;
+    this.planetThatMurderedMe = false;
     var closestPlanetDistance = Number.MAX_SAFE_INTEGER;
     var closestPlanet = false;
     for (var id in planets)
@@ -190,15 +286,15 @@ class Ship
   }
   updateVelocityFree(planets)
   {
+
     for(var id in planets)
     {
       var planet = planets[id];
+
       //Gravitational Attraction
-      var dir = this.loc.direction(planet.loc);
-      var dist = Vector.distance(this.loc,planet.loc);
-      var force = gravitationalConstant*this.mass()*planet.mass()/(dist*dist);
-      var acc = dir.normalize(force/this.mass());
-      this.vel = this.vel.addVector(acc);
+      let gravityForce = gravityCalculator(this,planet);
+      this.vel = this.vel.addVector(gravityForce);
+
       //Bounce off each other.
       if(Vector.distance(this.loc,planet.loc) <= this.size+planet.size)
       {
@@ -208,6 +304,7 @@ class Ship
         if(this.vel.magnitude() >= 30)
         {
           this.isDead = true;
+          this.planetThatMurderedMe = planet;
         }
         this.vel = this.vel.subVector(direction.multiplyScaler(stepOne*stepTwo*bouncyness));
       }
@@ -219,7 +316,7 @@ class Ship
     }
   }
 
-  updateShip(timeDifferential,planets)
+  updateLocation(timeDifferential,planets)
   {
     this.loc = this.loc.addVector(this.vel.multiplyScaler(timeDifferential*universeSpeed));
     if(this.parked)
@@ -430,7 +527,14 @@ class Player
   {
     if(this.inSpaceShip)
     {
-      this.isDead = this.inSpaceShip.isDead;
+      if("lifespan" in this.inSpaceShip)
+      {
+        this.isDead = true;
+      }
+      else
+      {
+        this.isDead = this.inSpaceShip.isDead;
+      }
     }
     var closestPlanetDistance = Number.MAX_SAFE_INTEGER;
     var closestPlanet = false;
@@ -438,9 +542,9 @@ class Player
     {
       var planet = planets[id];
       //Check for closestPlanet
-      if(Vector.distance(this.loc,planet.loc) < closestPlanetDistance)
+      if(Vector.distance(this.loc,planet.loc) - planet.size < closestPlanetDistance)
       {
-        closestPlanetDistance = Vector.distance(this.loc,planet.loc);
+        closestPlanetDistance = Vector.distance(this.loc,planet.loc) - planet.size;
         closestPlanet = planet;
       }
     }
@@ -468,16 +572,17 @@ class Player
   updateVelocitySelf(planets)
   {
     this.velocityComponents.set("Base  ", this.vel.copy());
+
+
     for(var id in planets)
     {
       var planet = planets[id];
+
       //Gravitational Attraction
-      var dir = this.loc.direction(planet.loc);
-      var dist = Vector.distance(this.loc,planet.loc);
-      var force = gravitationalConstant*this.mass()*planet.mass()/(dist*dist);
-      var acc = dir.normalize(force/this.mass());
-      this.velocityComponents.set("Grav "+id, acc.copy());
-      this.vel = this.vel.addVector(acc);
+      let gravityForce = gravityCalculator(this,planet);
+      this.velocityComponents.set("Grav "+id, gravityForce);
+      this.vel = this.vel.addVector(gravityForce);
+
       //Bounce off each other.
       if(Vector.distance(this.loc,planet.loc) <= this.size+planet.size && playerBounce)
       {
@@ -646,26 +751,24 @@ class Planet
 
   updateVelocity(planets)
   {
-    for(var id in planets)
+    let otherPlanets = planets.filter((x)=>!this.loc.isEqual(x.loc));
+
+    for(var id in otherPlanets)
     {
-      var planet = planets[id];
-      if(!this.loc.isEqual(planet.loc))
+      var planet = otherPlanets[id];
+
+      //Gravitational Attraction
+      this.vel = this.vel.addVector(gravityCalculator(this,planet));
+
+      //Bounce off each other.
+      if(Vector.distance(this.loc,planet.loc) <= this.size+planet.size)
       {
-        //Gravitational Attraction
-        var dir = this.loc.direction(planet.loc);
-        var dist = Vector.distance(this.loc,planet.loc);
-        var force = gravitationalConstant*this.mass()*planet.mass()/(dist*dist);
-        var acc = dir.normalize(force/this.mass());
-        this.vel = this.vel.addVector(acc);
-        //Bounce off each other.
-        if(Vector.distance(this.loc,planet.loc) <= this.size+planet.size)
-        {
-          var stepOne = Vector.dotProduct(this.vel.subVector(planet.oldVel),this.loc.subVector(planet.loc))/Math.pow((this.loc.subVector(planet.loc).magnitude()),2);
-          var stepTwo = 2*planet.mass()/(this.mass()+planet.mass());
-          var direction = this.loc.subVector(planet.loc);
-          this.vel = this.vel.subVector(direction.multiplyScaler(stepOne*stepTwo*bouncyness));
-        }
+        var stepOne = Vector.dotProduct(this.vel.subVector(planet.oldVel),this.loc.subVector(planet.loc))/Math.pow((this.loc.subVector(planet.loc).magnitude()),2);
+        var stepTwo = 2*planet.mass()/(this.mass()+planet.mass());
+        var direction = this.loc.subVector(planet.loc);
+        this.vel = this.vel.subVector(direction.multiplyScaler(stepOne*stepTwo*bouncyness));
       }
+
     }
   }
 
@@ -853,3 +956,4 @@ module.exports.Planet = Planet;
 module.exports.Ship = Ship;
 module.exports.Asteroid = Asteroid;
 module.exports.Flock = Flock;
+module.exports.Explosion = Explosion;

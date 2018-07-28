@@ -3,6 +3,8 @@ var myPlayer = null;
 var zoomRatio = 1.05;
 var zoomMult = Math.pow(zoomRatio,viewer.zoom);
 
+var deathCounter = 500;
+
 var colorSelected = false;
 var cursorMove = 0;
 var cursorLoc = 0;
@@ -41,24 +43,31 @@ socket.on('state',function(celestial) {
 
     if(myPlayer && myPlayer == "dead")
     {
-      myPlayer = null;
-      colorSelected = false;
-      cursorLoc = 0;
-      cursorMove = 0;
-      socket.emit("dead");
-      viewer.space = false;
-      viewer.enter = false;
-      return(0);
+      if(deathCounter > 0)
+      {
+        deathCounter--;
+      }
+      else {
+        myPlayer = null;
+        colorSelected = false;
+        cursorLoc = 0;
+        cursorMove = 0;
+        socket.emit("dead");
+        viewer.space = false;
+        viewer.enter = false;
+        deathCounter = 500;
+        return(0);
+      }
     }
 
     viewerUpdate();
     zoomMult = Math.pow(zoomRatio,viewer.zoom);
-    if(myPlayer && (viewer.space || viewer.focusPlayer))
+    if(myPlayer && (viewer.space || viewer.focusPlayer) && myPlayer != "dead")
     {
       viewer.x = myPlayer.loc.x;
       viewer.y = myPlayer.loc.y;
     }
-    if(myPlayer && myPlayer.controllingPlanet)
+    if(myPlayer && myPlayer.controllingPlanet && myPlayer != "dead")
     {
       viewer.x += myPlayer.controllingPlanet.vel.x;
       viewer.y += myPlayer.controllingPlanet.vel.y;
@@ -87,11 +96,11 @@ socket.on('state',function(celestial) {
       var alien = aliens[id];
       alienDrawer(alien,context);
     }
-    if(myPlayer)
+    if(myPlayer && myPlayer != "dead")
     {
       playerDot(myPlayer,context)
     }
-    if(myPlayer && viewer.showVelocity)
+    if(myPlayer && viewer.showVelocity && myPlayer != "dead")
     {
       var toMap = new Map(myPlayer.velocityComponents)
       var velPieces = toMap.size;
@@ -107,7 +116,7 @@ socket.on('state',function(celestial) {
         }
       }
     }
-    if(myPlayer)
+    if(myPlayer && myPlayer != "dead")
     {
       for (var inv in myPlayer.inventory)
       {

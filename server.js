@@ -33,6 +33,7 @@ server.listen(process.env.PORT || 5000, function() {
   ships.push(new space.Ship(1000,5000,"red",planets));
   ships.push(new space.Ship(-4330,-1500,"blue",planets));
   ships.push(new space.Ship(4330,-1500,"yellow",planets));
+  //ships.push(new space.Explosion(100,100,20,500));
   asteroids.push(new space.Asteroid(10000,0,0,4,100));
   asteroids.push(new space.Asteroid(0,0,0,0,100));
   aliens.push(new space.Flock(50,3,100,100,5,"pink",3000));
@@ -102,11 +103,22 @@ setInterval(function() {
   for (var id in ships)
   {
     ships[id].updateVelocity(planetoids);
+    if("isDead" in ships[id] && ships[id].isDead)
+    {
+      ships[id] = new space.Explosion(ships[id].loc.x,ships[id].loc.y,20,500,ships[id].planetThatMurderedMe);
+    }
   }
   ships = ships.filter(ship =>
   {
-    ship.updateShip(timeDifferential,planetoids);
-    return !ship.isDead;
+    ship.updateLocation(timeDifferential,planetoids);
+    if("isDead" in ship)
+    {
+      return true;
+    }
+    else
+    {
+      return ship.lifespan > 0;
+    }
   })
   for (var id in players)
   {
