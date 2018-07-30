@@ -14,9 +14,9 @@ var planetCompress = function(planet)
 var particleCompress = function(particle)
 {
   return {
-    loc: particle.loc,
+    loc: new space.Vector(Math.floor(particle.loc.x),Math.floor(particle.loc.y)),
     color: particle.color,
-    size: particle.size
+    size: Math.floor(particle.size)
   }
 }
 
