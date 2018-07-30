@@ -4,7 +4,10 @@ var http = require('http');
 var path = require('path');
 var socketIO = require('socket.io');
 
+var dog = true;
+
 var space = require("./space.js");
+var compr = require("./spaceCompression.js");
 
 var app = express();
 var server = http.Server(app);
@@ -142,5 +145,11 @@ setInterval(function() {
     }
   }
   lastUpdateTime = currentTime;
-  io.sockets.emit('state', [planets,players,ships,asteroids,aliens]);
+  io.sockets.emit('state', [planets.map(compr.planetCompress),players,ships.map(compr.shipCompress),asteroids.map(compr.planetCompress),aliens.map(compr.alienCompress)]);
+  if(dog)
+  {
+    console.log(JSON.stringify([planets,players,ships,asteroids,aliens]).length);
+    console.log(JSON.stringify([planets.map(compr.planetCompress),players,ships.map(compr.shipCompress),asteroids.map(compr.planetCompress),aliens.map(compr.alienCompress)]).length)
+    dog = false;
+  }
 }, 1000/60);

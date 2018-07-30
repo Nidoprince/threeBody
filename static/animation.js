@@ -12,7 +12,7 @@
 //4           5
 var shipDrawer = function(ship, drawOn)
 {
-  if("lifespan" in ship)
+  if(ship.type == "explosion")
   {
     for(let particle of ship.particles)
     {
@@ -54,7 +54,7 @@ var shipDrawer = function(ship, drawOn)
     drawOn.lineTo(angleRight.x,angleRight.y);
     drawOn.closePath();
     drawOn.fill();
-    if(ship.driver)
+    if(ship.driverColor)
     {
       drawOn.fillStyle = ship.driverColor;
       drawOn.beginPath();
@@ -141,7 +141,7 @@ var flockDrawer = function(flock,drawOn)
 }
 var alienDrawer = function(alien,drawOn)
 {
-  if(alien.hasOwnProperty("flock"))
+  if("flock" in alien)
   {
     flockDrawer(alien,drawOn);
   }

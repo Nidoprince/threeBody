@@ -143,7 +143,7 @@ class Explosion
     this.colors = colors;
     this.particles = [];
     this.spawnParticles(100);
-    this.type = "Explosion";
+    this.type = "explosion";
   }
   spawnParticles(numberOfParticles)
   {
@@ -413,6 +413,7 @@ class Player
     if(this.inSpaceShip)
     {
       this.inSpaceShip.driver = false;
+      this.inSpaceShip.driverColor = false;
       this.inSpaceShip = false;
     }
     else
