@@ -127,6 +127,9 @@ socket.on('state',function(celestial) {
       if(myPlayer.inSpaceShip)
       {
         fuelBar(myPlayer, context);
+        shipDrawer(myPlayer.inSpaceShip, context, {x: myPlayer.loc.x - 700,y: myPlayer.loc.y + 300},1);
+        context.strokeStyle = "grey";
+        context.strokeRect(1400,0,200,200);
       }
     }
   }
