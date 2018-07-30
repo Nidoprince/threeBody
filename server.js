@@ -4,8 +4,6 @@ var http = require('http');
 var path = require('path');
 var socketIO = require('socket.io');
 
-var dog = true;
-
 var space = require("./space.js");
 var compr = require("./spaceCompression.js");
 
@@ -36,7 +34,6 @@ server.listen(process.env.PORT || 5000, function() {
   ships.push(new space.Ship(1000,5000,"red",planets));
   ships.push(new space.Ship(-4330,-1500,"blue",planets));
   ships.push(new space.Ship(4330,-1500,"yellow",planets));
-  //ships.push(new space.Explosion(100,100,20,500));
   asteroids.push(new space.Asteroid(10000,0,0,4,100));
   asteroids.push(new space.Asteroid(0,0,0,0,100));
   aliens.push(new space.Flock(50,3,100,100,5,"pink",3000));
@@ -146,10 +143,11 @@ setInterval(function() {
   }
   lastUpdateTime = currentTime;
   io.sockets.emit('state', [planets.map(compr.planetCompress),players,ships.map(compr.shipCompress),asteroids.map(compr.planetCompress),aliens.map(compr.alienCompress)]);
-  if(dog)
+  /*if(dog)
   {
     console.log(JSON.stringify([planets,players,ships,asteroids,aliens]).length);
     console.log(JSON.stringify([planets.map(compr.planetCompress),players,ships.map(compr.shipCompress),asteroids.map(compr.planetCompress),aliens.map(compr.alienCompress)]).length)
     dog = false;
-  }
+  }*/
 }, 1000/60);
+//var dog = true;

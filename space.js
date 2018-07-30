@@ -486,6 +486,7 @@ class Player
         else
         {
           this.inventory[this.inventory.length-1] = asteroid.contents;
+          asteroid.mineTime *= 1.1;
           this.currentlyLoading = false;
         }
       }
