@@ -9,13 +9,18 @@ var colorSelected = false;
 var cursorMove = 0;
 var cursorLoc = 0;
 
+var menuOpen = false;
+var menuLoc = 0;
+
 var socket = io();
 socket.on('message', function(data) {
   console.log(data);
 });
 
 setInterval(function() {
-  socket.emit('playerControl', playerControl);
+  if(!menuOpen){
+    socket.emit('playerControl', playerControl);
+  }
   trigger.reset();
 }, 1000/60);
 
@@ -131,6 +136,35 @@ socket.on('state',function(celestial) {
         context.strokeStyle = "grey";
         context.strokeRect(1400,0,200,200);
       }
+    }
+
+    if(myPlayer && menuOpen)
+    {
+      if(trigger.right)
+      {
+        menuLoc = (menuLoc+1)%18;
+      }
+      else if(trigger.left)
+      {
+        menuLoc = ((menuLoc-1)%18+18)%18;
+      }
+      else if(trigger.down)
+      {
+        menuLoc = (menuLoc+6)%18;
+      }
+      else if(trigger.up)
+      {
+        menuLoc = ((menuLoc-6)%18+18)%18;
+      }
+      else if(trigger.enter)
+      {
+        if(menuLoc == 0 && myPlayer.inventory.filter((x) => x == "iron").length > 0)
+        {
+          playerControl.build = "Base Rocket";
+          menuOpen = false;
+        }
+      }
+      menuAnimation(context);
     }
   }
   else

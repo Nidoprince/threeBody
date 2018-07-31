@@ -227,3 +227,15 @@ var starForger = function(drawOn)
     drawOn.fill();
   }
 }
+
+var menuAnimation =  function(drawOn)
+{
+  drawOn.fillStyle = "grey";
+  drawOn.fillRect(50,50,1500,700);
+  drawOn.fillStyle = "purple";
+  drawOn.fillRect(100+250*(menuLoc%6),100+225*Math.floor(menuLoc/6),150,150);
+  drawOn.fillStyle = "white";
+  drawOn.font = "bold 14px Arial";
+  drawOn.fillText("Base Rocket",130,150);
+  drawOn.fillText("1 Iron", 150,200);
+}

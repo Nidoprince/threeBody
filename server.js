@@ -63,6 +63,18 @@ io.on('connection', function(socket) {
     player.ePressed = data.e;
     player.mHeld = data.m;
     player.pPressed = data.p;
+    if(data.build)
+    {
+      if(data.build = "Base Rocket")
+      {
+        if(player.inventory.filter((x) => x == "iron").length > 0)
+        {
+          let index = player.inventory.indexOf("iron");
+          player.inventory.splice(index,1);
+          ships.push(new space.Ship(player.loc.x,player.loc.y,player.color,planets));
+        }
+      }
+    }
   });
 });
 
