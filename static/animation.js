@@ -10,6 +10,13 @@
 //   3     6
 //
 //4           5
+//
+// towRocket
+//     -
+//  -     -
+//  1     4
+//2         3
+//
 var shipDrawer = function(ship, drawOn, localViewer = viewer, localZoomMult = zoomMult)
 {
   if(ship.type == "explosion")
@@ -27,7 +34,56 @@ var shipDrawer = function(ship, drawOn, localViewer = viewer, localZoomMult = zo
     var penLoc = new Vector((ship.loc.x-localViewer.x)/localZoomMult+800,(ship.loc.y-localViewer.y)/localZoomMult+400);
     var shipDir = new Vector(ship.direction.x,ship.direction.y);
   }
-  if(ship.type == "baseRocket")
+  if(ship.type == "towRocket")
+  {
+    drawOn.fillStyle = ship.color;
+    drawOn.beginPath();
+    //CircleCenter
+    var circleCenter = penLoc.addVector(shipDir.normalize(ship.size/(2*localZoomMult)));
+    drawOn.arc(circleCenter.x,circleCenter.y,ship.size/(2*localZoomMult),shipDir.angle()+3*Math.PI/4,shipDir.angle()+Math.PI/4);
+    drawOn.fill();
+    drawOn.beginPath();
+    //Point 1
+    var indentLeft = circleCenter.addVector(shipDir.normalize(ship.size/(3*localZoomMult)).rotate(-Math.PI/2));
+    drawOn.moveTo(indentLeft.x,indentLeft.y);
+    //Point 2
+    var finLeft = penLoc.addVector(shipDir.negate().normalize(ship.size/3/localZoomMult)).addVector(shipDir.rotate(3*Math.PI/2).normalize(ship.size/(1.5*localZoomMult)));
+    drawOn.lineTo(finLeft.x,finLeft.y);
+    //Point 3
+    var finRight = penLoc.addVector(shipDir.negate().normalize(ship.size/3/localZoomMult)).addVector(shipDir.rotate(Math.PI/2).normalize(ship.size/(1.5*localZoomMult)));
+    drawOn.lineTo(finRight.x,finRight.y);
+    //Point 4
+    var indentRight = circleCenter.addVector(shipDir.normalize(ship.size/(3*localZoomMult)).rotate(Math.PI/2));
+    drawOn.lineTo(indentRight.x,indentRight.y);
+    drawOn.closePath();
+    drawOn.fill();
+    if(ship.driverColor)
+    {
+      drawOn.fillStyle = ship.driverColor;
+      drawOn.beginPath();
+      drawOn.arc(penLoc.x,penLoc.y,ship.size/(6*localZoomMult), 0, 2 * Math.PI);
+      drawOn.fill();
+    }
+    var shipControl = new Vector(ship.controlInput.x,ship.controlInput.y);
+    if(Math.abs(shipControl.angle()-shipDir.angle())<Math.PI/3 && shipControl.magnitude()>0)
+    {
+      let engineLoc = penLoc.addVector(shipDir.negate().normalize(ship.size*1/localZoomMult));
+      drawOn.fillStyle = "red";
+      drawOn.beginPath();
+      drawOn.arc(engineLoc.x,engineLoc.y,ship.size/(1.5*localZoomMult),0,2*Math.PI)
+      drawOn.fill();
+      engineLoc = penLoc.addVector(shipDir.negate().normalize(ship.size*0.9/localZoomMult));
+      drawOn.fillStyle = "orange";
+      drawOn.beginPath();
+      drawOn.arc(engineLoc.x,engineLoc.y,ship.size/(3*localZoomMult),0,2*Math.PI)
+      drawOn.fill();
+      drawOn.fillStyle = "white";
+      drawOn.beginPath();
+      drawOn.arc(engineLoc.x,engineLoc.y,ship.size/(6*localZoomMult),0,2*Math.PI)
+      drawOn.fill();
+    }
+  }
+  else if(ship.type == "baseRocket")
   {
     drawOn.beginPath();
     drawOn.fillStyle = ship.color;

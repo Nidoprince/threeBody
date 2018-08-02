@@ -197,6 +197,10 @@ class Ship
     this.fuelMax = 50000;
     this.isDead = false;
     this.planetThatMurderedMe = false;
+    if(this.type == "towRocket")
+    {
+      this.density *= 2;
+    }
     var closestPlanetDistance = Number.MAX_SAFE_INTEGER;
     var closestPlanet = false;
     for (var id in planets)
@@ -248,30 +252,54 @@ class Ship
   {
     this.controlInput = new Vector(0,0);
     this.controlRotation = 0;
-    //Thrust
-    if(up && this.fuel > 5)
+    let thrustFuel;
+    let turnFuel;
+    let slowFuel;
+    let thrustMultiplier;
+    let edgeMultiplier;
+    let slowMultiplier;
+    if(this.type == "baseRocket")
     {
-      this.controlInput = this.direction.multiplyScaler(this.thrust);
-      this.fuel -= 5;
+      thrustFuel = 5;
+      turnFuel = 1;
+      slowFuel = 3;
+      thrustMultiplier = 1;
+      edgeMultiplier = 1;
+      slowMultiplier = 1;
+    }
+    else if(this.type == "towRocket")
+    {
+      thrustFuel = 10;
+      turnFuel = 0.1;
+      slowFuel = 0.1;
+      thrustMultiplier = 3;
+      edgeMultiplier = 0.3;
+      slowMultiplier = 0.5;
+    }
+    //Thrust
+    if(up && this.fuel > thrustFuel)
+    {
+      this.controlInput = this.direction.multiplyScaler(this.thrust*thrustMultiplier);
+      this.fuel -= thrustFuel;
     }
     //Rotation
-    if(right && !left && this.fuel > 1)
+    if(right && !left && this.fuel >  turnFuel)
     {
-      this.controlRotation = this.turnRate;
-      this.controlInput = this.controlInput.addVector(this.direction.rotate(Math.PI/2).multiplyScaler(this.edgeThrust));
-      this.fuel -= 1;
+      this.controlRotation = this.turnRate*edgeMultiplier;
+      this.controlInput = this.controlInput.addVector(this.direction.rotate(Math.PI/2).multiplyScaler(this.edgeThrust*edgeMultiplier));
+      this.fuel -=  turnFuel;
     }
-    else if(left && !right && this.fuel > 1)
+    else if(left && !right && this.fuel >  turnFuel)
     {
-      this.controlRotation = -1*this.turnRate;
-      this.controlInput = this.controlInput.addVector(this.direction.rotate(-1*Math.PI/2).multiplyScaler(this.edgeThrust));
-      this.fuel -= 1;
+      this.controlRotation = -1*this.turnRate*edgeMultiplier;
+      this.controlInput = this.controlInput.addVector(this.direction.rotate(-1*Math.PI/2).multiplyScaler(this.edgeThrust*edgeMultiplier));
+      this.fuel -=  turnFuel;
     }
     //Slow
-    if(down && this.fuel > 3)
+    if(down && this.fuel > slowFuel)
     {
-      this.controlInput = this.controlInput.subVector(this.vel.multiplyScaler(this.slowRate))
-      this.fuel -= 3;
+      this.controlInput = this.controlInput.subVector(this.vel.multiplyScaler(this.slowRate*slowMultiplier))
+      this.fuel -= slowFuel;
     }
     return this.vel.copy();
   }
@@ -311,7 +339,7 @@ class Ship
       //Air Resistance
       if(Vector.distance(this.loc,planet.loc) <= this.size+planet.size*1.2)
       {
-        this.vel = this.vel.subVector(this.vel.multiplyScaler(airResistance*this.vel.magnitude()));
+        this.vel = this.vel.subVector(this.vel.multiplyScaler(airResistance*this.vel.magnitude()/this.mass()));
       }
     }
   }
@@ -333,7 +361,7 @@ class Ship
     }
     if(!this.parked)
     {
-      this.direction = this.direction.rotate((this.vel.angle()-this.direction.angle())/240*timeDifferential*universeSpeed);
+      this.direction = this.direction.rotate((this.vel.angle()-this.direction.angle())/(240*this.mass())*timeDifferential*universeSpeed);
       if(this.driver)
       {
         this.direction = this.direction.rotate(this.controlRotation*timeDifferential*universeSpeed);

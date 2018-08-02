@@ -34,6 +34,7 @@ server.listen(process.env.PORT || 5000, function() {
   ships.push(new space.Ship(1000,5000,"red",planets));
   ships.push(new space.Ship(-4330,-1500,"blue",planets));
   ships.push(new space.Ship(4330,-1500,"yellow",planets));
+  ships.push(new space.Ship(400,400,'green',planets,"towRocket"));
   asteroids.push(new space.Asteroid(10000,0,0,4,100));
   asteroids.push(new space.Asteroid(0,0,0,0,100));
   aliens.push(new space.Flock(50,3,100,100,5,"pink",3000));
