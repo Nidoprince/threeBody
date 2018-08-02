@@ -163,6 +163,11 @@ socket.on('state',function(celestial) {
           playerControl.build = "Base Rocket";
           menuOpen = false;
         }
+        if(menuLoc == 1 && myPlayer.inventory.filter((x) => x == "iron").length > 3)
+        {
+          playerControl.build = "Tow Rocket";
+          menuOpen = false;
+        }
       }
       menuAnimation(context);
     }

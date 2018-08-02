@@ -200,6 +200,7 @@ class Ship
     if(this.type == "towRocket")
     {
       this.density *= 2;
+      this.towing = false;
     }
     var closestPlanetDistance = Number.MAX_SAFE_INTEGER;
     var closestPlanet = false;
@@ -342,6 +343,29 @@ class Ship
         this.vel = this.vel.subVector(this.vel.multiplyScaler(airResistance*this.vel.magnitude()/this.mass()));
       }
     }
+    //Tow Line
+    if(this.type == "towRocket" && this.towing)
+    {
+      let stretchedDistance = Vector.distance(this.loc,this.towing.loc);
+      let towingForce = 5;
+      let minDistance = 100;
+      if(stretchedDistance > minDistance)
+      {
+        let pull = this.loc.direction(this.towing.loc).normalize(towingForce*(stretchedDistance-minDistance));
+        if(!this.parked)
+        {
+          this.vel = this.vel.addVector(pull.multiplyScaler(1/this.mass()));
+        }
+        if(!this.towing.parked)
+        {
+          this.towing.vel = this.towing.vel.subVector(pull.multiplyScaler(1/this.towing.mass()));
+        }
+      }
+      if(this.towing.isDead)
+      {
+        this.towing = false;
+      }
+    }
   }
 
   updateLocation(timeDifferential,planets)
@@ -416,6 +440,7 @@ class Player
     this.ePressed = false;
     this.mHeld = false;
     this.pPressed = false;
+    this.tPressed = false;
     this.color = color;
     this.size = size;
     this.density = density;
@@ -469,6 +494,31 @@ class Player
           }
           break;
         }
+      }
+    }
+  }
+  attachOrReleaseTowLine(ships)
+  {
+    if(this.inSpaceShip.towing)
+    {
+      this.inSpaceShip.towing = false;
+    }
+    else
+    {
+      let distance = 500;
+      let closestShip = false;
+      for(var ship of ships)
+      {
+        let dist = Vector.distance(this.inSpaceShip.loc,ship.loc);
+        if(dist > 0 && dist < distance)
+        {
+          distance = dist;
+          closestShip = ship;
+        }
+      }
+      if(distance < 300)
+      {
+        this.inSpaceShip.towing = closestShip;
       }
     }
   }
@@ -746,6 +796,10 @@ class Player
       {
         this.toggleParkingBreak();
       }
+    }
+    if(this.tPressed && this.inSpaceShip && this.inSpaceShip.type == "towRocket")
+    {
+      this.attachOrReleaseTowLine(ships);
     }
   }
 }

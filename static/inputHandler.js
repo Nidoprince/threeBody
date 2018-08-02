@@ -6,6 +6,7 @@ var playerControl = {
   e: false,
   m: false,
   p: false,
+  t: false,
   build: false
 }
 var viewer = {
@@ -36,6 +37,7 @@ var trigger = {
   e: false,
   p: false,
   b: false,
+  t: false,
   reset()
   {
     this.up = false;
@@ -48,6 +50,7 @@ var trigger = {
     this.enter = false;
     playerControl.e = false;
     playerControl.p = false;
+    playerControl.t = false;
     playerControl.build = false;
   }
 }
@@ -131,6 +134,9 @@ document.addEventListener('keydown', function(event) {
       break;
     case 66: //B
       trigger.b = true;
+      break;
+    case 84: //T
+      trigger.t = true;
       break;
     case 38: //Up Arrow
       viewer.up = true;
@@ -231,6 +237,13 @@ document.addEventListener('keyup', function(event) {
         menuOpen = !menuOpen;
       }
       trigger.b = false;
+      break;
+    case 84: //T
+      if(trigger.t)
+      {
+        playerControl.t = true;
+      }
+      trigger.t = false;
       break;
     case 38: //Up Arrow
       if(viewer.up)

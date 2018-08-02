@@ -20,6 +20,16 @@ var particleCompress = function(particle)
   }
 }
 
+var towCompress = function(towed)
+{
+  if(towed)
+  {
+    return towed.loc.copy();
+  }
+  else {
+    return false;
+  }
+}
 var shipCompress = function(ship)
 {
   if(ship.type == "explosion")
@@ -27,6 +37,20 @@ var shipCompress = function(ship)
     return {
       type: "explosion",
       particles: ship.particles.map(particleCompress)
+    }
+  }
+  else if(ship.type == "towRocket")
+  {
+    return {
+      type: ship.type,
+      loc: ship.loc,
+      direction: ship.direction,
+      size: ship.size,
+      color: ship.color,
+      controlInput: ship.controlInput,
+      controlRotation: ship.controlRotation,
+      driverColor: ship.driverColor,
+      towing: towCompress(ship.towing)
     }
   }
   else

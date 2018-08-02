@@ -82,6 +82,15 @@ var shipDrawer = function(ship, drawOn, localViewer = viewer, localZoomMult = zo
       drawOn.arc(engineLoc.x,engineLoc.y,ship.size/(6*localZoomMult),0,2*Math.PI)
       drawOn.fill();
     }
+    if(ship.towing)
+    {
+      drawOn.strokeStyle = "grey";
+      drawOn.beginPath();
+      drawOn.moveTo(penLoc.x,penLoc.y);
+      let otherSide = new Vector((ship.towing.x-localViewer.x)/localZoomMult+800,(ship.towing.y-localViewer.y)/localZoomMult+400);
+      drawOn.lineTo(otherSide.x,otherSide.y);
+      drawOn.stroke();
+    }
   }
   else if(ship.type == "baseRocket")
   {
@@ -293,5 +302,8 @@ var menuAnimation =  function(drawOn)
   drawOn.fillStyle = "white";
   drawOn.font = "bold 14px Arial";
   drawOn.fillText("Base Rocket",130,150);
-  drawOn.fillText("1 Iron", 150,200);
+  drawOn.fillText("1 Iron", 150,190);
+  drawOn.fillText("Tow Rocket",380,150);
+  drawOn.fillText("4 Iron", 400,190);
+  drawOn.fillText("Press T to Tow.",375,230);
 }
