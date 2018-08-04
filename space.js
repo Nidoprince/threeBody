@@ -232,7 +232,44 @@ class Ship
   {
     return this.size*this.density*this.size*3.14159265358979323646264338;
   }
-
+  spaceAvailable()
+  {
+    if(this.driver && ["baseRocket","towRocket"].includes(this.type))
+    {
+      return false;
+    }
+    else if(!this.driver)
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
+  setDriver(color,id)
+  {
+    if(["baseRocket","towRocket"].includes(this.type))
+    {
+      this.driverColor = color;
+      this.driver = id;
+    }
+  }
+  driverLocation(id)
+  {
+    if(["baseRocket","towRocket"].includes(this.type))
+    {
+      return this.loc.copy();
+    }
+  }
+  removeDriver(id)
+  {
+    if(["baseRocket","towRocket"].includes(this.type))
+    {
+      this.driver = false;
+      this.driverColor = false;
+    }
+  }
   updateVelocity(planets)
   {
     if(this.parked)
@@ -406,8 +443,9 @@ class Ship
 
 class Player
 {
-  constructor(x,y,color, planets, size = 10,density = 1)
+  constructor(x,y,color, planets, serialNumber, size = 10,density = 1)
   {
+    this.id = serialNumber;
     this.color = color;
     this.controllingPlanet = false;
     this.inventory = [];
@@ -465,8 +503,7 @@ class Player
   {
     if(this.inSpaceShip)
     {
-      this.inSpaceShip.driver = false;
-      this.inSpaceShip.driverColor = false;
+      this.inSpaceShip.removeDriver(id);
       this.inSpaceShip = false;
     }
     else
@@ -474,12 +511,11 @@ class Player
       for (var id in ships)
       {
         var ship = ships[id];
-        if(Vector.distance(this.loc,ship.loc) < this.size+ship.size)
+        if(Vector.distance(this.loc,ship.loc) < this.size+ship.size && ship.spaceAvailable())
         {
           this.inSpaceShip = ship;
-          this.inSpaceShip.driver = true;
-          this.inSpaceShip.driverColor = this.color;
-          this.loc = this.inSpaceShip.loc.copy();
+          this.inSpaceShip.setDriver(this.color,this.id);
+          this.loc = this.inSpaceShip.driverLocation(this.id);
           this.inSpaceShip.fuel += this.inventory.filter(x => x == "fuel").length*3000;
           let extrafuel = 0;
           if(this.inSpaceShip.fuel > this.inSpaceShip.fuelMax)
