@@ -92,15 +92,20 @@ var shipDrawer = function(ship, drawOn, localViewer = viewer, localZoomMult = zo
       drawOn.stroke();
     }
   }
-  else if(ship.type == "baseRocket")
+  else if(ship.type == "baseRocket" || ship.type == "miningShip")
   {
+    let shipWidth = 1;
+    if(ship.type == "miningShip")
+    {
+      shipWidth = 2;
+    }
     drawOn.beginPath();
     drawOn.fillStyle = ship.color;
     //Point 1
     var tipPoint = penLoc.addVector(shipDir.normalize(ship.size/localZoomMult));
     drawOn.moveTo(tipPoint.x,tipPoint.y);
     //Point 2
-    var angleLeft = tipPoint.addVector(shipDir.negate().rotate(Math.PI/6).normalize(ship.size/(4*localZoomMult)));
+    var angleLeft = tipPoint.addVector(shipDir.negate().rotate(Math.PI/6).normalize(shipWidth*ship.size/(4*localZoomMult)));
     drawOn.lineTo(angleLeft.x,angleLeft.y);
     //Point 3
     var baseLeft = angleLeft.addVector(shipDir.negate().normalize(ship.size*3/(2*localZoomMult)));
@@ -112,7 +117,7 @@ var shipDrawer = function(ship, drawOn, localViewer = viewer, localZoomMult = zo
     var finRight = penLoc.addVector(shipDir.negate().normalize(ship.size/localZoomMult)).addVector(shipDir.rotate(Math.PI/2).normalize(ship.size/(2*localZoomMult)));
     drawOn.lineTo(finRight.x,finRight.y);
     //Point 7
-    var angleRight = tipPoint.addVector(shipDir.negate().rotate(-Math.PI/6).normalize(ship.size/(4*localZoomMult)));
+    var angleRight = tipPoint.addVector(shipDir.negate().rotate(-Math.PI/6).normalize(shipWidth*ship.size/(4*localZoomMult)));
     //Point 6
     var baseRight = angleRight.addVector(shipDir.negate().normalize(ship.size*3/(2*localZoomMult)));
     drawOn.lineTo(baseRight.x,baseRight.y);
@@ -124,6 +129,14 @@ var shipDrawer = function(ship, drawOn, localViewer = viewer, localZoomMult = zo
       drawOn.fillStyle = ship.driverColor;
       drawOn.beginPath();
       drawOn.arc(penLoc.x,penLoc.y,ship.size/(6*localZoomMult), 0, 2 * Math.PI);
+      drawOn.fill();
+    }
+    if(ship.type == "miningShip" && ship.minerColor)
+    {
+      var minerPoint = penLoc.subVector(shipDir.normalize(ship.size/(2*localZoomMult)));
+      drawOn.fillStyle = ship.minerColor;
+      drawOn.beginPath();
+      drawOn.arc(minerPoint.x,minerPoint.y,ship.size/(6*localZoomMult),0,2*Math.PI);
       drawOn.fill();
     }
     if(ship.controlRotation > 0)

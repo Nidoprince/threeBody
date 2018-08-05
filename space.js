@@ -197,10 +197,17 @@ class Ship
     this.fuelMax = 50000;
     this.isDead = false;
     this.planetThatMurderedMe = false;
+    this.mineSpeed = 1;
     if(this.type == "towRocket")
     {
       this.density *= 2;
       this.towing = false;
+    }
+    else if(this.type == "miningShip")
+    {
+      this.miner = false;
+      this.minerColor = false;
+      this.mineSpeed = 10;
     }
     var closestPlanetDistance = Number.MAX_SAFE_INTEGER;
     var closestPlanet = false;
@@ -234,13 +241,17 @@ class Ship
   }
   spaceAvailable()
   {
-    if(this.driver && ["baseRocket","towRocket"].includes(this.type))
+    if(!this.driver)
+    {
+      return true;
+    }
+    else if(["baseRocket","towRocket"].includes(this.type))
     {
       return false;
     }
-    else if(!this.driver)
+    else if(["miningShip"].includes(this.type))
     {
-      return true;
+      return !this.miner;
     }
     else
     {
@@ -254,12 +265,36 @@ class Ship
       this.driverColor = color;
       this.driver = id;
     }
+    else if(["miningShip"].includes(this.type))
+    {
+      if(this.driver)
+      {
+        this.miner = id;
+        this.minerColor = color;
+      }
+      else
+      {
+        this.driver = id;
+        this.driverColor = color;
+      }
+    }
   }
   driverLocation(id)
   {
     if(["baseRocket","towRocket"].includes(this.type))
     {
       return this.loc.copy();
+    }
+    else if(["miningShip"].includes(this.type))
+    {
+      if(this.driver == id)
+      {
+        return this.loc.copy();
+      }
+      else if(this.miner == id)
+      {
+        return this.loc.subVector(this.direction.normalize(this.size/2));
+      }
     }
   }
   removeDriver(id)
@@ -268,6 +303,19 @@ class Ship
     {
       this.driver = false;
       this.driverColor = false;
+    }
+    else if(["miningShip"].includes(this.type))
+    {
+      if(this.driver == id)
+      {
+        this.driver = false;
+        this.driverColor = false;
+      }
+      else if(this.miner == id)
+      {
+        this.miner = false;
+        this.minerColor = false;
+      }
     }
   }
   updateVelocity(planets)
@@ -286,10 +334,8 @@ class Ship
     }
     this.vel = this.vel.speedLimit(shipSpeedLimit);
   }
-  shipControl(up,down,left,right)
+  shipControl(id,up,down,left,right)
   {
-    this.controlInput = new Vector(0,0);
-    this.controlRotation = 0;
     let thrustFuel;
     let turnFuel;
     let slowFuel;
@@ -314,22 +360,43 @@ class Ship
       edgeMultiplier = 0.3;
       slowMultiplier = 0.5;
     }
+    else if(this.type == "miningShip")
+    {
+      if(id == this.driver)
+      {
+        thrustFuel = 8;
+        turnFuel = 2;
+        slowFuel = 2;
+        thrustMultiplier = 0.5;
+        edgeMultiplier = 5;
+        slowMultiplier = 3;
+      }
+      else
+      {
+        thrustFuel = 0;
+        turnFuel = 0;
+        slowFuel = 0;
+        thrustMultiplier = 0;
+        edgeMultiplier = 0;
+        slowMultiplier = 0;
+      }
+    }
     //Thrust
     if(up && this.fuel > thrustFuel)
     {
-      this.controlInput = this.direction.multiplyScaler(this.thrust*thrustMultiplier);
+      this.controlInput = this.controlInput.addVector(this.direction.multiplyScaler(this.thrust*thrustMultiplier));
       this.fuel -= thrustFuel;
     }
     //Rotation
     if(right && !left && this.fuel >  turnFuel)
     {
-      this.controlRotation = this.turnRate*edgeMultiplier;
+      this.controlRotation += this.turnRate*edgeMultiplier;
       this.controlInput = this.controlInput.addVector(this.direction.rotate(Math.PI/2).multiplyScaler(this.edgeThrust*edgeMultiplier));
       this.fuel -=  turnFuel;
     }
     else if(left && !right && this.fuel >  turnFuel)
     {
-      this.controlRotation = -1*this.turnRate*edgeMultiplier;
+      this.controlRotation += -1*this.turnRate*edgeMultiplier;
       this.controlInput = this.controlInput.addVector(this.direction.rotate(-1*Math.PI/2).multiplyScaler(this.edgeThrust*edgeMultiplier));
       this.fuel -=  turnFuel;
     }
@@ -437,6 +504,8 @@ class Ship
         this.loc = planet.loc.addVector(planet.loc.direction(this.loc).normalize(planet.size+this.size));
       }
     }
+    this.controlInput = new Vector(0,0);
+    this.controlRotation = 0;
   }
 }
 
@@ -503,7 +572,7 @@ class Player
   {
     if(this.inSpaceShip)
     {
-      this.inSpaceShip.removeDriver(id);
+      this.inSpaceShip.removeDriver(this.id);
       this.inSpaceShip = false;
     }
     else
@@ -595,7 +664,7 @@ class Player
         }
         else if(this.inventory[this.inventory.length-1] < asteroid.mineTime)
         {
-          this.inventory[this.inventory.length-1]++;
+          this.inventory[this.inventory.length-1]+=this.inSpaceShip.mineSpeed;
         }
         else
         {
@@ -677,7 +746,7 @@ class Player
     this.velocityComponents = new Map();
     if(this.inSpaceShip)
     {
-      this.vel = this.inSpaceShip.shipControl(this.upHeld,this.downHeld,this.leftHeld,this.rightHeld);
+      this.vel = this.inSpaceShip.shipControl(this.id,this.upHeld,this.downHeld,this.leftHeld,this.rightHeld);
       this.velocityComponents.set("Ship  ",this.vel.copy());
     }
     else
@@ -825,9 +894,12 @@ class Player
         this.inventory.pop();
       }
     }
+    if(this.inSpaceShip)
+    {
+      this.loc = this.inSpaceShip.driverLocation(this.id);
+    }
     if(this.inSpaceShip && this.controllingPlanet)
     {
-      this.loc = this.inSpaceShip.loc.copy();
       if(this.pPressed)
       {
         this.toggleParkingBreak();
@@ -836,6 +908,11 @@ class Player
     if(this.tPressed && this.inSpaceShip && this.inSpaceShip.type == "towRocket")
     {
       this.attachOrReleaseTowLine(ships);
+    }
+    if(this.tPressed)
+    {
+      console.log(this)
+      console.log(this.inSpaceShip)
     }
   }
 }

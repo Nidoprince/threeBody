@@ -53,6 +53,20 @@ var shipCompress = function(ship)
       towing: towCompress(ship.towing)
     }
   }
+  else if(ship.type == "miningShip")
+  {
+    return {
+      type: ship.type,
+      loc: ship.loc,
+      direction: ship.direction,
+      size: ship.size,
+      color: ship.color,
+      controlInput: ship.controlInput,
+      controlRotation: ship.controlRotation,
+      driverColor: ship.driverColor,
+      minerColor: ship.minerColor
+    }
+  }
   else
   {
     return {
