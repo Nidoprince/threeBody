@@ -319,4 +319,7 @@ var menuAnimation =  function(drawOn)
   drawOn.fillText("Tow Rocket",380,150);
   drawOn.fillText("4 Iron", 400,190);
   drawOn.fillText("Press T to Tow.",375,230);
+  drawOn.fillText("Mining Ship",630,150);
+  drawOn.fillText("8 Iron", 650,190);
+  drawOn.fillText("Holds 2 Players.",625,230);
 }

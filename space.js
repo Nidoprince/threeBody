@@ -367,8 +367,8 @@ class Ship
         thrustFuel = 8;
         turnFuel = 2;
         slowFuel = 2;
-        thrustMultiplier = 0.5;
-        edgeMultiplier = 5;
+        thrustMultiplier = 0.6;
+        edgeMultiplier = 3;
         slowMultiplier = 3;
       }
       else

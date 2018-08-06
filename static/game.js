@@ -168,6 +168,11 @@ socket.on('state',function(celestial) {
           playerControl.build = "Tow Rocket";
           menuOpen = false;
         }
+        if(menuLoc == 2 && myPlayer.inventory.filter((x) => x == "iron").length > 7)
+        {
+          playerControl.build = "Mining Ship";
+          menuOpen = false;
+        }
       }
       menuAnimation(context);
     }

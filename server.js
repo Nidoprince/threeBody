@@ -34,7 +34,7 @@ server.listen(process.env.PORT || 5000, function() {
   ships.push(new space.Ship(1000,5000,"red",planets));
   ships.push(new space.Ship(-4330,-1500,"blue",planets));
   ships.push(new space.Ship(4330,-1500,"yellow",planets));
-  ships.push(new space.Ship(400,400,'green',planets,"miningShip"));
+  //ships.push(new space.Ship(400,400,'green',planets,"miningShip"));
   asteroids.push(new space.Asteroid(10000,0,0,4,100));
   asteroids.push(new space.Asteroid(0,0,0,0,100));
   aliens.push(new space.Flock(50,3,100,100,5,"pink",3000));
@@ -86,6 +86,18 @@ io.on('connection', function(socket) {
             player.inventory.splice(index,1);
           }
           ships.push(new space.Ship(player.loc.x,player.loc.y,player.color,planets,"towRocket"))
+        }
+      }
+      if(data.build == "Mining Ship")
+      {
+        if(player.inventory.filter((x) => x == "iron").length > 7)
+        {
+          for(let i = 0; i<8; i++)
+          {
+            let index = player.inventory.indexOf("iron");
+            player.inventory.splice(index,1);
+          }
+          ships.push(new space.Ship(player.loc.x,player.loc.y,player.color,planets,"miningShip"))
         }
       }
     }
