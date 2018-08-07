@@ -224,7 +224,7 @@ class Ship
     if(closestPlanet && closestPlanetDistance <= closestPlanet.size+this.size+5)
     {
       this.parked = closestPlanet;
-      this.loc = this.parked.loc.addVector(planet.loc.direction(this.loc).normalize(planet.size+this.size));
+      this.loc = this.parked.loc.addVector(this.parked.loc.direction(this.loc).normalize(planet.size+this.size));
       this.direction = this.parked.loc.direction(this.loc);
       this.vel = this.parked.vel.copy();
     }
