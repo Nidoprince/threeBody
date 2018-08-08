@@ -21,7 +21,7 @@ setInterval(function() {
   if(!menuOpen){
     socket.emit('playerControl', playerControl);
   }
-  trigger.reset();
+  trigger.resetPlayer();
 }, 1000/60);
 
 var canvas = document.getElementById('canvas');
@@ -224,4 +224,5 @@ socket.on('state',function(celestial) {
       colorSelected = true;
     }
   }
+  trigger.reset();
 });

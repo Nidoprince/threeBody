@@ -914,6 +914,9 @@ class Player
       console.log(this)
       console.log(this.inSpaceShip)
     }
+    this.tPressed = false;
+    this.pPressed = false;
+    this.ePressed = false;
   }
 }
 

@@ -61,10 +61,18 @@ io.on('connection', function(socket) {
     player.upHeld = data.up;
     player.rightHeld = data.right;
     player.downHeld = data.down;
-    player.ePressed = data.e;
     player.mHeld = data.m;
-    player.pPressed = data.p;
-    player.tPressed = data.t;
+    if(data.e){
+      player.ePressed = data.e;
+    }
+    if(data.p)
+    {
+      player.pPressed = data.p;
+    }
+    if(data.t)
+    {
+      player.tPressed = data.t;
+    }
     if(data.build)
     {
       if(data.build == "Base Rocket")
@@ -73,7 +81,7 @@ io.on('connection', function(socket) {
         {
           let index = player.inventory.indexOf("iron");
           player.inventory.splice(index,1);
-          ships.push(new space.Ship(player.loc.x,player.loc.y,player.color,planets));
+          ships.push(new space.Ship(player.loc.x,player.loc.y,player.color,planets.concat(asteroids)));
         }
       }
       if(data.build == "Tow Rocket")
@@ -85,7 +93,7 @@ io.on('connection', function(socket) {
             let index = player.inventory.indexOf("iron");
             player.inventory.splice(index,1);
           }
-          ships.push(new space.Ship(player.loc.x,player.loc.y,player.color,planets,"towRocket"))
+          ships.push(new space.Ship(player.loc.x,player.loc.y,player.color,planets.concat(asteroids),"towRocket"))
         }
       }
       if(data.build == "Mining Ship")
@@ -97,7 +105,7 @@ io.on('connection', function(socket) {
             let index = player.inventory.indexOf("iron");
             player.inventory.splice(index,1);
           }
-          ships.push(new space.Ship(player.loc.x,player.loc.y,player.color,planets,"miningShip"))
+          ships.push(new space.Ship(player.loc.x,player.loc.y,player.color,planets.concat(asteroids),"miningShip"))
         }
       }
     }

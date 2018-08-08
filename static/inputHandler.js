@@ -48,6 +48,9 @@ var trigger = {
     this.velocity = false;
     this.focus = false;
     this.enter = false;
+  },
+  resetPlayer()
+  {
     playerControl.e = false;
     playerControl.p = false;
     playerControl.t = false;
