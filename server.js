@@ -114,7 +114,16 @@ io.on('connection', function(socket) {
 
 setInterval(function() {
   var currentTime = (new Date()).getTime();
-  var timeDifferential = (currentTime - lastUpdateTime)/17;
+  var timeDifferential = (currentTime - lastUpdateTime)/20;
+  if(Math.random()*1000 < (50-asteroids.length)/50)
+  {
+    let size = (Math.random()+Math.random()+Math.random()+Math.random())*40+20;
+    let x = Math.random()*40000-20000;
+    let y = Math.random()*40000-20000;
+    let xV = (Math.random()+Math.random())*5-5;
+    let yV = (Math.random()+Math.random())*5-5;
+    asteroids.push(new space.Asteroid(x,y,xV,yV,size));
+  }
   let planetoids = planets.concat(asteroids);
   if(Math.random()*3000 < 1)
   {
@@ -131,12 +140,13 @@ setInterval(function() {
   }
   for (var id in asteroids)
   {
-    asteroids[id].updateVelocity(planets);
+    asteroids[id].updateVelocity(planetoids);
   }
-  for (var id in asteroids)
+  asteroids = asteroids.filter(asteroid =>
   {
-    asteroids[id].updateLocation(timeDifferential);
-  }
+    asteroid.updateLocation(timeDifferential);
+    return space.Vector.distance(asteroid.loc,new space.Vector(0,0)) < 50000;
+  })
   for (var id in aliens)
   {
     aliens[id].updateVelocity();
@@ -195,5 +205,5 @@ setInterval(function() {
     console.log(JSON.stringify([planets.map(compr.planetCompress),players,ships.map(compr.shipCompress),asteroids.map(compr.planetCompress),aliens.map(compr.alienCompress)]).length)
     dog = false;
   }*/
-}, 1000/60);
+}, 1000/50);
 //var dog = true;

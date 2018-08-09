@@ -3,7 +3,7 @@ var space = require("./space.js");
 var planetCompress = function(planet)
 {
   return {
-    loc: planet.loc,
+    loc: new space.Vector(Math.floor(planet.loc.x),Math.floor(planet.loc.y)),
     size: planet.size,
     color: planet.color,
     atmosphereColor: planet.atmosphereColor,

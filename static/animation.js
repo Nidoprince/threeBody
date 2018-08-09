@@ -211,10 +211,13 @@ var boidDrawer = function(boid,drawOn,size)
 }
 var flockDrawer = function(flock,drawOn)
 {
-  drawOn.fillStyle = flock.color;
-  for (var boid of flock.flock)
+  if(flock.size/zoomMult > 1)
   {
-    boidDrawer(boid,drawOn,flock.size);
+    drawOn.fillStyle = flock.color;
+    for (var boid of flock.flock)
+    {
+      boidDrawer(boid,drawOn,flock.size);
+    }  
   }
 }
 var alienDrawer = function(alien,drawOn)
@@ -251,10 +254,13 @@ var planetDrawer = function(planet,drawOn)
 
 var asteroidDrawer = function(asteroid,drawOn)
 {
-  drawOn.fillStyle = asteroid.color;
-  drawOn.beginPath();
-  drawOn.arc((asteroid.loc.x-viewer.x)/zoomMult+800,(asteroid.loc.y-viewer.y)/zoomMult+400, asteroid.size/zoomMult, 0, 2 * Math.PI);
-  drawOn.fill();
+  if(asteroid.size/zoomMult > 1)
+  {
+    drawOn.fillStyle = asteroid.color;
+    drawOn.beginPath();
+    drawOn.arc((asteroid.loc.x-viewer.x)/zoomMult+800,(asteroid.loc.y-viewer.y)/zoomMult+400, asteroid.size/zoomMult, 0, 2 * Math.PI);
+    drawOn.fill();
+  }
 }
 
 var fuelBar = function(player,drawOn)
