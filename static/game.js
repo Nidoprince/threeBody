@@ -1,5 +1,6 @@
 const viewerSpeed = 3;
 var myPlayer = null;
+var reality = 0;
 var zoomRatio = 1.05;
 var zoomMult = Math.pow(zoomRatio,viewer.zoom);
 
@@ -30,6 +31,11 @@ canvas.height = 800;
 var context = canvas.getContext('2d');
 socket.on('state',function(celestial) {
   context.clearRect(0,0,1600,800);
+  if(reality == 1)
+  {
+    context.fillStyle = "white";
+    context.fillRect(0,0,1600,800);
+  }
   if(colorSelected)
   {
     let players = celestial[1];
@@ -45,6 +51,23 @@ socket.on('state',function(celestial) {
         myPlayer = players[id];
       }
     }
+    if(myPlayer)
+    {
+      if(adminControls.q)
+      {
+        myPlayer.reality = 1;
+      }
+      else
+      {
+        myPlayer.reality = 0;
+      }
+      reality = myPlayer.reality;
+    }
+
+    planets = planets.filter((x)=>x.reality==reality);
+    ships = ships.filter((x)=>x.reality==reality);
+    asteroids = asteroids.filter((x)=>x.reality==reality);
+    aliens = aliens.filter((x)=>x.reality==reality);
 
     if(myPlayer && myPlayer == "dead")
     {
@@ -83,7 +106,10 @@ socket.on('state',function(celestial) {
 
     for (var id in players) {
       var player = players[id];
-      playerDrawer(player,context);
+      if(player.reality == reality)
+      {
+        playerDrawer(player,context);
+      }
     }
     for (var id in planets) {
       var planet = planets[id];
@@ -112,6 +138,10 @@ socket.on('state',function(celestial) {
       for (var [key,value] of toMap)
       {
         context.fillStyle = "white";
+        if(reality == 1)
+        {
+          context.fillStyle = "black";
+        }
         context.font = "bold 16px Arial";
         context.fillText(key + " - x: " + value.x.toFixed(3) + " y: "+value.y.toFixed(3) +" m: "+Math.sqrt(value.x*value.x+value.y*value.y).toFixed(3),1300,810-50*velPieces);
         velPieces -= 1;
@@ -126,6 +156,10 @@ socket.on('state',function(celestial) {
       for (var inv in myPlayer.inventory)
       {
         context.fillStyle = "white"
+        if(reality == 1)
+        {
+          context.fillStyle = "black";
+        }
         context.font = "bold 14px Arial";
         context.fillText(myPlayer.inventory[inv],50+inv*100,750)
       }

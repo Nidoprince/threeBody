@@ -217,7 +217,7 @@ var flockDrawer = function(flock,drawOn)
     for (var boid of flock.flock)
     {
       boidDrawer(boid,drawOn,flock.size);
-    }  
+    }
   }
 }
 var alienDrawer = function(alien,drawOn)
@@ -296,15 +296,24 @@ var starForger = function(drawOn)
   var time = (new Date()).getTime();
   for(var i = 0; i < 100 +10*(viewer.zoom+20); i++)
   {
-    var xS = (5001*i+Math.floor(Math.abs(viewer.x)/20))%1600;
-    var yS = (333*i*i+Math.floor(Math.abs(viewer.y)/30))%800;
+    var xS = Math.floor((5001*i+Math.floor(Math.abs(viewer.x)/20))%1600);
+    var yS = Math.floor((333*i*i+Math.floor(Math.abs(viewer.y)/30))%800);
+    let colorStart;
+    if(reality == 0)
+    {
+      colorStart = "rgba(255,255,255,0."
+    }
+    else if(reality == 1)
+    {
+      colorStart = "rgba(0,0,0,0."
+    }
     if((time+2001*i)%100000 <= 500)
     {
-      drawOn.fillStyle = "rgba(255,255,255,0."+((Math.abs(i*i+i)%60)+49).toString()+")";
+      drawOn.fillStyle = colorStart+((Math.abs(i*i+i)%60)+49).toString()+")";
     }
     else
     {
-      drawOn.fillStyle = "rgba(255,255,255,0."+((Math.abs(i*i+i)%60)+20).toString()+")";
+      drawOn.fillStyle = colorStart+((Math.abs(i*i+i)%60)+20).toString()+")";
     }
     drawOn.beginPath();
     drawOn.arc(xS,yS,Math.abs(i*i+i)%5,0,2*Math.PI);

@@ -9,6 +9,9 @@ var playerControl = {
   t: false,
   build: false
 }
+var adminControls = {
+  q: false
+}
 var viewer = {
   up: false,
   down: false,
@@ -141,6 +144,9 @@ document.addEventListener('keydown', function(event) {
     case 84: //T
       trigger.t = true;
       break;
+    case 81: //Q
+      adminControls.q = true;
+      break;
     case 38: //Up Arrow
       viewer.up = true;
       break;
@@ -247,6 +253,9 @@ document.addEventListener('keyup', function(event) {
         playerControl.t = true;
       }
       trigger.t = false;
+      break;
+    case 81: //Q
+      adminControls.q = false;
       break;
     case 38: //Up Arrow
       if(viewer.up)

@@ -7,7 +7,8 @@ var planetCompress = function(planet)
     size: planet.size,
     color: planet.color,
     atmosphereColor: planet.atmosphereColor,
-    fuelSources: planet.fuelSources
+    fuelSources: planet.fuelSources,
+    reality: planet.reality
   }
 }
 
@@ -36,7 +37,8 @@ var shipCompress = function(ship)
   {
     return {
       type: "explosion",
-      particles: ship.particles.map(particleCompress)
+      particles: ship.particles.map(particleCompress),
+      reality: ship.reality
     }
   }
   else if(ship.type == "towRocket")
@@ -50,7 +52,8 @@ var shipCompress = function(ship)
       controlInput: ship.controlInput,
       controlRotation: ship.controlRotation,
       driverColor: ship.driverColor,
-      towing: towCompress(ship.towing)
+      towing: towCompress(ship.towing),
+      reality: ship.reality
     }
   }
   else if(ship.type == "miningShip")
@@ -64,7 +67,8 @@ var shipCompress = function(ship)
       controlInput: ship.controlInput,
       controlRotation: ship.controlRotation,
       driverColor: ship.driverColor,
-      minerColor: ship.minerColor
+      minerColor: ship.minerColor,
+      reality: ship.reality
     }
   }
   else
@@ -77,7 +81,8 @@ var shipCompress = function(ship)
       color: ship.color,
       controlInput: ship.controlInput,
       controlRotation: ship.controlRotation,
-      driverColor: ship.driverColor
+      driverColor: ship.driverColor,
+      reality: ship.reality
     }
   }
 }
@@ -96,7 +101,8 @@ var alienCompress = function(alien)
     return {
       flock: alien.flock.map(boidCompress),
       size: alien.size,
-      color: alien.color
+      color: alien.color,
+      reality: alien.reality
     }
   }
 }

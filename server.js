@@ -37,6 +37,7 @@ server.listen(process.env.PORT || 5000, function() {
   //ships.push(new space.Ship(400,400,'green',planets,"miningShip"));
   asteroids.push(new space.Asteroid(10000,0,0,4,100));
   asteroids.push(new space.Asteroid(0,0,0,0,100));
+  asteroids.push(new space.Asteroid(500,500,0,0.5,200,"iron","brown",1,1));
   aliens.push(new space.Flock(50,3,100,100,5,"pink",3000));
 
 });

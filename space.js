@@ -5,6 +5,7 @@ const groundTouchError = 0;
 const similarEnoughVelocities = 0.3;
 const fallingAngle = Math.PI/4;
 const jumpForce = 15;
+const fuelWeight = 0.05;
 
 const shipSpeedLimit = 60;
 const universeSpeed = 1;
@@ -62,7 +63,7 @@ class Boid
 
 class Flock
 {
-  constructor(number, velocity, x, y, size, color, lifespan)
+  constructor(number, velocity, x, y, size, color, lifespan, reality = 0)
   {
     this.flock = [];
     for (var i = 0; i < number;i++)
@@ -72,6 +73,7 @@ class Flock
     this.size =  size;
     this.color = color;
     this.lifespan = lifespan;
+    this.reality = reality;
   }
   updateVelocity()
   {
@@ -126,7 +128,7 @@ class Particle
 }
 class Explosion
 {
-  constructor(x,y,size,lifespan,relative = false,colors = ["red","yellow","orange"])
+  constructor(x,y,size,lifespan,relative = false,colors = ["red","yellow","orange"], reality = 0)
   {
     this.loc = new Vector(x,y);
     this.relative = relative;
@@ -144,6 +146,7 @@ class Explosion
     this.particles = [];
     this.spawnParticles(100);
     this.type = "explosion";
+    this.reality = reality;
   }
   spawnParticles(numberOfParticles)
   {
@@ -176,7 +179,7 @@ class Explosion
 }
 class Ship
 {
-  constructor(x,y,color,planets,type="baseRocket",size = 40,density=1,thrust = 0.3,turnRate = 0.02,edgeThrust = 0.05,slowRate = 0.001)
+  constructor(x,y,color,planets,type="baseRocket",size = 40,density=1,reality = 0,thrust = 0.3,turnRate = 0.02,edgeThrust = 0.05,slowRate = 0.001)
   {
     this.loc = new Vector(x,y);
     this.vel = new Vector(0,0);
@@ -188,6 +191,7 @@ class Ship
     this.turnRate = turnRate;
     this.edgeThrust = edgeThrust;
     this.slowRate = slowRate;
+    this.reality = reality;
     this.parked = true;
     this.driver = false;
     this.driverColor = false;
@@ -209,6 +213,10 @@ class Ship
       this.minerColor = false;
       this.mineSpeed = 10;
     }
+    
+    //Only in same reality
+    planets = planets.filter((x)=>this.reality == x.reality)
+
     var closestPlanetDistance = Number.MAX_SAFE_INTEGER;
     var closestPlanet = false;
     for (var id in planets)
@@ -237,7 +245,7 @@ class Ship
 
   mass()
   {
-    return this.size*this.density*this.size*3.14159265358979323646264338;
+    return this.size*this.density*this.size*3.14159265358979323646264338 + this.fuel*fuelWeight;
   }
   spaceAvailable()
   {
@@ -320,6 +328,9 @@ class Ship
   }
   updateVelocity(planets)
   {
+    //Only in same reality
+    planets = planets.filter((x)=>this.reality == x.reality)
+
     if(this.parked)
     {
       this.updateVelocityParked(planets);
@@ -474,6 +485,9 @@ class Ship
 
   updateLocation(timeDifferential,planets)
   {
+    //Only in same reality
+    planets = planets.filter((x)=>this.reality == x.reality)
+
     this.loc = this.loc.addVector(this.vel.multiplyScaler(timeDifferential*universeSpeed));
     if(this.parked)
     {
@@ -512,7 +526,7 @@ class Ship
 
 class Player
 {
-  constructor(x,y,color, planets, serialNumber, size = 10,density = 1)
+  constructor(x,y,color, planets, serialNumber, size = 10,density = 1, reality = 0)
   {
     this.id = serialNumber;
     this.color = color;
@@ -551,6 +565,7 @@ class Player
     this.color = color;
     this.size = size;
     this.density = density;
+    this.reality = reality;
     this.inAir = false;
     this.isDead = false;
     this.velocityComponents = new Map();
@@ -612,6 +627,7 @@ class Player
     {
       let distance = 500;
       let closestShip = false;
+
       for(var ship of ships)
       {
         let dist = Vector.distance(this.inSpaceShip.loc,ship.loc);
@@ -710,6 +726,9 @@ class Player
   }
   updateVelocity(planets)
   {
+    //Only in same reality
+    planets = planets.filter((x)=>this.reality == x.reality)
+
     if(this.inSpaceShip)
     {
       if("lifespan" in this.inSpaceShip)
@@ -861,6 +880,10 @@ class Player
 
   updatePlayer(timeDifferential,planets,ships)
   {
+    //Only in same reality
+    ships = ships.filter((x)=>this.reality == x.reality)
+    planets = planets.filter((x)=>this.reality == x.reality)
+
     this.loc = this.loc.addVector(this.vel.multiplyScaler(universeSpeed*timeDifferential));
     for(var id in planets)
     {
@@ -922,7 +945,7 @@ class Player
 
 class Planet
 {
-  constructor(startX,startY,startXD,startYD,size,color = 'red',atmosphereColor = "rgba(255,0,0,0.1)",density = 1)
+  constructor(startX,startY,startXD,startYD,size,color = 'red',atmosphereColor = "rgba(255,0,0,0.1)",density = 1, reality = 0)
   {
     this.loc = new Vector(startX,startY);
     this.vel = new Vector(startXD,startYD);
@@ -931,6 +954,7 @@ class Planet
     this.density = density;
     this.color = color;
     this.atmosphereColor = atmosphereColor;
+    this.reality = reality;
     this.fuelSources = [];
     this.mineTime = 200;
   }
@@ -952,6 +976,9 @@ class Planet
   updateVelocity(planets)
   {
     let otherPlanets = planets.filter((x)=>!this.loc.isEqual(x.loc));
+
+    //Only in same reality
+    otherPlanets = otherPlanets.filter((x)=>this.reality == x.reality)
 
     for(var id in otherPlanets)
     {
@@ -987,9 +1014,9 @@ class Planet
 
 class Asteroid extends Planet
 {
-  constructor(x,y,xV,yV,size,contents = "iron",color = "brown",density = 1)
+  constructor(x,y,xV,yV,size,contents = "iron",color = "brown",density = 1,reality = 0)
   {
-    super(x,y,xV,yV,size,color,"rgba(0,0,0,0)",density);
+    super(x,y,xV,yV,size,color,"rgba(0,0,0,0)",density,reality);
     this.contents = contents;
     if(this.contents == "iron")
     {
