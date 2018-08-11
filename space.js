@@ -128,7 +128,7 @@ class Particle
 }
 class Explosion
 {
-  constructor(x,y,size,lifespan,relative = false,colors = ["red","yellow","orange"], reality = 0)
+  constructor(x,y,size,lifespan,relative = false,reality = 0,colors = ["red","yellow","orange"])
   {
     this.loc = new Vector(x,y);
     this.relative = relative;
@@ -213,7 +213,7 @@ class Ship
       this.minerColor = false;
       this.mineSpeed = 10;
     }
-    
+
     //Only in same reality
     planets = planets.filter((x)=>this.reality == x.reality)
 
@@ -253,7 +253,7 @@ class Ship
     {
       return true;
     }
-    else if(["baseRocket","towRocket"].includes(this.type))
+    else if(["baseRocket","towRocket","realityRocket"].includes(this.type))
     {
       return false;
     }
@@ -268,7 +268,7 @@ class Ship
   }
   setDriver(color,id)
   {
-    if(["baseRocket","towRocket"].includes(this.type))
+    if(["baseRocket","towRocket","realityRocket"].includes(this.type))
     {
       this.driverColor = color;
       this.driver = id;
@@ -289,7 +289,7 @@ class Ship
   }
   driverLocation(id)
   {
-    if(["baseRocket","towRocket"].includes(this.type))
+    if(["baseRocket","towRocket","realityRocket"].includes(this.type))
     {
       return this.loc.copy();
     }
@@ -307,7 +307,7 @@ class Ship
   }
   removeDriver(id)
   {
-    if(["baseRocket","towRocket"].includes(this.type))
+    if(["baseRocket","towRocket","realityRocket"].includes(this.type))
     {
       this.driver = false;
       this.driverColor = false;
@@ -370,6 +370,15 @@ class Ship
       thrustMultiplier = 3;
       edgeMultiplier = 0.3;
       slowMultiplier = 0.5;
+    }
+    else if(this.type == "realityRocket")
+    {
+      thrustFuel = 8 + (-10 * this.reality);
+      turnFuel = 2;
+      slowFuel = 10;
+      thrustMultiplier = 0.9;
+      edgeMultiplier = 1.5;
+      slowMultiplier = 10;
     }
     else if(this.type == "miningShip")
     {
@@ -932,11 +941,21 @@ class Player
     {
       this.attachOrReleaseTowLine(ships);
     }
-    if(this.tPressed)
+    if(this.tPressed && this.inSpaceShip && this.inSpaceShip.type == "realityRocket")
     {
-      console.log(this)
-      console.log(this.inSpaceShip)
+      if(this.inSpaceShip.fuel > 50)
+      {
+        this.inSpaceShip.fuel -= 50;
+        this.inSpaceShip.reality = 1-this.inSpaceShip.reality;
+        this.reality = 1-this.reality;
+        this.inSpaceShip.parked = false;
+      }
     }
+    //if(this.tPressed)
+    //{
+    //  console.log(this)
+    //  console.log(this.inSpaceShip)
+    //}
     this.tPressed = false;
     this.pPressed = false;
     this.ePressed = false;

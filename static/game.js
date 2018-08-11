@@ -51,17 +51,13 @@ socket.on('state',function(celestial) {
         myPlayer = players[id];
       }
     }
-    if(myPlayer)
+    if(myPlayer && myPlayer != "dead")
     {
+      reality = myPlayer.reality;
       if(adminControls.q)
       {
-        myPlayer.reality = 1;
+        reality = 1 - reality;
       }
-      else
-      {
-        myPlayer.reality = 0;
-      }
-      reality = myPlayer.reality;
     }
 
     planets = planets.filter((x)=>x.reality==reality);
@@ -221,7 +217,7 @@ socket.on('state',function(celestial) {
     context.fillStyle = "blue";
     context.fillText("Bombastic Lizards Using Explosives",500,450);
     context.fillStyle = "yellow";
-    context.fillText("Yammering Ecentric Llama Lovers Of Woe",500,550);
+    context.fillText("Yammering Eccentric Llama Lovers Of Woe",500,550);
     context.fillStyle = "green";
     context.fillText("Generally Really Entrancingly Entertaining Nomads",500,650);
     context.fillStyle = "white"

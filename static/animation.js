@@ -34,7 +34,7 @@ var shipDrawer = function(ship, drawOn, localViewer = viewer, localZoomMult = zo
     var penLoc = new Vector((ship.loc.x-localViewer.x)/localZoomMult+800,(ship.loc.y-localViewer.y)/localZoomMult+400);
     var shipDir = new Vector(ship.direction.x,ship.direction.y);
   }
-  if(ship.type == "towRocket")
+  if(ship.type == "towRocket" || ship.type == "realityRocket")
   {
     drawOn.fillStyle = ship.color;
     drawOn.beginPath();
@@ -46,12 +46,24 @@ var shipDrawer = function(ship, drawOn, localViewer = viewer, localZoomMult = zo
     //Point 1
     var indentLeft = circleCenter.addVector(shipDir.normalize(ship.size/(3*localZoomMult)).rotate(-Math.PI/2));
     drawOn.moveTo(indentLeft.x,indentLeft.y);
+    if(ship.type == "realityRocket")
+    {
+      //Point 1.5
+      var spikeLeft = penLoc.addVector(shipDir.rotate(3*Math.PI/2).normalize(ship.size/(localZoomMult)));
+      drawOn.lineTo(spikeLeft.x,spikeLeft.y);
+    }
     //Point 2
     var finLeft = penLoc.addVector(shipDir.negate().normalize(ship.size/3/localZoomMult)).addVector(shipDir.rotate(3*Math.PI/2).normalize(ship.size/(1.5*localZoomMult)));
     drawOn.lineTo(finLeft.x,finLeft.y);
     //Point 3
     var finRight = penLoc.addVector(shipDir.negate().normalize(ship.size/3/localZoomMult)).addVector(shipDir.rotate(Math.PI/2).normalize(ship.size/(1.5*localZoomMult)));
     drawOn.lineTo(finRight.x,finRight.y);
+    if(ship.type == "realityRocket")
+    {
+      //Point 3.5
+      var spikeRight = penLoc.addVector(shipDir.rotate(Math.PI/2).normalize(ship.size/(localZoomMult)));
+      drawOn.lineTo(spikeRight.x,spikeRight.y);
+    }
     //Point 4
     var indentRight = circleCenter.addVector(shipDir.normalize(ship.size/(3*localZoomMult)).rotate(Math.PI/2));
     drawOn.lineTo(indentRight.x,indentRight.y);
@@ -82,7 +94,7 @@ var shipDrawer = function(ship, drawOn, localViewer = viewer, localZoomMult = zo
       drawOn.arc(engineLoc.x,engineLoc.y,ship.size/(6*localZoomMult),0,2*Math.PI)
       drawOn.fill();
     }
-    if(ship.towing)
+    if(ship.type == "towRocket" && ship.towing)
     {
       drawOn.strokeStyle = "grey";
       drawOn.beginPath();

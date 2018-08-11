@@ -34,7 +34,7 @@ server.listen(process.env.PORT || 5000, function() {
   ships.push(new space.Ship(1000,5000,"red",planets));
   ships.push(new space.Ship(-4330,-1500,"blue",planets));
   ships.push(new space.Ship(4330,-1500,"yellow",planets));
-  //ships.push(new space.Ship(400,400,'green',planets,"miningShip"));
+  ships.push(new space.Ship(400,400,'green',planets,"realityRocket"));
   asteroids.push(new space.Asteroid(10000,0,0,4,100));
   asteroids.push(new space.Asteroid(0,0,0,0,100));
   asteroids.push(new space.Asteroid(500,500,0,0.5,200,"iron","brown",1,1));
@@ -162,7 +162,7 @@ setInterval(function() {
     ships[id].updateVelocity(planetoids);
     if("isDead" in ships[id] && ships[id].isDead)
     {
-      ships[id] = new space.Explosion(ships[id].loc.x,ships[id].loc.y,20,500,ships[id].planetThatMurderedMe);
+      ships[id] = new space.Explosion(ships[id].loc.x,ships[id].loc.y,20,500,ships[id].planetThatMurderedMe,ships[id].reality);
     }
   }
   ships = ships.filter(ship =>
