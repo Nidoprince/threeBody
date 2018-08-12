@@ -1041,6 +1041,10 @@ class Asteroid extends Planet
     {
       this.mineTime = 1000;
     }
+    else if(this.contents == "chronos")
+    {
+      this.mineTime = 100;
+    }
     else
     {
       this.mineTime = 10000;

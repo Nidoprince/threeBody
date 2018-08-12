@@ -34,10 +34,11 @@ server.listen(process.env.PORT || 5000, function() {
   ships.push(new space.Ship(1000,5000,"red",planets));
   ships.push(new space.Ship(-4330,-1500,"blue",planets));
   ships.push(new space.Ship(4330,-1500,"yellow",planets));
-  ships.push(new space.Ship(400,400,'green',planets,"realityRocket"));
+  //ships.push(new space.Ship(400,400,'green',planets,"realityRocket"));
   asteroids.push(new space.Asteroid(10000,0,0,4,100));
   asteroids.push(new space.Asteroid(0,0,0,0,100));
   asteroids.push(new space.Asteroid(500,500,0,0.5,200,"iron","brown",1,1));
+  //asteroids.push(new space.Asteroid(800,800,0,0.5,200,"chronos","pink"));
   aliens.push(new space.Flock(50,3,100,100,5,"pink",3000));
 
 });
@@ -94,7 +95,7 @@ io.on('connection', function(socket) {
             let index = player.inventory.indexOf("iron");
             player.inventory.splice(index,1);
           }
-          ships.push(new space.Ship(player.loc.x,player.loc.y,player.color,planets.concat(asteroids),"towRocket"))
+          ships.push(new space.Ship(player.loc.x,player.loc.y,player.color,planets.concat(asteroids),"towRocket"));
         }
       }
       if(data.build == "Mining Ship")
@@ -106,7 +107,18 @@ io.on('connection', function(socket) {
             let index = player.inventory.indexOf("iron");
             player.inventory.splice(index,1);
           }
-          ships.push(new space.Ship(player.loc.x,player.loc.y,player.color,planets.concat(asteroids),"miningShip"))
+          ships.push(new space.Ship(player.loc.x,player.loc.y,player.color,planets.concat(asteroids),"miningShip"));
+        }
+      }
+      if(data.build == "Reality Rocket")
+      {
+        if(player.inventory.filter((x) => x == "iron").length > 0 && player.inventory.filter((x) => x == "chronos").length > 0)
+        {
+          let index = player.inventory.indexOf("iron");
+          player.inventory.splice(index,1);
+          index = player.inventory.indexOf("chronos");
+          player.inventory.splice(index,1);
+          ships.push(new space.Ship(player.loc.x,player.loc.y,player.color,planets.concat(asteroids),"realityRocket"));
         }
       }
     }
@@ -123,7 +135,28 @@ setInterval(function() {
     let y = Math.random()*40000-20000;
     let xV = (Math.random()+Math.random())*5-5;
     let yV = (Math.random()+Math.random())*5-5;
-    asteroids.push(new space.Asteroid(x,y,xV,yV,size));
+    let contents;
+    let color;
+    let reality;
+    if(Math.random()*100 < 5)
+    {
+      contents = "chronos";
+      color = "pink";
+    }
+    else
+    {
+      contents = "iron";
+      color = "brown";
+    }
+    if(Math.random()*100 < 10)
+    {
+      reality = 1;
+    }
+    else
+    {
+      reality = 0;
+    }
+    asteroids.push(new space.Asteroid(x,y,xV,yV,size,contents,color,1,reality));
   }
   let planetoids = planets.concat(asteroids);
   if(Math.random()*3000 < 1)

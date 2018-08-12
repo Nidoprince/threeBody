@@ -203,6 +203,11 @@ socket.on('state',function(celestial) {
           playerControl.build = "Mining Ship";
           menuOpen = false;
         }
+        if(menuLoc == 3 && myPlayer.inventory.filter((x) => x == "iron").length > 0 && myPlayer.inventory.filter((x) => x == "chronos").length > 0)
+        {
+          playerControl.build = "Reality Rocket";
+          menuOpen = false;
+        }
       }
       menuAnimation(context);
     }
