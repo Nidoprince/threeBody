@@ -120,6 +120,7 @@ document.addEventListener("touchmove", touchHandler);
 
 var touchHandler = function(event)
 {
+  console.log(event)
   if(event.touches)
   {
     console.log(event.touches)
