@@ -7,7 +7,9 @@ var playerControl = {
   m: false,
   p: false,
   t: false,
-  build: false
+  build: false,
+  xGoal: false,
+  yGoal: false
 }
 var adminControls = {
   q: false
@@ -41,6 +43,8 @@ var trigger = {
   p: false,
   b: false,
   t: false,
+  tX: false,
+  tY: false,
   reset()
   {
     this.up = false;
@@ -51,6 +55,8 @@ var trigger = {
     this.velocity = false;
     this.focus = false;
     this.enter = false;
+    this.tX = false;
+    this.tY = false;
   },
   resetPlayer()
   {
@@ -58,6 +64,8 @@ var trigger = {
     playerControl.p = false;
     playerControl.t = false;
     playerControl.build = false;
+    playerControl.xGoal = false;
+    playerControl.yGoal = false;
   }
 }
 
@@ -79,7 +87,7 @@ viewerUpdate = function()
   {
     viewer.x -= viewerSpeed*Math.pow(zoomRatio,viewer.zoom);
   }
-  if(viewer.reduce && viewer.zoom > -20)
+  if(viewer.reduce && viewer.zoom > -50)
   {
     viewer.zoom -= 1;
   }
@@ -105,6 +113,33 @@ viewerUpdate = function()
     cursorLoc = false;
   }
 }
+
+document.addEventListener("touchstart", touchHandler);
+
+document.addEventListener("touchmove", touchHandler);
+
+var touchHandler = function(event)
+{
+  if(event.touches)
+  {
+    let canvasLocX = event.touches[0].pageX - canvas.offsetLeft;
+    let canvasLocY = event.touches[0].pageY - canvas.offsetTop;
+    playerInput.xGoal = (canvasLocX-800)*zoomMult+viewer.x;
+    playerInput.yGoal = (canvasLocY-400)*zoomMult+viewer.y;
+    event.preventDefault();
+    console.log(playerInput.xGoal)
+    console.log(playerInput.yGoal)
+  }
+}
+
+document.addEventListener("touchend", function(event) {
+  if(event.touches)
+  {
+    trigger.tX = event.touches[0].pageX - canvas.offsetLeft;
+    trigger.tY = event.touches[0].pageY - canvas.offsetTop;
+    event.preventDefault();
+  }
+})
 
 document.addEventListener('keydown', function(event) {
   switch (event.keyCode) {

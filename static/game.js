@@ -1,7 +1,7 @@
 const viewerSpeed = 3;
 var myPlayer = null;
 var reality = 0;
-var zoomRatio = 1.05;
+var zoomRatio = 1.03;
 var zoomMult = Math.pow(zoomRatio,viewer.zoom);
 
 var deathCounter = 500;
@@ -28,6 +28,7 @@ setInterval(function() {
 var canvas = document.getElementById('canvas');
 canvas.width = 1600;
 canvas.height = 800;
+
 var context = canvas.getContext('2d');
 socket.on('state',function(celestial) {
   context.clearRect(0,0,1600,800);
@@ -257,6 +258,32 @@ socket.on('state',function(celestial) {
     {
       socket.emit("new player",cursorLoc);
       colorSelected = true;
+    }
+    if(trigger.tX && trigger.tY)
+    {
+      if(trigger.tX > 400 && trigger.tX < 1200)
+      {
+        if(trigger.tY > 350 && trigger.tY <450)
+        {
+          socket.emit("new player",0);
+          colorSelected = true;
+        }
+        else if(trigger.tY > 450 && trigger.tY <550)
+        {
+          socket.emit("new player",1);
+          colorSelected = true;
+        }
+        else if(trigger.tY > 550 && trigger.tY <650)
+        {
+          socket.emit("new player",2);
+          colorSelected = true;
+        }
+        else if(trigger.tY > 650 && trigger.tY <750)
+        {
+          socket.emit("new player",3);
+          colorSelected = true;
+        }
+      }
     }
   }
   trigger.reset();

@@ -75,6 +75,14 @@ io.on('connection', function(socket) {
     {
       player.tPressed = data.t;
     }
+    if(data.xGoal && data.yGoal)
+    {
+      player.goal = new space.Vector(data.xGoal,data.yGoal);
+    }
+    else
+    {
+      player.goal = false;
+    }
     if(data.build)
     {
       if(data.build == "Base Rocket")

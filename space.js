@@ -571,6 +571,7 @@ class Player
     this.mHeld = false;
     this.pPressed = false;
     this.tPressed = false;
+    this.goal = false;
     this.color = color;
     this.size = size;
     this.density = density;
@@ -774,7 +775,7 @@ class Player
     this.velocityComponents = new Map();
     if(this.inSpaceShip)
     {
-      this.vel = this.inSpaceShip.shipControl(this.id,this.upHeld,this.downHeld,this.leftHeld,this.rightHeld);
+      this.vel = this.inSpaceShip.shipControl(this.id,this.upHeld,this.downHeld,this.leftHeld,this.rightHeld,this.goal);
       this.velocityComponents.set("Ship  ",this.vel.copy());
     }
     else
@@ -817,6 +818,24 @@ class Player
   }
   updateVelocityAtmosphere(planets)
   {
+    //Touch Controls
+    if(this.goal)
+    {
+      let planetLocAngle = this.controllingPlanet.loc.direction(this.loc).angle();
+      let goalLocAngle = this.controllingPlanet.loc.direction(this.goal).angle();
+      if(goalLocAngle - planetLocAngle > 0.2)
+      {
+        this.rightHeld = true;
+      }
+      else if(goalLocAngle - planetLocAngle < -0.2)
+      {
+        this.leftHeld = true;
+      }
+      else
+      {
+        this.upHeld = true;
+      }
+    }
     if(!this.inAir)
     {
       var jumpDirection = this.controllingPlanet.loc.direction(this.loc);
@@ -860,6 +879,26 @@ class Player
   }
   updateVelocitySpace(planets)
   {
+    //Touch Controls
+    if(this.goal)
+    {
+      if(this.goal.x>this.loc.x)
+      {
+        this.rightHeld = true;
+      }
+      else if(this.goal.x<this.loc.x)
+      {
+        this.leftHeld = true;
+      }
+      if(this.goal.y>this.loc.y)
+      {
+        this.downHeld = true;
+      }
+      else if(this.goal.y<this.loc.y)
+      {
+        this.upHeld = true;
+      }
+    }
     var x = 0;
     var y = 0;
     if(this.leftHeld)
