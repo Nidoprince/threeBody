@@ -114,11 +114,7 @@ viewerUpdate = function()
   }
 }
 
-document.addEventListener("touchstart", touchHandler);
-
-document.addEventListener("touchmove", touchHandler);
-
-var touchHandler = function(event)
+function touchHandler(event)
 {
   console.log(event)
   if(event.touches)
@@ -135,6 +131,9 @@ var touchHandler = function(event)
     console.log(playerInput.yGoal)
   }
 }
+document.addEventListener("touchstart", touchHandler);
+
+document.addEventListener("touchmove", touchHandler);
 
 document.addEventListener('keydown', function(event) {
   switch (event.keyCode) {
