@@ -25,8 +25,8 @@ var viewer = {
   zoom: 0,
   velocity: false,
   showVelocity: false,
-  focus: true,
-  focusPlayer: false,
+  focus: false,
+  focusPlayer: true,
   log: false,
   enter: false
 }
@@ -127,8 +127,8 @@ function touchHandler(event)
     trigger.tX = event.touches[0].pageX - canvas.offsetLeft;
     trigger.tY = event.touches[0].pageY - canvas.offsetTop;
     event.preventDefault();
-    console.log(playerInput.xGoal)
-    console.log(playerInput.yGoal)
+    console.log(playerControl.xGoal)
+    console.log(playerControl.yGoal)
   }
 }
 document.addEventListener("touchstart", touchHandler);
