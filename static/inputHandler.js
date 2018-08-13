@@ -122,8 +122,8 @@ function touchHandler(event)
     console.log(event.touches)
     let canvasLocX = event.touches[0].pageX - canvas.offsetLeft;
     let canvasLocY = event.touches[0].pageY - canvas.offsetTop;
-    playerInput.xGoal = (canvasLocX-800)*zoomMult+viewer.x;
-    playerInput.yGoal = (canvasLocY-400)*zoomMult+viewer.y;
+    playerControl.xGoal = (canvasLocX-800)*zoomMult+viewer.x;
+    playerControl.yGoal = (canvasLocY-400)*zoomMult+viewer.y;
     trigger.tX = event.touches[0].pageX - canvas.offsetLeft;
     trigger.tY = event.touches[0].pageY - canvas.offsetTop;
     event.preventDefault();
