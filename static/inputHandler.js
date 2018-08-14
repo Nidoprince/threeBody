@@ -112,7 +112,6 @@ viewerUpdate = function()
 
 function touchHandler(event)
 {
-  console.log(event)
   if(event.touches && event.touches.length == 1)
   {
     //console.log(event.touches)
@@ -131,19 +130,23 @@ function touchHandler(event)
     trigger.tY = false;
   }
 }
-document.addEventListener("touchstart", touchHandler);
 
-document.addEventListener("touchmove", touchHandler);
-
-document.addEventListener("touchend", function(event) {
-  if(!event.touches)
+function touchEndHandler(event)
+{
+  if(!event.touches || event.touches.length != 1)
   {
     playerControl.xGoal = false;
     playerControl.yGoal = false;
     trigger.tX = false;
     trigger.tY = false;
   }
-})
+}
+
+document.addEventListener("touchstart", touchHandler);
+document.addEventListener("touchmove", touchHandler);
+
+document.addEventListener("touchend", touchEndHandler);
+document.addEventListener("touchcancel", touchEndHandler);
 
 document.addEventListener('keydown', function(event) {
   switch (event.keyCode) {
