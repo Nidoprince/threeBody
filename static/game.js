@@ -289,9 +289,7 @@ socket.on('state',function(celestial) {
     }
   }
   trigger.reset();
-  //console.log(trigger.tX)
-  //console.log(trigger.tY)
-  if(showTouch && trigger.tX && trigger.tY);
+  if(showTouch && trigger.tX > 0 && trigger.tY > 0);
   {
     drawTouch(context);
   }

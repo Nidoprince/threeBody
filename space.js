@@ -823,15 +823,20 @@ class Player
     {
       let planetLocAngle = this.controllingPlanet.loc.direction(this.loc).angle();
       let goalLocAngle = this.controllingPlanet.loc.direction(this.goal).angle();
-      if(goalLocAngle - planetLocAngle > 0.2)
+      let difference = goalLocAngle - planetLocAngle;
+      if(difference < 0)
+      {
+        difference += Math.PI*2;
+      }
+      if(difference > 0.2 && difference < 2*Math.PI/3)
       {
         this.rightHeld = true;
       }
-      else if(goalLocAngle - planetLocAngle < -0.2)
+      else if(difference > 4*Math.PI/3 && difference < 2*Math.PI-0.2)
       {
         this.leftHeld = true;
       }
-      else
+      else if(difference < 0.2 || difference > 2*Math.PI-0.2)
       {
         this.upHeld = true;
       }
