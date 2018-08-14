@@ -337,7 +337,7 @@ var drawTouch = function(drawOn)
 {
   drawOn.fillStyle = "orange";
   drawOn.beginPath();
-  drawOn.arc(trigger.tX,trigger.tY,20,0,2*Math.PI);
+  drawOn.arc(trigger.tX,trigger.tY,10,0,2*Math.PI);
   drawOn.fill();
 }
 

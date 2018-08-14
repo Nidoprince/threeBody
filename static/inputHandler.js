@@ -55,8 +55,6 @@ var trigger = {
     this.velocity = false;
     this.focus = false;
     this.enter = false;
-    this.tX = false;
-    this.tY = false;
   },
   resetPlayer()
   {
