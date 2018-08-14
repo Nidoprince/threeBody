@@ -4,6 +4,8 @@ var reality = 0;
 var zoomRatio = 1.03;
 var zoomMult = Math.pow(zoomRatio,viewer.zoom);
 
+var showTouch = true;
+
 var deathCounter = 500;
 
 var colorSelected = false;
@@ -287,4 +289,8 @@ socket.on('state',function(celestial) {
     }
   }
   trigger.reset();
+  if(showTouch && trigger.tX && trigger.tY);
+  {
+    drawTouch(context);
+  }
 });

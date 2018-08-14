@@ -64,8 +64,6 @@ var trigger = {
     playerControl.p = false;
     playerControl.t = false;
     playerControl.build = false;
-    playerControl.xGoal = false;
-    playerControl.yGoal = false;
   }
 }
 
@@ -117,7 +115,7 @@ viewerUpdate = function()
 function touchHandler(event)
 {
   console.log(event)
-  if(event.touches)
+  if(event.touches && event.touches.length == 1)
   {
     //console.log(event.touches)
     let canvasLocX = event.touches[0].pageX - canvas.offsetLeft;
@@ -126,14 +124,28 @@ function touchHandler(event)
     playerControl.yGoal = (canvasLocY-400)*zoomMult+viewer.y;
     trigger.tX = event.touches[0].pageX - canvas.offsetLeft;
     trigger.tY = event.touches[0].pageY - canvas.offsetTop;
-    //event.preventDefault();
-    console.log(playerControl.xGoal)
-    console.log(playerControl.yGoal)
+  }
+  else
+  {
+    playerControl.xGoal = false;
+    playerControl.yGoal = false;
+    trigger.tX = false;
+    trigger.tY = false;
   }
 }
 document.addEventListener("touchstart", touchHandler);
 
 document.addEventListener("touchmove", touchHandler);
+
+document.addEventListener("touchend", function(event) {
+  if(!event.touches)
+  {
+    playerControl.xGoal = false;
+    playerControl.yGoal = false;
+    trigger.tX = false;
+    trigger.tY = false;
+  }
+})
 
 document.addEventListener('keydown', function(event) {
   switch (event.keyCode) {

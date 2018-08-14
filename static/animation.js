@@ -333,6 +333,14 @@ var starForger = function(drawOn)
   }
 }
 
+var drawTouch = function(drawOn)
+{
+  drawOn.fillStyle = "orange";
+  drawOn.beginPath();
+  drawOn.arc(trigger.tX,trigger.tY,20,0,2*Math.PI);
+  drawOn.fill();
+}
+
 var menuAnimation =  function(drawOn)
 {
   drawOn.fillStyle = "grey";
