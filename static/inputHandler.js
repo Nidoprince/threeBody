@@ -110,7 +110,7 @@ viewerUpdate = function()
   }
 }
 
-function touchHandler(event)
+function touchHandler(event,touchtype)
 {
   if(event.touches && event.touches.length == 1)
   {
@@ -122,6 +122,10 @@ function touchHandler(event)
     trigger.tX = event.touches[0].pageX - canvas.offsetLeft;
     trigger.tY = event.touches[0].pageY - canvas.offsetTop;
   }
+  else if(event.touches && event.touches.length == 2 && touchtype == "start")
+  {
+    playerControl.e = true;
+  }
   else
   {
     playerControl.xGoal = false;
@@ -129,6 +133,15 @@ function touchHandler(event)
     trigger.tX = false;
     trigger.tY = false;
   }
+}
+
+function touchStartHandler(event)
+{
+  touchHandler(event,"start");
+}
+function touchMoveHandler(event)
+{
+  touchHandler(event,"move");
 }
 
 function touchEndHandler(event)
@@ -142,8 +155,8 @@ function touchEndHandler(event)
   }
 }
 
-document.addEventListener("touchstart", touchHandler);
-document.addEventListener("touchmove", touchHandler);
+document.addEventListener("touchstart", touchStartHandler);
+document.addEventListener("touchmove", touchMoveHandler);
 
 document.addEventListener("touchend", touchEndHandler);
 document.addEventListener("touchcancel", touchEndHandler);

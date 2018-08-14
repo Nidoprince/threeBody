@@ -345,8 +345,30 @@ class Ship
     }
     this.vel = this.vel.speedLimit(shipSpeedLimit);
   }
-  shipControl(id,up,down,left,right)
+  shipControl(id,up,down,left,right,goal)
   {
+    //Touch Control
+    if(goal)
+    {
+      let towardsGoal = this.loc.direction(goal);
+      let turningNeeded = Vector.angleBetween(this.direction,towardsGoal);
+      if(Math.abs(turningNeeded) < Math.PI/6)
+      {
+        up = true;
+      }
+      if(turningNeeded > 0)
+      {
+        right = true;
+      }
+      if(turningNeeded < 0)
+      {
+        left = true;
+      }
+      if(Math.abs(Vector.angleBetween(this.vel,towardsGoal)) > Math.PI/2)
+      {
+        down = true;
+      }
+    }
     let thrustFuel;
     let turnFuel;
     let slowFuel;
@@ -828,15 +850,15 @@ class Player
       {
         difference += Math.PI*2;
       }
-      if(difference > 0.2 && difference < 2*Math.PI/3)
+      if(difference > 0.1 && difference < 2*Math.PI/3)
       {
         this.rightHeld = true;
       }
-      else if(difference > 4*Math.PI/3 && difference < 2*Math.PI-0.2)
+      else if(difference > 4*Math.PI/3 && difference < 2*Math.PI-0.1)
       {
         this.leftHeld = true;
       }
-      else if(difference < 0.2 || difference > 2*Math.PI-0.2)
+      else if(difference < 0.1 || difference > 2*Math.PI-0.1)
       {
         this.upHeld = true;
       }
@@ -1240,6 +1262,21 @@ class Vector
    static dotProduct(a,b)
    {
      return a.x*b.x + a.y*b.y;
+   }
+
+   //Angle Between 2 Vectors
+   static angleBetween(a,b)
+   {
+     let difference = b.angle()-a.angle();
+     if(difference < 0)
+     {
+       difference += Math.PI*2;
+     }
+     if(difference > Math.PI)
+     {
+       difference = difference-Math.PI*2;
+     }
+     return difference;
    }
 }
 
