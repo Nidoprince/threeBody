@@ -42,6 +42,11 @@ class Vector
      return this.addVector(vec.negate()).negate().normalize(1);
    }
 
+   fromTill(vec)
+   {
+     return this.addVector(vec.negate()).negate();
+   }
+
    //Changing length of Vector to size while preserving angle
    normalize(size)
    {
@@ -136,5 +141,20 @@ class Vector
    static dotProduct(a,b)
    {
      return a.x*b.x + a.y*b.y;
+   }
+
+   //Angle Between 2 Vectors
+   static angleBetween(a,b)
+   {
+     let difference = b.angle()-a.angle();
+     if(difference < 0)
+     {
+       difference += Math.PI*2;
+     }
+     if(difference > Math.PI)
+     {
+       difference = difference-Math.PI*2;
+     }
+     return difference;
    }
 }

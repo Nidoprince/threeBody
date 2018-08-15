@@ -14,6 +14,60 @@ var playerControl = {
 var adminControls = {
   q: false
 }
+var touchGesture = {
+  oldLoc1: false,
+  oldLoc2: false,
+  newLoc1: false,
+  newLoc2: false,
+  updateTouch(x1,y1,x2,y2)
+  {
+    if(oldLoc1 == false)
+    {
+      this.oldLoc1 = new Vector(x1,y1);
+      this.newLoc1 = new Vector(x1,y1);
+      this.oldLoc2 = new Vector(x2,y2);
+      this.newLoc2 = new Vector(x2,y2);
+    }
+    else
+    {
+      this.oldLoc1 = newLoc1.copy();
+      this.oldLoc2 = newLoc2.copy();
+      this.newLoc1 = new Vector(x1,y1);
+      this.newLoc2 = new Vector(x2,y2);
+    }
+  },
+  move1()
+  {
+    return this.oldLoc1.fromTill(this.newLoc1);
+  },
+  move2()
+  {
+    return this.oldLoc2.fromTill(this.newLoc2);
+  },
+  isZooming()
+  {
+    if(this.move1().magnitude() > 5 && this.move2().magnitude() > 5 && Math.abs(Vector.angleBetween(this.move1(),this.move2())) > Math.PI-0.5)
+    {
+      if(Vector.distance(this.oldLoc1,this.oldLoc2) > Vector.distance(this.newLoc1,this.newLoc2))
+      {
+        return "pinching";
+      }
+      else
+      {
+        return "expanding";
+      }
+    }
+    else
+    {
+      return false;
+    }
+  },
+  reset()
+  {
+    this.oldLoc1 = false;
+    this.oldLoc2 = false;
+  }
+}
 var viewer = {
   up: false,
   down: false,
@@ -122,6 +176,19 @@ function touchHandler(event,touchtype)
   {
     playerControl.e = true;
   }
+  else if(event.touches && event.touches.length == 2)
+  {
+    touchGesture.updateTouch(event.touches[0].pageX - canvas.offsetLeft,event.touches[0].pageY - canvas.offsetTop,event.touches[1].pageX - canvas.offsetLeft,event.touches[1].pageY - canvas.offsetTop);
+    let zooming = touchGesture.isZooming();
+    if(zooming == "pinching")
+    {
+      viewer.zoom += 1;
+    }
+    else if(zooming == "expanding")
+    {
+      viewer.zoom -= 1;
+    }
+  }
   else
   {
     trigger.tX = false;
@@ -144,6 +211,10 @@ function touchEndHandler(event)
   {
     trigger.tX = false;
     trigger.tY = false;
+  }
+  if(!event.touches || event.touches.length != 2)
+  {
+    touchGesture.reset();
   }
 }
 
