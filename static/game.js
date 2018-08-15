@@ -275,22 +275,22 @@ socket.on('state',function(celestial) {
     {
       if(trigger.tX > 400 && trigger.tX < 1200)
       {
-        if(trigger.tY > 350 && trigger.tY <450)
+        if(trigger.tY > 300 && trigger.tY <400)
         {
           socket.emit("new player",0);
           colorSelected = true;
         }
-        else if(trigger.tY > 450 && trigger.tY <550)
+        else if(trigger.tY > 400 && trigger.tY <500)
         {
           socket.emit("new player",1);
           colorSelected = true;
         }
-        else if(trigger.tY > 550 && trigger.tY <650)
+        else if(trigger.tY > 500 && trigger.tY <600)
         {
           socket.emit("new player",2);
           colorSelected = true;
         }
-        else if(trigger.tY > 650 && trigger.tY <750)
+        else if(trigger.tY > 600 && trigger.tY <750)
         {
           socket.emit("new player",3);
           colorSelected = true;
