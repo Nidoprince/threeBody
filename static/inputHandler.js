@@ -115,21 +115,15 @@ function touchHandler(event,touchtype)
   if(event.touches && event.touches.length == 1)
   {
     //console.log(event.touches)
-    let canvasLocX = event.touches[0].pageX - canvas.offsetLeft;
-    let canvasLocY = event.touches[0].pageY - canvas.offsetTop;
-    playerControl.xGoal = (canvasLocX-800)*zoomMult+viewer.x;
-    playerControl.yGoal = (canvasLocY-400)*zoomMult+viewer.y;
     trigger.tX = event.touches[0].pageX - canvas.offsetLeft;
     trigger.tY = event.touches[0].pageY - canvas.offsetTop;
   }
-  else if(event.touches && event.touches.length == 2 && touchtype == "start")
+  else if(event.touches && event.touches.length == 3 && touchtype == "start")
   {
     playerControl.e = true;
   }
   else
   {
-    playerControl.xGoal = false;
-    playerControl.yGoal = false;
     trigger.tX = false;
     trigger.tY = false;
   }
@@ -148,8 +142,6 @@ function touchEndHandler(event)
 {
   if(!event.touches || event.touches.length != 1)
   {
-    playerControl.xGoal = false;
-    playerControl.yGoal = false;
     trigger.tX = false;
     trigger.tY = false;
   }

@@ -21,6 +21,16 @@ socket.on('message', function(data) {
 });
 
 setInterval(function() {
+  if(trigger.tX && trigger.tY)
+  {
+    playerControl.xGoal = (trigger.tX-800)*zoomMult+viewer.x;
+    playerControl.yGoal = (trigger.tY-400)*zoomMult+viewer.y;
+  }
+  else
+  {
+    playerControl.xGoal = false;
+    playerControl.yGoal = false;
+  }
   if(!menuOpen){
     socket.emit('playerControl', playerControl);
   }
