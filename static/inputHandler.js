@@ -180,13 +180,21 @@ function touchHandler(event,touchtype)
   {
     touchGesture.updateTouch(event.touches[0].pageX - canvas.offsetLeft,event.touches[0].pageY - canvas.offsetTop,event.touches[1].pageX - canvas.offsetLeft,event.touches[1].pageY - canvas.offsetTop);
     let zooming = touchGesture.isZooming();
-    if(zooming == "pinching")
+    if(zooming == "pinching" && viewer.zoom<150)
     {
-      viewer.zoom += 1;
+      viewer.zoom += Math.floor(touchGesture.move1().magnitude()/100);
+      if viewer.zoom > 150
+      {
+        viewer.zoom = 150;
+      }
     }
-    else if(zooming == "expanding")
+    else if(zooming == "expanding" && viewer.zoom>-50)
     {
-      viewer.zoom -= 1;
+      viewer.zoom -= Math.floor(touchGesture.move1().magnitude()/100);
+      if viewer.zoom < -50
+      {
+        viewer.zoom = -50;
+      }
     }
   }
   else
