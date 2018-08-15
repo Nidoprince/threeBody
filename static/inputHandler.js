@@ -182,7 +182,7 @@ function touchHandler(event,touchtype)
     let zooming = touchGesture.isZooming();
     if(zooming == "pinching" && viewer.zoom<150)
     {
-      viewer.zoom += Math.floor(touchGesture.move1().magnitude()/100);
+      viewer.zoom += Math.floor(touchGesture.move1().magnitude()/10);
       if(viewer.zoom > 150)
       {
         viewer.zoom = 150;
@@ -190,7 +190,7 @@ function touchHandler(event,touchtype)
     }
     else if(zooming == "expanding" && viewer.zoom>-50)
     {
-      viewer.zoom -= Math.floor(touchGesture.move1().magnitude()/100);
+      viewer.zoom -= Math.floor(touchGesture.move1().magnitude()/10);
       if(viewer.zoom < -50)
       {
         viewer.zoom = -50;
