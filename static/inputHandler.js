@@ -21,7 +21,7 @@ var touchGesture = {
   newLoc2: false,
   updateTouch(x1,y1,x2,y2)
   {
-    if(oldLoc1 == false)
+    if(this.oldLoc1 == false)
     {
       this.oldLoc1 = new Vector(x1,y1);
       this.newLoc1 = new Vector(x1,y1);
