@@ -30,8 +30,8 @@ var touchGesture = {
     }
     else
     {
-      this.oldLoc1 = newLoc1.copy();
-      this.oldLoc2 = newLoc2.copy();
+      this.oldLoc1 = this.newLoc1.copy();
+      this.oldLoc2 = this.newLoc2.copy();
       this.newLoc1 = new Vector(x1,y1);
       this.newLoc2 = new Vector(x2,y2);
     }
