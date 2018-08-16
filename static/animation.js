@@ -357,8 +357,8 @@ var menuAnimation =  function(drawOn)
   drawOn.fillText("Mining Ship",630,150);
   drawOn.fillText("8 Iron", 650,190);
   drawOn.fillText("Holds 2 Players.",625,230);
-  drawOn.fillText("Reality Rocket",780,150);
-  drawOn.fillText("1 Iron 1 Chronos", 800,190);
-  drawOn.fillText("Press T to dimension hop.",775,230);
+  drawOn.fillText("Reality Rocket",875,150);
+  drawOn.fillText("1 Iron 1 Chronos", 870,190);
+  drawOn.fillText("Press T to Hop.",875,230);
 
 }

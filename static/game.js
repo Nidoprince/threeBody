@@ -1,7 +1,7 @@
 const viewerSpeed = 3;
 var myPlayer = null;
 var reality = 0;
-var zoomRatio = 1.03;
+var zoomRatio = 1.04;
 var zoomMult = Math.pow(zoomRatio,viewer.zoom);
 
 var showTouch = true;
