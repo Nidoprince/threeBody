@@ -333,6 +333,22 @@ var starForger = function(drawOn)
   }
 }
 
+var parkDrawer = function(isParked,drawOn,x,y)
+{
+  drawOn.fillStyle = "grey";
+  drawOn.strokeStyle = "grey";
+  drawOn.strokeRect(x,y-1,65,65);
+  drawOn.font = "bold 50px Arial";
+  if(isParked)
+  {
+    drawOn.fillText("P",x+15,y+50);
+  }
+  else
+  {
+    drawOn.fillText("X",x+15,y+50)
+  }
+}
+
 var drawTouch = function(drawOn)
 {
   drawOn.fillStyle = "orange";
