@@ -1052,10 +1052,27 @@ class Planet
     }
   }
 
-  updateLocation(timeDifferential)
+  updateLocation(timeDifferential, planets)
   {
+    let otherPlanets = planets.filter((x)=>!this.loc.isEqual(x.loc));
+
+    //Only in same reality
+    otherPlanets = otherPlanets.filter((x)=>this.reality == x.reality)
+
     this.loc = this.loc.addVector(this.vel.multiplyScaler(universeSpeed*timeDifferential));
     this.oldVel = this.vel.copy();
+
+    for (let planet of otherPlanets)
+    {
+      if(planet.size+this.size > Vector.distance(planet.loc,this.loc))
+      {
+        let notTouching = planet.loc.addVector(planet.loc.direction(this.loc).multiplyScaler(planet.size+this.size));
+        let movement = this.loc.fromTill(notTouching);
+        this.loc = notTouching.copy();
+        this.vel = this.vel.addVector(movement.multiplyScaler(0.01/this.mass()));
+        planet.vel = planet.vel.subVector(movement.multiplyScaler(0.01/planet.mass()));
+      }
+    }
   }
 
   updateVelocity(planets)
@@ -1082,12 +1099,6 @@ class Planet
       }
 
     }
-  }
-
-  update(timeDifferential)
-  {
-    this.updateVelocity();
-    this.updateLocation(timeDifferential);
   }
 
   mass()

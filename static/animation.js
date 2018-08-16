@@ -306,7 +306,7 @@ var starForger = function(drawOn)
 {
   //Make Stars
   var time = (new Date()).getTime();
-  for(var i = 0; i < 100 +10*(viewer.zoom+20); i++)
+  for(var i = 0; i < 100 + 2*(viewer.zoom+50); i++)
   {
     var xS = Math.floor((5001*i+Math.floor(Math.abs(viewer.x)/20))%1600);
     var yS = Math.floor((333*i*i+Math.floor(Math.abs(viewer.y)/30))%800);

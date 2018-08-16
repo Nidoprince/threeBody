@@ -178,7 +178,7 @@ setInterval(function() {
   }
   for (var id in planets)
   {
-    planets[id].updateLocation(timeDifferential);
+    planets[id].updateLocation(timeDifferential,planetoids);
   }
   for (var id in asteroids)
   {
@@ -186,7 +186,7 @@ setInterval(function() {
   }
   asteroids = asteroids.filter(asteroid =>
   {
-    asteroid.updateLocation(timeDifferential);
+    asteroid.updateLocation(timeDifferential,planetoids);
     return space.Vector.distance(asteroid.loc,new space.Vector(0,0)) < 50000;
   })
   for (var id in aliens)
