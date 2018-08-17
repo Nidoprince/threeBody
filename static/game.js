@@ -179,6 +179,7 @@ socket.on('state',function(celestial) {
         context.strokeStyle = "grey";
         context.strokeRect(1400,0,200,200);
         parkDrawer(myPlayer.inSpaceShip.parked, context, 1400,200);
+        specialDrawer(myPlayer.inSpaceShip, context, 1530,200);
       }
     }
 

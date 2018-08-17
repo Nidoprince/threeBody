@@ -349,6 +349,43 @@ var parkDrawer = function(isParked,drawOn,x,y)
   }
 }
 
+var specialDrawer = function(ship,drawOn,x,y)
+{
+  if(["towRocket","realityRocket","miningShip"].includes(ship.type))
+  {
+    drawOn.strokeStyle = "grey";
+    drawOn.strokeRect(x,y-1,65,65);
+    drawOn.fillStyle = "grey";
+    drawOn.font = "bold 50px Arial";
+    if(ship.type == "towRocket")
+    {
+      if(ship.towing)
+      {
+        drawOn.fillText("T",x+15,y+50);
+      }
+      else
+      {
+        drawOn.fillText("X",x+15,y+50);
+      }
+    }
+    else if(ship.type == "realityRocket")
+    {
+      drawOn.fillText(ship.reality,x+15,y+50);
+    }
+    else if(ship.type == "miningShip")
+    {
+      if(ship.driverColor && ship.minerColor)
+      {
+        drawOn.fillText("2",x+15,y+50);
+      }
+      else
+      {
+        drawOn.fillText("1",x+15,y+50);
+      }
+    }
+  }
+}
+
 var drawTouch = function(drawOn)
 {
   drawOn.fillStyle = "orange";

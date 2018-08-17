@@ -171,6 +171,20 @@ function touchHandler(event,touchtype)
     //console.log(event.touches)
     trigger.tX = event.touches[0].pageX - canvas.offsetLeft;
     trigger.tY = event.touches[0].pageY - canvas.offsetTop;
+    if(touchType == "start")
+    {
+      if(trigger.tY > 180 && trigger.tY < 280)
+      {
+        if(trigger.tX > 1350 && trigger.tX < 1500)
+        {
+          playerControl.p = true;
+        }
+        else if(trigger.tX > 1500 && trigger.tX < 1650)
+        {
+          playerControl.t = true;
+        }
+      }
+    }
   }
   else if(event.touches && event.touches.length == 3 && touchtype == "start")
   {
