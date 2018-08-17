@@ -164,7 +164,7 @@ viewerUpdate = function()
   }
 }
 
-function touchHandler(event,touchtype)
+function touchHandler(event,touchType)
 {
   if(event.touches && event.touches.length == 1)
   {
@@ -186,7 +186,7 @@ function touchHandler(event,touchtype)
       }
     }
   }
-  else if(event.touches && event.touches.length == 3 && touchtype == "start")
+  else if(event.touches && event.touches.length == 3 && touchType == "start")
   {
     playerControl.e = true;
   }
