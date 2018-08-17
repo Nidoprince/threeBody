@@ -46,7 +46,7 @@ var touchGesture = {
   },
   isZooming()
   {
-    if(this.move1().magnitude() > 5 && this.move2().magnitude() > 5 && Math.abs(Vector.angleBetween(this.move1(),this.move2())) > Math.PI-0.5)
+    if(this.move1().magnitude() > 10 && this.move2().magnitude() > 10 && Math.abs(Vector.angleBetween(this.move1(),this.move2())) > Math.PI-0.5)
     {
       if(Vector.distance(this.oldLoc1,this.oldLoc2) > Vector.distance(this.newLoc1,this.newLoc2))
       {
@@ -56,6 +56,17 @@ var touchGesture = {
       {
         return "expanding";
       }
+    }
+    else
+    {
+      return false;
+    }
+  },
+  isStill()
+  {
+    if(this.move1().magnitude() <= 10 && this.move2().magnitude() <= 10)
+    {
+      return(new Vector((this.newLoc1.x+this.newLoc2.x)/2,(this.newLoc1.y+this.newLoc2.y)/2));
     }
     else
     {
@@ -194,6 +205,7 @@ function touchHandler(event,touchType)
   {
     touchGesture.updateTouch(event.touches[0].pageX - canvas.offsetLeft,event.touches[0].pageY - canvas.offsetTop,event.touches[1].pageX - canvas.offsetLeft,event.touches[1].pageY - canvas.offsetTop);
     let zooming = touchGesture.isZooming();
+    let stillLoc = touchGesture.isStill();
     if(zooming == "pinching" && viewer.zoom<150)
     {
       viewer.zoom += Math.floor(touchGesture.move1().magnitude()/10);
@@ -209,6 +221,12 @@ function touchHandler(event,touchType)
       {
         viewer.zoom = -50;
       }
+    }
+    else if(stillLoc)
+    {
+      trigger.tX = stillLoc.x - canvas.offsetLeft;
+      trigger.tY = stillLoc.y - canvas.offsetRight;
+      playerControl.m = true;
     }
   }
   else
@@ -237,6 +255,7 @@ function touchEndHandler(event)
   if(!event.touches || event.touches.length != 2)
   {
     touchGesture.reset();
+    playerControl.m = false;
   }
 }
 
