@@ -182,6 +182,7 @@ function touchHandler(event,touchType)
     //console.log(event.touches)
     trigger.tX = event.touches[0].pageX*(realWidth/1600) - canvas.offsetLeft;
     trigger.tY = event.touches[0].pageY*(realHeight/800) - canvas.offsetTop;
+    console.log(event.touches[0]);
     if(touchType == "start")
     {
       if(trigger.tY > 180 && trigger.tY < 280)
