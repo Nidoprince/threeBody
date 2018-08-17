@@ -180,8 +180,8 @@ function touchHandler(event,touchType)
   if(event.touches && event.touches.length == 1)
   {
     //console.log(event.touches)
-    trigger.tX = event.touches[0].pageX*(1600/realWidth) - canvas.offsetLeft;
-    trigger.tY = event.touches[0].pageY*(800/realHeight) - canvas.offsetTop;
+    trigger.tX = event.touches[0].pageX*(realWidth/1600) - canvas.offsetLeft;
+    trigger.tY = event.touches[0].pageY*(realHeight/800) - canvas.offsetTop;
     if(touchType == "start")
     {
       if(trigger.tY > 180 && trigger.tY < 280)
@@ -224,8 +224,8 @@ function touchHandler(event,touchType)
     }
     else if(stillLoc)
     {
-      trigger.tX = stillLoc.x*(1600/realWidth) - canvas.offsetLeft;
-      trigger.tY = stillLoc.y*(800/realHeight) - canvas.offsetRight;
+      trigger.tX = stillLoc.x*(realWidth/1600) - canvas.offsetLeft;
+      trigger.tY = stillLoc.y*(realHeight/800) - canvas.offsetRight;
       playerControl.m = true;
     }
   }
