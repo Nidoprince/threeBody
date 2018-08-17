@@ -4,6 +4,9 @@ var reality = 0;
 var zoomRatio = 1.04;
 var zoomMult = Math.pow(zoomRatio,viewer.zoom);
 
+var realWidth = 1600;
+var realHeight = 800;
+
 var showTouch = true;
 
 var deathCounter = 500;
@@ -38,6 +41,8 @@ setInterval(function() {
 }, 1000/60);
 
 var canvas = document.getElementById('canvas');
+realWidth = canvas.width;
+realHeight = canvas.height;
 canvas.width = 1600;
 canvas.height = 800;
 

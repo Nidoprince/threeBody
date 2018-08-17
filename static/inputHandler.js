@@ -46,7 +46,7 @@ var touchGesture = {
   },
   isZooming()
   {
-    if(this.move1().magnitude() > 10 && this.move2().magnitude() > 10 && Math.abs(Vector.angleBetween(this.move1(),this.move2())) > Math.PI-0.5)
+    if(this.move1().magnitude() > 20 && this.move2().magnitude() > 20 && Math.abs(Vector.angleBetween(this.move1(),this.move2())) > Math.PI-0.5)
     {
       if(Vector.distance(this.oldLoc1,this.oldLoc2) > Vector.distance(this.newLoc1,this.newLoc2))
       {
@@ -64,7 +64,7 @@ var touchGesture = {
   },
   isStill()
   {
-    if(this.move1().magnitude() <= 10 && this.move2().magnitude() <= 10)
+    if(this.move1().magnitude() <= 20 && this.move2().magnitude() <= 20)
     {
       return(new Vector((this.newLoc1.x+this.newLoc2.x)/2,(this.newLoc1.y+this.newLoc2.y)/2));
     }
@@ -180,8 +180,8 @@ function touchHandler(event,touchType)
   if(event.touches && event.touches.length == 1)
   {
     //console.log(event.touches)
-    trigger.tX = event.touches[0].pageX - canvas.offsetLeft;
-    trigger.tY = event.touches[0].pageY - canvas.offsetTop;
+    trigger.tX = event.touches[0].pageX*(1600/realWidth) - canvas.offsetLeft;
+    trigger.tY = event.touches[0].pageY*(800/realHeight) - canvas.offsetTop;
     if(touchType == "start")
     {
       if(trigger.tY > 180 && trigger.tY < 280)
@@ -224,8 +224,8 @@ function touchHandler(event,touchType)
     }
     else if(stillLoc)
     {
-      trigger.tX = stillLoc.x - canvas.offsetLeft;
-      trigger.tY = stillLoc.y - canvas.offsetRight;
+      trigger.tX = stillLoc.x*(1600/realWidth) - canvas.offsetLeft;
+      trigger.tY = stillLoc.y*(800/realHeight) - canvas.offsetRight;
       playerControl.m = true;
     }
   }
@@ -264,6 +264,13 @@ document.addEventListener("touchmove", touchMoveHandler);
 
 document.addEventListener("touchend", touchEndHandler);
 document.addEventListener("touchcancel", touchEndHandler);
+
+document.addEventListener("resize", function(event)
+{
+  let canvasTest = document.getElementById('canvas');
+  realWidth = canvasTest.width;
+  realHeight = canvasTest.height;
+});
 
 document.addEventListener('keydown', function(event) {
   switch (event.keyCode) {
