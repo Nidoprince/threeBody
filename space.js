@@ -850,15 +850,15 @@ class Player
       {
         difference += Math.PI*2;
       }
-      if(difference > 0.1 && difference < 2*Math.PI/3)
+      if(difference > 0.01 && difference < 2*Math.PI/3)
       {
         this.rightHeld = true;
       }
-      else if(difference > 4*Math.PI/3 && difference < 2*Math.PI-0.1)
+      else if(difference > 4*Math.PI/3 && difference < 2*Math.PI-0.01)
       {
         this.leftHeld = true;
       }
-      else if((difference < 0.1 || difference > 2*Math.PI-0.1) && Vector.distance(this.loc,this.goal) > 200 && Vector.distance(this.loc,this.controllingPlanet.loc) > Vector.distance(this.goal,this.controllingPlanet.loc))
+      else if((difference < 0.2 || difference > 2*Math.PI-0.2) && Vector.distance(this.loc,this.goal) > 100 && Vector.distance(this.loc,this.controllingPlanet.loc) < Vector.distance(this.goal,this.controllingPlanet.loc))
       {
         this.upHeld = true;
       }
