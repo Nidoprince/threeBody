@@ -180,11 +180,13 @@ function touchHandler(event,touchType)
   if(event.touches && event.touches.length == 1)
   {
     //console.log(event.touches)
-    trigger.tX = event.touches[0].screenX*(1600/realWidth) - canvas.offsetLeft;
-    trigger.tY = event.touches[0].screenY*(800/realHeight) - canvas.offsetTop;
+    trigger.tX = event.touches[0].screenX*(1600/realWidth) //- canvas.offsetLeft;
+    trigger.tY = event.touches[0].screenY*(800/realHeight) //- canvas.offsetTop;
     console.log(event.touches[0]);
     console.log(realWidth)
     console.log(realHeight)
+    console.log(canvas.offsetLeft)
+    console.log(canvas.offsetTop)
     if(touchType == "start")
     {
       if(trigger.tY > 180 && trigger.tY < 280)
