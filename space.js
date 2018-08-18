@@ -858,7 +858,7 @@ class Player
       {
         this.leftHeld = true;
       }
-      else if(difference < 0.1 || difference > 2*Math.PI-0.1)
+      else if((difference < 0.1 || difference > 2*Math.PI-0.1) && Vector.distance(this.loc,this.goal) > 200 && Vector.distance(this.loc,this.controllingPlanet.loc) > Vector.distance(this.goal,this.controllingPlanet.loc))
       {
         this.upHeld = true;
       }
