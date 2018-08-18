@@ -41,8 +41,8 @@ setInterval(function() {
 }, 1000/60);
 
 var canvas = document.getElementById('canvas');
-realWidth = canvas.width;
-realHeight = canvas.height;
+realWidth = canvas.clientWidth;
+realHeight = canvas.clientHeight;
 canvas.width = 1600;
 canvas.height = 800;
 

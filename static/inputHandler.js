@@ -273,8 +273,8 @@ document.addEventListener("touchcancel", touchEndHandler);
 document.addEventListener("resize", function(event)
 {
   let canvasTest = document.getElementById('canvas');
-  realWidth = canvasTest.width;
-  realHeight = canvasTest.height;
+  realWidth = canvasTest.clientWidth;
+  realHeight = canvasTest.clientHeight;
 });
 
 document.addEventListener('keydown', function(event) {
