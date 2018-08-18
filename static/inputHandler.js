@@ -182,11 +182,6 @@ function touchHandler(event,touchType)
     //console.log(event.touches)
     trigger.tX = event.touches[0].pageX*(1600/realWidth) - canvas.offsetLeft;
     trigger.tY = event.touches[0].pageY*(800/realHeight) - canvas.offsetTop;
-    console.log(event.touches[0]);
-    console.log(realWidth)
-    console.log(realHeight)
-    console.log(canvas.offsetLeft)
-    console.log(canvas.offsetTop)
     if(touchType == "start")
     {
       if(trigger.tY > 180 && trigger.tY < 280)
@@ -208,7 +203,7 @@ function touchHandler(event,touchType)
   }
   else if(event.touches && event.touches.length == 2)
   {
-    touchGesture.updateTouch(event.touches[0].pageX - canvas.offsetLeft,event.touches[0].pageY - canvas.offsetTop,event.touches[1].pageX - canvas.offsetLeft,event.touches[1].pageY - canvas.offsetTop);
+    touchGesture.updateTouch(event.touches[0].pageX*(1600/realWidth) - canvas.offsetLeft,event.touches[0].pageY*(800/realHeight) - canvas.offsetTop,event.touches[1].pageX*(1600/realWidth) - canvas.offsetLeft,event.touches[1].pageY*(800/realHeight) - canvas.offsetTop);
     let zooming = touchGesture.isZooming();
     let stillLoc = touchGesture.isStill();
     if(zooming == "pinching" && viewer.zoom<150)
@@ -229,8 +224,8 @@ function touchHandler(event,touchType)
     }
     else if(stillLoc)
     {
-      trigger.tX = stillLoc.x*(realWidth/1600) - canvas.offsetLeft;
-      trigger.tY = stillLoc.y*(realHeight/800) - canvas.offsetRight;
+      trigger.tX = stillLoc.x;
+      trigger.tY = stillLoc.y;
       playerControl.m = true;
     }
   }
