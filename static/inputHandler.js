@@ -195,7 +195,7 @@ function touchHandler(event,touchType)
           playerControl.t = true;
         }
       }
-      if(trigger.tY > 500 && trigger.tX < 800)
+      if(trigger.tY > 700 && trigger.tX < 150)
       {
         menuOpen = !menuOpen;
       }
