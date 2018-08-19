@@ -195,6 +195,22 @@ function touchHandler(event,touchType)
           playerControl.t = true;
         }
       }
+      if(trigger.tY > 500 && trigger.tX < 800)
+      {
+        menuOpen = !menuOpen;
+      }
+      if(menuOpen && trigger.tY > 100 && trigger.tY < 700 && trigger.tX > 100 && trigger.tX < 1500)
+      {
+        let clickWhere = Math.floor((trigger.tX-100)/250)+6*Math.floor((trigger.tY-100)/225);
+        if(menuLoc == clickWhere)
+        {
+          trigger.enter = true;
+        }
+        else
+        {
+          menuLoc = clickWhere;
+        }
+      }
     }
   }
   else if(event.touches && event.touches.length == 3 && touchType == "start")
