@@ -574,6 +574,7 @@ class Player
     {
       this.loc = this.controllingPlanet.loc.addVector((new Vector(this.controllingPlanet.size,0)).rotate(Math.random()*Math.PI*2));
       this.vel = this.controllingPlanet.vel.copy();
+      this.inventory.push("iron");
     }
     else
     {
@@ -583,6 +584,7 @@ class Player
       this.inventory.push("fuel");
       this.inventory.push("fuel");
       this.inventory.push("fuel");
+      this.inventory.push("iron");
     }
     this.actingVel = new Vector(0,0);
     this.leftHeld = false;
