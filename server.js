@@ -27,16 +27,16 @@ app.get('/', function(req, res) {
 //Starts the server.
 server.listen(process.env.PORT || 5000, function() {
   console.log('Starting server on port 5000')
-  planets.push(new space.Planet(0,5000,5,0,1000,'red','rgba(255,0,0,0.1)',2));
-  planets.push(new space.Planet(-4330,-2500,-5/2,8.66/2,1000,'blue','rgba(0,0,255,0.1)',2));
-  planets.push(new space.Planet(4330,-2500,-5/2,-8.66/2,1000,'yellow','rgba(255,255,0,0.1)',2));
+  planets.push(new space.Planet(0,25000,10,0,4031,'red','rgba(255,0,0,0.1)',2));
+  planets.push(new space.Planet(-43300/2,-25000/2,-5,8.66,4031,'blue','rgba(0,0,255,0.1)',2));
+  planets.push(new space.Planet(43300/2,-25000/2,-5,-8.66,4031,'yellow','rgba(255,255,0,0.1)',2));
   ships.push(new space.Ship(100,100,"green",planets));
-  ships.push(new space.Ship(1000,5000,"red",planets));
-  ships.push(new space.Ship(-4330,-1500,"blue",planets));
-  ships.push(new space.Ship(4330,-1500,"yellow",planets));
-  ships.push(new space.Ship(400,400,'green',planets,"realityRocket"));
-  ships.push(new space.Ship(200,400,'green',planets,"miningShip"));
-  ships.push(new space.Ship(400,200,'green',planets,"towRocket"));
+  ships.push(new space.Ship(1000,25000,"red",planets));
+  ships.push(new space.Ship(-43300/2,-25500/2,"blue",planets));
+  ships.push(new space.Ship(43300/2,-25500/2,"yellow",planets));
+  //ships.push(new space.Ship(400,400,'green',planets,"realityRocket"));
+  //ships.push(new space.Ship(200,400,'green',planets,"miningShip"));
+  //ships.push(new space.Ship(400,200,'green',planets,"towRocket"));
   asteroids.push(new space.Asteroid(10000,0,0,4,100));
   asteroids.push(new space.Asteroid(0,0,0,0,100));
   asteroids.push(new space.Asteroid(500,500,0,0.5,200,"iron","brown",1,1));
@@ -141,8 +141,8 @@ setInterval(function() {
   if(Math.random()*1000 < (50-asteroids.length)/50)
   {
     let size = (Math.random()+Math.random()+Math.random()+Math.random())*40+20;
-    let x = Math.random()*40000-20000;
-    let y = Math.random()*40000-20000;
+    let x = Math.random()*200000-100000;
+    let y = Math.random()*200000-100000;
     let xV = (Math.random()+Math.random())*5-5;
     let yV = (Math.random()+Math.random())*5-5;
     let contents;
@@ -181,6 +181,7 @@ setInterval(function() {
   for (var id in planets)
   {
     planets[id].updateLocation(timeDifferential,planetoids);
+    //console.log("Net: "+planets[id].vel.magnitude())
   }
   for (var id in asteroids)
   {
@@ -189,7 +190,7 @@ setInterval(function() {
   asteroids = asteroids.filter(asteroid =>
   {
     asteroid.updateLocation(timeDifferential,planetoids);
-    return space.Vector.distance(asteroid.loc,new space.Vector(0,0)) < 50000;
+    return space.Vector.distance(asteroid.loc,new space.Vector(0,0)) < 500000;
   })
   for (var id in aliens)
   {

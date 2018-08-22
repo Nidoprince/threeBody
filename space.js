@@ -10,8 +10,8 @@ const fuelWeight = 0.05;
 const shipSpeedLimit = 60;
 const universeSpeed = 1;
 const controlSpeed = 0.1;
-const walkSpeed = 5;
-const maxSpeed = 10;
+const walkSpeed = 3;
+const maxSpeed = 20;
 const friction = 0.2;
 const airResistance = 0.001;
 
@@ -729,7 +729,7 @@ class Player
   {
     this.controllingPlanet.fuelSources = this.controllingPlanet.fuelSources.filter(fuel =>
     {
-      if(Math.abs(fuel-this.controllingPlanet.loc.direction(this.loc).angle()) < Math.PI/90)
+      if(Math.abs(fuel-this.controllingPlanet.loc.direction(this.loc).angle()) < Math.PI/80)
       {
         if(this.inventory.length == 0 || isNaN(this.inventory[this.inventory.length-1]))
         {
@@ -818,7 +818,10 @@ class Player
 
       //Gravitational Attraction
       let gravityForce = gravityCalculator(this,planet);
-      this.velocityComponents.set("Grav "+id, gravityForce);
+      if(!("contents" in planet))
+      {
+        this.velocityComponents.set("Grav "+id, gravityForce);
+      }
       this.vel = this.vel.addVector(gravityForce);
 
       //Bounce off each other.
@@ -829,7 +832,6 @@ class Player
         var direction = this.loc.subVector(planet.loc);
         this.vel = this.vel.subVector(direction.multiplyScaler(stepOne*stepTwo*bouncyness));
       }
-      this.vel = this.vel.speedLimit(maxSpeed);
     }
     if(this.controllingPlanet && Vector.distance(this.controllingPlanet.loc,this.loc) < this.controllingPlanet.size*1.2)
     {
@@ -839,6 +841,7 @@ class Player
     {
       this.updateVelocitySpace(planets)
     }
+    this.vel = this.vel.speedLimit(maxSpeed);
   }
   updateVelocityAtmosphere(planets)
   {
@@ -962,6 +965,10 @@ class Player
     planets = planets.filter((x)=>this.reality == x.reality)
 
     this.loc = this.loc.addVector(this.vel.multiplyScaler(universeSpeed*timeDifferential));
+    if(this.controllingPlanet && !("contents" in this.controllingPlanet))
+    {
+      this.loc = this.loc.addVector(this.controllingPlanet.vel.multiplyScaler(universeSpeed*timeDifferential));
+    }
     for(var id in planets)
     {
       var planet = planets[id];
@@ -1090,6 +1097,10 @@ class Planet
 
       //Gravitational Attraction
       this.vel = this.vel.addVector(gravityCalculator(this,planet));
+      //if(this.size > 1000)
+      //{
+      //  console.log(gravityCalculator(this,planet).magnitude());
+      //}
 
       //Bounce off each other.
       if(Vector.distance(this.loc,planet.loc) <= this.size+planet.size)

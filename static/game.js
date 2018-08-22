@@ -118,13 +118,6 @@ socket.on('state',function(celestial) {
     //Make Stars
     starForger(context);
 
-    for (var id in players) {
-      var player = players[id];
-      if(player.reality == reality)
-      {
-        playerDrawer(player,context);
-      }
-    }
     for (var id in planets) {
       var planet = planets[id];
       planetDrawer(planet,context);
@@ -136,6 +129,13 @@ socket.on('state',function(celestial) {
     for (var id in ships) {
       var ship = ships[id];
       shipDrawer(ship,context);
+    }
+    for (var id in players) {
+      var player = players[id];
+      if(player.reality == reality)
+      {
+        playerDrawer(player,context);
+      }
     }
     for (var id in aliens) {
       var alien = aliens[id];

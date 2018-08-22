@@ -250,8 +250,8 @@ var planetDrawer = function(planet,drawOn)
   {
     drawOn.fillStyle = "grey";
     drawOn.beginPath();
-    let fuelLoc = (new Vector(planet.loc.x,planet.loc.y)).addVector((new Vector(0,-planet.size*0.99)).rotate(fuel));
-    drawOn.arc((fuelLoc.x-viewer.x)/zoomMult+800,(fuelLoc.y-viewer.y)/zoomMult+400, planet.size*0.015/zoomMult,0, 2 * Math.PI);
+    let fuelLoc = (new Vector(planet.loc.x,planet.loc.y)).addVector((new Vector(0,-planet.size*0.98)).rotate(fuel));
+    drawOn.arc((fuelLoc.x-viewer.x)/zoomMult+800,(fuelLoc.y-viewer.y)/zoomMult+400, planet.size*0.03/zoomMult,0, 2 * Math.PI);
     drawOn.fill();
   }
   drawOn.fillStyle = planet.color;
