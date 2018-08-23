@@ -104,6 +104,32 @@ var shipDrawer = function(ship, drawOn, localViewer = viewer, localZoomMult = zo
       drawOn.stroke();
     }
   }
+  else if(ship.type == "SUV")
+  {
+    drawOn.fillStyle = ship.color;
+    drawOn.beginPath();
+    //Point1
+    var topLeft = penLoc.addVector(shipDir.normalize(ship.size/localZoomMult).rotate(3*Math.PI/2)).addVector(shipDir.normalize(ship.size/4/localZoomMult));
+    drawOn.moveTo(topLeft.x,topLeft.y);
+    //Point2
+    var bottomLeft = penLoc.addVector(shipDir.normalize(ship.size/localZoomMult).rotate(3*Math.PI/2)).subVector(shipDir.normalize(ship.size/2/localZoomMult));
+    drawOn.lineTo(bottomLeft.x,bottomLeft.y);
+    //Point3
+    var bottomRight = penLoc.addVector(shipDir.normalize(ship.size/localZoomMult).rotate(Math.PI/2)).subVector(shipDir.normalize(ship.size/2/localZoomMult));
+    drawOn.lineTo(bottomRight.x,bottomRight.y);
+    //Point4
+    var topRight = penLoc.addVector(shipDir.normalize(ship.size/localZoomMult).rotate(Math.PI/2)).addVector(shipDir.normalize(ship.size/4/localZoomMult));
+    drawOn.lineTo(topRight.x,topRight.y);
+    drawOn.closePath();
+    drawOn.fill();
+    if(ship.driverColor)
+    {
+      drawOn.fillStyle = ship.driverColor;
+      drawOn.beginPath();
+      drawOn.arc(penLoc.x,penLoc.y,ship.size/(6*localZoomMult), 0, 2 * Math.PI);
+      drawOn.fill();
+    }
+  }
   else if(ship.type == "baseRocket" || ship.type == "miningShip")
   {
     let shipWidth = 1;

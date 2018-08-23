@@ -177,9 +177,10 @@ class Explosion
     })
   }
 }
+
 class Ship
 {
-  constructor(x,y,color,planets,type="baseRocket",size = 40,density=1,reality = 0,thrust = 0.3,turnRate = 0.02,edgeThrust = 0.05,slowRate = 0.001)
+  constructor(x,y,color,planets,type="baseRocket",size = 60,density=1,reality = 0,thrust = 0.3,turnRate = 0.02,edgeThrust = 0.05,slowRate = 0.001)
   {
     this.loc = new Vector(x,y);
     this.vel = new Vector(0,0);
@@ -253,7 +254,7 @@ class Ship
     {
       return true;
     }
-    else if(["baseRocket","towRocket","realityRocket"].includes(this.type))
+    else if(["baseRocket","towRocket","realityRocket","SUV"].includes(this.type))
     {
       return false;
     }
@@ -268,7 +269,7 @@ class Ship
   }
   setDriver(color,id)
   {
-    if(["baseRocket","towRocket","realityRocket"].includes(this.type))
+    if(["baseRocket","towRocket","realityRocket","SUV"].includes(this.type))
     {
       this.driverColor = color;
       this.driver = id;
@@ -289,7 +290,7 @@ class Ship
   }
   driverLocation(id)
   {
-    if(["baseRocket","towRocket","realityRocket"].includes(this.type))
+    if(["baseRocket","towRocket","realityRocket","SUV"].includes(this.type))
     {
       return this.loc.copy();
     }
@@ -307,7 +308,7 @@ class Ship
   }
   removeDriver(id)
   {
-    if(["baseRocket","towRocket","realityRocket"].includes(this.type))
+    if(["baseRocket","towRocket","realityRocket","SUV"].includes(this.type))
     {
       this.driver = false;
       this.driverColor = false;
@@ -424,26 +425,26 @@ class Ship
       }
     }
     //Thrust
-    if(up && this.fuel > thrustFuel)
+    if(up && this.fuel >= thrustFuel)
     {
       this.controlInput = this.controlInput.addVector(this.direction.multiplyScaler(this.thrust*thrustMultiplier));
       this.fuel -= thrustFuel;
     }
     //Rotation
-    if(right && !left && this.fuel >  turnFuel)
+    if(right && !left && this.fuel >=  turnFuel)
     {
       this.controlRotation += this.turnRate*edgeMultiplier;
       this.controlInput = this.controlInput.addVector(this.direction.rotate(Math.PI/2).multiplyScaler(this.edgeThrust*edgeMultiplier));
       this.fuel -=  turnFuel;
     }
-    else if(left && !right && this.fuel >  turnFuel)
+    else if(left && !right && this.fuel >=  turnFuel)
     {
       this.controlRotation += -1*this.turnRate*edgeMultiplier;
       this.controlInput = this.controlInput.addVector(this.direction.rotate(-1*Math.PI/2).multiplyScaler(this.edgeThrust*edgeMultiplier));
       this.fuel -=  turnFuel;
     }
     //Slow
-    if(down && this.fuel > slowFuel)
+    if(down && this.fuel >= slowFuel)
     {
       this.controlInput = this.controlInput.subVector(this.vel.multiplyScaler(this.slowRate*slowMultiplier))
       this.fuel -= slowFuel;
@@ -470,18 +471,21 @@ class Ship
       let gravityForce = gravityCalculator(this,planet);
       this.vel = this.vel.addVector(gravityForce);
 
-      //Bounce off each other.
-      if(Vector.distance(this.loc,planet.loc) <= this.size+planet.size)
+      if(this.type != "SUV")
       {
-        var stepOne = Vector.dotProduct(this.vel.subVector(planet.oldVel),this.loc.subVector(planet.loc))/Math.pow((this.loc.subVector(planet.loc).magnitude()),2);
-        var stepTwo = 2*planet.mass()/(this.mass()+planet.mass());
-        var direction = this.loc.subVector(planet.loc);
-        if(this.vel.magnitude() >= 30)
+        //Bounce off each other.
+        if(Vector.distance(this.loc,planet.loc) <= this.size+planet.size)
         {
-          this.isDead = true;
-          this.planetThatMurderedMe = planet;
+          var stepOne = Vector.dotProduct(this.vel.subVector(planet.oldVel),this.loc.subVector(planet.loc))/Math.pow((this.loc.subVector(planet.loc).magnitude()),2);
+          var stepTwo = 2*planet.mass()/(this.mass()+planet.mass());
+          var direction = this.loc.subVector(planet.loc);
+          if(this.vel.magnitude() >= 30)
+          {
+            this.isDead = true;
+            this.planetThatMurderedMe = planet;
+          }
+          this.vel = this.vel.subVector(direction.multiplyScaler(stepOne*stepTwo*bouncyness));
         }
-        this.vel = this.vel.subVector(direction.multiplyScaler(stepOne*stepTwo*bouncyness));
       }
       //Air Resistance
       if(Vector.distance(this.loc,planet.loc) <= this.size+planet.size*1.2)
@@ -554,6 +558,120 @@ class Ship
   }
 }
 
+
+class Car extends Ship
+{
+  constructor(x,y,color,planets,type="SUV",size = 30,density = 1,reality = 0)
+  {
+    super(x,y,color,planets,type,size,density,reality);
+    this.drivingOn = this.parked;
+    this.fuelMax = 3000;
+  }
+  shipControl(id,up,down,left,right,goal)
+  {
+    if(this.drivingOn && Vector.distance(this.loc,this.drivingOn.loc)<this.size+this.drivingOn.size+groundTouchError)
+    {
+      //Touch Controls
+      if(this.goal)
+      {
+        let planetLocAngle = this.drivingOn.loc.direction(this.loc).angle();
+        let goalLocAngle = this.drivingOn.loc.direction(this.goal).angle();
+        let difference = goalLocAngle - planetLocAngle;
+        if(difference < 0)
+        {
+          difference += Math.PI*2;
+        }
+        if(difference > 0.01 && difference < 2*Math.PI/3)
+        {
+          right = true;
+        }
+        else if(difference > 4*Math.PI/3 && difference < 2*Math.PI-0.01)
+        {
+          left = true;
+        }
+        else if((difference < 0.2 || difference > 2*Math.PI-0.2) && Vector.distance(this.loc,this.goal) > 100 && Vector.distance(this.loc,this.controllingPlanet.loc) < Vector.distance(this.goal,this.controllingPlanet.loc))
+        {
+          up = true;
+        }
+      }
+
+      let moveSpeed;
+      let moveFuel;
+      let jumpForce;
+      let jumpFuel;
+      if(this.type == "SUV")
+      {
+        moveSpeed = 5;
+        moveFuel = 1;
+        jumpForce = 0;
+        jumpFuel = 0;
+      }
+
+      let planetDirection = this.drivingOn.loc.direction(this.loc);
+      if(right && this.fuel >= moveFuel)
+      {
+        this.controlInput = this.controlInput.addVector(planetDirection.rotate(Math.PI/2).multiplyScaler(moveSpeed));
+        this.fuel -= moveFuel;
+      }
+      else if(left && this.fuel >= moveFuel)
+      {
+        this.controlInput = this.controlInput.addVector(planetDirection.rotate(3*Math.PI/2).multiplyScaler(moveSpeed));
+        this.fuel -= moveFuel;
+      }
+      if(up && this.fuel >= jumpFuel)
+      {
+        this.controlInput = this.controlInput.addVector(planetDirection.multiplyScaler(jumpForce));
+        this.fuel -= jumpFuel;
+      }
+    }
+    return this.vel.copy();
+  }
+  updateLocation(timeDifferential,planets)
+  {
+    //Only in same reality
+    planets = planets.filter((x)=>this.reality == x.reality)
+    this.vel = this.vel.speedLimit(shipSpeedLimit/2);
+    this.loc = this.loc.addVector(this.vel.multiplyScaler(timeDifferential*universeSpeed));
+    let closestPlanetDistance = 1000;
+    if(this.drivingOn)
+    {
+      if(!this.parked)
+      {
+        this.loc = this.loc.addVector(this.drivingOn.vel.multiplyScaler(timeDifferential*universeSpeed));
+      }
+      closestPlanetDistance = Vector.distance(this.loc,this.drivingOn.loc) - this.size - this.drivingOn.size;
+      this.direction = this.drivingOn.loc.direction(this.loc);
+    }
+    else
+    {
+      this.direction = this.direction.rotate((this.vel.angle()-this.direction.angle())/(240*this.mass())*timeDifferential*universeSpeed);
+      if(this.driver)
+      {
+        this.direction = this.direction.rotate(this.controlRotation*timeDifferential*universeSpeed);
+      }
+    }
+    for(var id in planets)
+    {
+      var planet = planets[id];
+      if(Vector.distance(this.loc,planet.loc)<planet.size+this.size)
+      {
+        this.vel = this.vel.addVector(planet.loc.addVector(planet.loc.direction(this.loc).normalize(planet.size+this.size)).subVector(this.loc));
+        this.loc = planet.loc.addVector(planet.loc.direction(this.loc).normalize(planet.size+this.size));
+      }
+      if(Vector.distance(this.loc,planet.loc) - this.size - planet.size < closestPlanetDistance)
+      {
+        closestPlanetDistance = Vector.distance(this.loc,planet.loc) - this.size - planet.size;
+        this.drivingOn = planet;
+      }
+    }
+    if(this.drivingOn && closestPlanetDistance > this.drivingOn.size*0.2)
+    {
+      this.drivingOn = false;
+    }
+    this.controlInput = new Vector(0,0);
+    this.controlRotation = 0;
+  }
+}
 
 class Player
 {
@@ -1309,6 +1427,7 @@ module.exports.Vector = Vector;
 module.exports.Player = Player;
 module.exports.Planet = Planet;
 module.exports.Ship = Ship;
+module.exports.Car = Car;
 module.exports.Asteroid = Asteroid;
 module.exports.Flock = Flock;
 module.exports.Explosion = Explosion;
