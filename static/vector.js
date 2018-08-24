@@ -87,6 +87,12 @@ class Vector
 	   return(new Vector(-1*this.x,-1*this.y));
    }
 
+   projectOnto(b)
+   {
+     let aLength = Vector.dotProduct(this,b)/b.magnitude();
+     return b.normalize(aLength);
+   }
+   
    //Change Angle while Keeping Length Constant
    rotate(angle)
    {

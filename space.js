@@ -487,6 +487,11 @@ class Ship
           this.vel = this.vel.subVector(direction.multiplyScaler(stepOne*stepTwo*bouncyness));
         }
       }
+      //Friction
+      if(Vector.distance(this.loc,planet.loc) <= this.size+planet.size+5)
+      {
+        this.vel = this.vel.subVector(this.vel.projectOnto(planet.loc.direction(this.loc).rotate(Math.PI/2)).multiplyScaler(friction/4));
+      }
       //Air Resistance
       if(Vector.distance(this.loc,planet.loc) <= this.size+planet.size*1.2)
       {
@@ -630,6 +635,7 @@ class Car extends Ship
   {
     //Only in same reality
     planets = planets.filter((x)=>this.reality == x.reality)
+
     this.vel = this.vel.speedLimit(shipSpeedLimit/2);
     this.loc = this.loc.addVector(this.vel.multiplyScaler(timeDifferential*universeSpeed));
     let closestPlanetDistance = 1000;
@@ -1392,6 +1398,12 @@ class Vector
    copy()
    {
 	   return(new Vector(this.x,this.y));
+   }
+
+   projectOnto(b)
+   {
+     let aLength = Vector.dotProduct(this,b)/b.magnitude();
+     return b.normalize(aLength);
    }
 
    //Find Distance

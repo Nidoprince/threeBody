@@ -32,7 +32,7 @@ server.listen(process.env.PORT || 5000, function() {
   planets.push(new space.Planet(43300/2,-25000/2,-5,-8.66,4031,'yellow','rgba(255,255,0,0.1)',2));
   ships.push(new space.Ship(100,100,"green",planets));
   ships.push(new space.Ship(1000,25000,"red",planets));
-  ships.push(new space.Car(500,25050,"red",planets));
+  //ships.push(new space.Car(500,25050,"red",planets));
   ships.push(new space.Ship(-43300/2,-25500/2,"blue",planets));
   ships.push(new space.Ship(43300/2,-25500/2,"yellow",planets));
   //ships.push(new space.Ship(400,400,'green',planets,"realityRocket"));
@@ -95,6 +95,15 @@ io.on('connection', function(socket) {
           let index = player.inventory.indexOf("iron");
           player.inventory.splice(index,1);
           ships.push(new space.Ship(player.loc.x,player.loc.y,player.color,planets.concat(asteroids)));
+        }
+      }
+      if(data.build == "SUV")
+      {
+        if(player.inventory.filter((x) => x == "iron").length > 0)
+        {
+          let index = player.inventory.indexOf("iron");
+          player.inventory.splice(index,1);
+          ships.push(new space.Car(player.loc.x,player.loc.y,player.color,planets.concat(asteroids)));
         }
       }
       if(data.build == "Tow Rocket")

@@ -306,7 +306,7 @@ var fuelBar = function(player,drawOn)
   drawOn.strokeStyle = "grey";
   drawOn.fillStyle = "purple";
   drawOn.strokeRect(29,29,32,502);
-  drawOn.fillRect(30,30+500-player.inSpaceShip.fuel/100,30,player.inSpaceShip.fuel/100);
+  drawOn.fillRect(30,30+500-500*(player.inSpaceShip.fuel/player.inSpaceShip.fuelMax),30,player.inSpaceShip.fuel/(player.inSpaceShip.fuelMax/500));
 }
 
 var playerDrawer = function(player,drawOn)
@@ -439,5 +439,6 @@ var menuAnimation =  function(drawOn)
   drawOn.fillText("Reality Rocket",875,150);
   drawOn.fillText("1 Iron 1 Chronos", 870,190);
   drawOn.fillText("Press T to Hop.",875,230);
-
+  drawOn.fillText("Base Car",130,600);
+  drawOn.fillText("1 Iron", 150,640);
 }

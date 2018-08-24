@@ -228,6 +228,11 @@ socket.on('state',function(celestial) {
           playerControl.build = "Reality Rocket";
           menuOpen = false;
         }
+        if(menuLoc == 12 && myPlayer.inventory.filter((x) => x == "iron").length > 0)
+        {
+          playerControl.build = "SUV";
+          menuOpen = false;
+        }
       }
       menuAnimation(context);
     }
