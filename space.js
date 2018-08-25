@@ -1,20 +1,21 @@
-const gravitationalConstant = 0.05;
-const bouncyness = 0.9;
-const playerBounce = false;
-const groundTouchError = 0;
-const similarEnoughVelocities = 0.3;
-const fallingAngle = Math.PI/4;
-const jumpForce = 15;
-const fuelWeight = 0.05;
+const gravitationalConstant = 0.05;  //Used to calculate force of gravity
+const bouncyness = 0.9; //How hard things richet off each other
+const playerBounce = false; //Whether or not we do the bounce formula for players.
+const groundTouchError = 0; //How many pixels something can be above the ground for it to count as touching the ground.
+const similarEnoughVelocities = 0.3; //No Idea  -------------------Check On This------------------------------------
+const fallingAngle = Math.PI/4; //Angle at which things tilt over.  Pretty bugged.
+const jumpForce = 15; //How much force players jump with.
+const fuelWeight = 0.05; //How much one unit of fuel weighs
 
-const shipSpeedLimit = 60;
-const universeSpeed = 1;
-const controlSpeed = 0.1;
-const walkSpeed = 3;
-const maxSpeed = 20;
-const friction = 0.2;
-const airResistance = 0.001;
+const shipSpeedLimit = 60; //Max velocity for spaceships
+const universeSpeed = 1; //How fast the universe is running
+const controlSpeed = 0.1; //Player acceleration in space.
+const walkSpeed = 3; //Acceleration on a planet
+const maxSpeed = 20; //Max velocity for player not in a ship.
+const friction = 0.2; //How much friction affects things.
+const airResistance = 0.001;  //How much air resistance affects things.
 
+//Calculates the effect of gravity on a body.
 const gravityCalculator = function(body,attractor)
 {
   let dir = body.loc.direction(attractor.loc);
@@ -24,7 +25,7 @@ const gravityCalculator = function(body,attractor)
   return acc;
 }
 
-
+//Little flying flocking bird aliens.
 class Boid
 {
   constructor(velocityMax, location)
@@ -61,6 +62,7 @@ class Boid
   }
 }
 
+//The Class for a whole flock of boids.
 class Flock
 {
   constructor(number, velocity, x, y, size, color, lifespan, reality = 0)
@@ -91,6 +93,8 @@ class Flock
     this.lifespan--;
   }
 }
+
+//A single circle that moves for a while then fades.
 class Particle
 {
   constructor(loc,vel,size,lifespan,color,relative = false)
@@ -126,6 +130,8 @@ class Particle
     this.size = this.lifespan/this.startLife*this.startSize;
   }
 }
+
+//Makes a bunch of particles shoot out from a central location.
 class Explosion
 {
   constructor(x,y,size,lifespan,relative = false,reality = 0,colors = ["red","yellow","orange"])
@@ -178,29 +184,31 @@ class Explosion
   }
 }
 
+
+//Main way to travel between the stars.
 class Ship
 {
-  constructor(x,y,color,planets,type="baseRocket",size = 60,density=1,reality = 0,thrust = 0.3,turnRate = 0.02,edgeThrust = 0.05,slowRate = 0.001)
+  constructor(x,y,color,planets,type="baseRocket",size = 60,density=1,reality = 0)
   {
     this.loc = new Vector(x,y);
     this.vel = new Vector(0,0);
     this.color = color;
     this.size = size;
     this.density = density;
-    this.type = type;
-    this.thrust = thrust;
-    this.turnRate = turnRate;
-    this.edgeThrust = edgeThrust;
-    this.slowRate = slowRate;
+    this.type = type;  //Very important variable.  Tells the abilities of a ship outside of base flying.
     this.reality = reality;
     this.parked = true;
     this.driver = false;
     this.driverColor = false;
-    this.controlInput = new Vector(0,0);
-    this.controlRotation = 0;
+    this.controlInput = new Vector(0,0);  //Variable that contain the change to velocity created by the player.
+    this.controlRotation = 0;  //This one has the change in angle by the player.
     this.fuel = 0;
     this.fuelMax = 50000;
     this.isDead = false;
+    this.thrust = 0.3;
+    this.turnRate = 0.02;
+    this.edgeThrust = 0.05;
+    this.slowRate = 0.001;
     this.planetThatMurderedMe = false;
     this.mineSpeed = 1;
     if(this.type == "towRocket")
@@ -210,7 +218,7 @@ class Ship
     }
     else if(this.type == "miningShip")
     {
-      this.miner = false;
+      this.miner = false;  //Adds a passenger spot in the ship.
       this.minerColor = false;
       this.mineSpeed = 10;
     }
@@ -218,6 +226,7 @@ class Ship
     //Only in same reality
     planets = planets.filter((x)=>this.reality == x.reality)
 
+    //This whole bit is for checking if a ship is on a planet, and if so, it makes them parked, so they don't just roll around.
     var closestPlanetDistance = Number.MAX_SAFE_INTEGER;
     var closestPlanet = false;
     for (var id in planets)
@@ -248,6 +257,8 @@ class Ship
   {
     return this.size*this.density*this.size*3.14159265358979323646264338 + this.fuel*fuelWeight;
   }
+
+  //Checks if a spaceship has room for another player to board it.
   spaceAvailable()
   {
     if(!this.driver)
@@ -267,6 +278,8 @@ class Ship
       return false;
     }
   }
+
+  //Puts a player in the appropriate part of the ship when they board.
   setDriver(color,id)
   {
     if(["baseRocket","towRocket","realityRocket","SUV"].includes(this.type))
@@ -288,6 +301,8 @@ class Ship
       }
     }
   }
+
+  //Gives the location of a given player within the space ship.
   driverLocation(id)
   {
     if(["baseRocket","towRocket","realityRocket","SUV"].includes(this.type))
@@ -306,6 +321,8 @@ class Ship
       }
     }
   }
+
+  //Removes a player from a ship.
   removeDriver(id)
   {
     if(["baseRocket","towRocket","realityRocket","SUV"].includes(this.type))
@@ -327,25 +344,8 @@ class Ship
       }
     }
   }
-  updateVelocity(planets)
-  {
-    //Only in same reality
-    planets = planets.filter((x)=>this.reality == x.reality)
 
-    if(this.parked)
-    {
-      this.updateVelocityParked(planets);
-    }
-    else if(this.driver)
-    {
-      this.updateVelocityControlled(planets);
-    }
-    else
-    {
-      this.updateVelocityFree(planets);
-    }
-    this.vel = this.vel.speedLimit(shipSpeedLimit);
-  }
+  //Handles how player inputs turn into changes in direction and velocity.  Different ship types respond differently.
   shipControl(id,up,down,left,right,goal)
   {
     //Touch Control
@@ -451,15 +451,42 @@ class Ship
     }
     return this.vel.copy();
   }
+
+  //Base function for updating the velocity each moment.
+  updateVelocity(planets)
+  {
+    //Only in same reality
+    planets = planets.filter((x)=>this.reality == x.reality)
+
+    if(this.parked)
+    {
+      this.updateVelocityParked(planets);
+    }
+    else if(this.driver)
+    {
+      this.updateVelocityControlled(planets);
+    }
+    else
+    {
+      this.updateVelocityFree(planets);
+    }
+    this.vel = this.vel.speedLimit(shipSpeedLimit);
+  }
+
+  //Handles if a player is driving.
   updateVelocityControlled(planets)
   {
     this.vel = this.vel.addVector(this.controlInput);
     this.updateVelocityFree(planets);
   }
+
+  //Handles if a ship is parked.
   updateVelocityParked(planets)
   {
     this.vel = this.parked.vel.copy();
   }
+
+  //Handles when the player is free floating in space.  All the passive effects of gravity and friction and collisions.
   updateVelocityFree(planets)
   {
 
@@ -531,11 +558,13 @@ class Ship
     this.loc = this.loc.addVector(this.vel.multiplyScaler(timeDifferential*universeSpeed));
     if(this.parked)
     {
-      var angleFromStraight = this.parked.loc.direction(this.loc).angle();-this.direction.angle();
+      //Supposedly makes a tilted ship fall on its side.
+      var angleFromStraight = this.parked.loc.direction(this.loc).angle()-this.direction.angle();
       if(Math.abs(angleFromStraight) > fallingAngle && Math.abs(angleFromStraight) < Math.PI/2)
       {
         this.direction = this.direction.rotate(angleFromStraight/10*timeDifferential*universeSpeed);
       }
+      //Stops being parked if knocked too far away.
       if(Vector.distance(this.loc,this.parked.loc) > this.size+this.parked.size+5)
       {
         this.parked = false;
@@ -543,12 +572,15 @@ class Ship
     }
     if(!this.parked)
     {
+      //Makes stuff drift in angle towards the way they are moving.
       this.direction = this.direction.rotate((this.vel.angle()-this.direction.angle())/(240*this.mass())*timeDifferential*universeSpeed);
       if(this.driver)
       {
         this.direction = this.direction.rotate(this.controlRotation*timeDifferential*universeSpeed);
       }
     }
+
+    //Keeps ships from being inside planets.
     for(var id in planets)
     {
       var planet = planets[id];
@@ -558,20 +590,24 @@ class Ship
         this.loc = planet.loc.addVector(planet.loc.direction(this.loc).normalize(planet.size+this.size));
       }
     }
+
+    //Reset the control inputs.
     this.controlInput = new Vector(0,0);
     this.controlRotation = 0;
   }
 }
 
-
+//Land bound ships AKA Cars
 class Car extends Ship
 {
   constructor(x,y,color,planets,type="SUV",size = 30,density = 1,reality = 0)
   {
     super(x,y,color,planets,type,size,density,reality);
     this.drivingOn = this.parked;
-    this.fuelMax = 3000;
+    this.fuelMax = 3000; //Smaller fuel tank than spaceships have.
   }
+
+  //Different version of the control function that takes into account moving around a planet.
   shipControl(id,up,down,left,right,goal)
   {
     if(this.drivingOn && Vector.distance(this.loc,this.drivingOn.loc)<this.size+this.drivingOn.size+groundTouchError)
@@ -631,16 +667,22 @@ class Car extends Ship
     }
     return this.vel.copy();
   }
+
+  //Kinda an extended function compared to the defualt.  In order to not have to overwrite more functions, I stuck some extra functionality in here.
   updateLocation(timeDifferential,planets)
   {
     //Only in same reality
     planets = planets.filter((x)=>this.reality == x.reality)
 
+    //Cars are slower than space ships.
     this.vel = this.vel.speedLimit(shipSpeedLimit/2);
     this.loc = this.loc.addVector(this.vel.multiplyScaler(timeDifferential*universeSpeed));
+
+    //Important for cars to know which planet they are driving on.
     let closestPlanetDistance = 1000;
     if(this.drivingOn)
     {
+      //Move with the planet one is on.
       if(!this.parked)
       {
         this.loc = this.loc.addVector(this.drivingOn.vel.multiplyScaler(timeDifferential*universeSpeed));
@@ -651,11 +693,8 @@ class Car extends Ship
     else
     {
       this.direction = this.direction.rotate((this.vel.angle()-this.direction.angle())/(240*this.mass())*timeDifferential*universeSpeed);
-      if(this.driver)
-      {
-        this.direction = this.direction.rotate(this.controlRotation*timeDifferential*universeSpeed);
-      }
     }
+    
     for(var id in planets)
     {
       var planet = planets[id];
