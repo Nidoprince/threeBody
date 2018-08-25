@@ -1116,11 +1116,12 @@ class Player
     {
       this.mineAsteroids(planets);
     }
-    else if(this.mHeld && (!this.inSpaceShip || this.inSpaceShip.type == "SUV") && this.controllingPlanet)
+    if(this.mHeld && ((!this.inSpaceShip) || this.inSpaceShip.type == "SUV") && this.controllingPlanet)
     {
       this.minePlanet();
     }
-    else
+
+    if(!this.mHeld || !this.controllingPlanet)
     {
       if(!isNaN(this.inventory[this.inventory.length-1]))
       {
@@ -1152,11 +1153,24 @@ class Player
         this.inSpaceShip.parked = false;
       }
     }
-    //if(this.tPressed)
-    //{
-    //  console.log(this)
-    //  console.log(this.inSpaceShip)
-    //}
+
+    //Deal with air.
+    if(!this.inSpaceShip && (!this.controllingPlanet || "contents" in this.controllingPlanet))
+    {
+      this.air -= 1;
+      if(this.air == 0)
+      {
+        this.isDead = true;
+      }
+    }
+    else
+    {
+      if(this.air<this.airMax)
+      {
+        this.air += 1;
+      }
+    }
+
     this.tPressed = false;
     this.pPressed = false;
     this.ePressed = false;

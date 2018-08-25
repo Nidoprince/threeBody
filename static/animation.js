@@ -309,6 +309,14 @@ var fuelBar = function(player,drawOn)
   drawOn.fillRect(30,30+500-500*(player.inSpaceShip.fuel/player.inSpaceShip.fuelMax),30,player.inSpaceShip.fuel/(player.inSpaceShip.fuelMax/500));
 }
 
+var airBar = function(player,drawOn)
+{
+  drawOn.strokeStyle = "grey";
+  drawOn.fillStyle = "white";
+  drawOn.strokeRect(29,29,32,502);
+  drawOn.fillRect(30,30+500-500*(player.air/player.airMax),30,500*player.air/player.airMax);
+}
+
 var playerDrawer = function(player,drawOn)
 {
   if(!player.inSpaceShip && player != "dead")

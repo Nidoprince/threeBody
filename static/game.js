@@ -186,6 +186,10 @@ socket.on('state',function(celestial) {
         parkDrawer(myPlayer.inSpaceShip.parked, context, 1400,200);
         specialDrawer(myPlayer.inSpaceShip, context, 1530,200);
       }
+      else if(myPlayer.air < myPlayer.airMax)
+      {
+        airBar(myPlayer,context);
+      }
     }
 
     if(myPlayer && menuOpen)
