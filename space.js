@@ -730,6 +730,8 @@ class Player
     this.velocityComponents.set("Base",this.vel.copy());
     this.inSpaceShip = false;
     this.currentlyLoading = false;
+    this.air = 1000;
+    this.airMax = 1000;
   }
 
   mass()
@@ -1114,7 +1116,7 @@ class Player
     {
       this.mineAsteroids(planets);
     }
-    else if(this.mHeld && !this.inSpaceShip && this.controllingPlanet)
+    else if(this.mHeld && (!this.inSpaceShip || this.inSpaceShip.type == "SUV") && this.controllingPlanet)
     {
       this.minePlanet();
     }
