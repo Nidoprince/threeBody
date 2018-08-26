@@ -8,6 +8,7 @@ const jumpForce = 15; //How much force players jump with.
 const fuelWeight = 0.05; //How much one unit of fuel weighs
 
 const shipSpeedLimit = 60; //Max velocity for spaceships
+const jumpDistance = 1000; //How far a jump ship jumps in space per velocity.
 const universeSpeed = 1; //How fast the universe is running
 const controlSpeed = 0.1; //Player acceleration in space.
 const walkSpeed = 3; //Acceleration on a planet
@@ -222,6 +223,10 @@ class Ship
       this.minerColor = false;
       this.mineSpeed = 10;
     }
+    else if(this.type == "jumpShip")
+    {
+      this.jumping = false;
+    }
 
     //Only in same reality
     planets = planets.filter((x)=>this.reality == x.reality)
@@ -265,7 +270,7 @@ class Ship
     {
       return true;
     }
-    else if(["baseRocket","towRocket","realityRocket","SUV"].includes(this.type))
+    else if(["baseRocket","towRocket","realityRocket","SUV","jumpShip"].includes(this.type))
     {
       return false;
     }
@@ -282,7 +287,7 @@ class Ship
   //Puts a player in the appropriate part of the ship when they board.
   setDriver(color,id)
   {
-    if(["baseRocket","towRocket","realityRocket","SUV"].includes(this.type))
+    if(["baseRocket","towRocket","realityRocket","SUV","jumpShip"].includes(this.type))
     {
       this.driverColor = color;
       this.driver = id;
@@ -305,7 +310,7 @@ class Ship
   //Gives the location of a given player within the space ship.
   driverLocation(id)
   {
-    if(["baseRocket","towRocket","realityRocket","SUV"].includes(this.type))
+    if(["baseRocket","towRocket","realityRocket","SUV","jumpShip"].includes(this.type))
     {
       return this.loc.copy();
     }
@@ -325,7 +330,7 @@ class Ship
   //Removes a player from a ship.
   removeDriver(id)
   {
-    if(["baseRocket","towRocket","realityRocket","SUV"].includes(this.type))
+    if(["baseRocket","towRocket","realityRocket","SUV","jumpShip"].includes(this.type))
     {
       this.driver = false;
       this.driverColor = false;
@@ -384,6 +389,15 @@ class Ship
       thrustMultiplier = 1;
       edgeMultiplier = 1;
       slowMultiplier = 1;
+    }
+    else if(this.type == "jumpShip")
+    {
+      thrustFuel = 3;
+      turnFuel = 2;
+      slowFuel = 5;
+      thrustMultiplier = 0.5;
+      edgeMultiplier = 2;
+      slowMultiplier = 15;
     }
     else if(this.type == "towRocket")
     {
@@ -556,6 +570,18 @@ class Ship
     planets = planets.filter((x)=>this.reality == x.reality)
 
     this.loc = this.loc.addVector(this.vel.multiplyScaler(timeDifferential*universeSpeed));
+
+    //Jump across space.
+    if(this.type == "jumpShip" && this.jumping)
+    {
+      if(!this.parked && this.fuel >= 1000)
+      {
+        this.loc = this.loc.addVector(this.direction.normalize(this.vel.magnitude()*jumpDistance));
+        this.fuel -= 1000;
+      }
+      this.jumping = false;
+    }
+
     if(this.parked)
     {
       //Supposedly makes a tilted ship fall on its side.
@@ -694,7 +720,7 @@ class Car extends Ship
     {
       this.direction = this.direction.rotate((this.vel.angle()-this.direction.angle())/(240*this.mass())*timeDifferential*universeSpeed);
     }
-    
+
     for(var id in planets)
     {
       var planet = planets[id];
@@ -738,6 +764,9 @@ class Player
       this.loc = this.controllingPlanet.loc.addVector((new Vector(this.controllingPlanet.size,0)).rotate(Math.random()*Math.PI*2));
       this.vel = this.controllingPlanet.vel.copy();
       this.inventory.push("iron");
+      //this.inventory.push("iron");
+      //this.inventory.push("chronos");
+      //this.inventory.push("chronos");
     }
     else
     {
@@ -1177,6 +1206,10 @@ class Player
       {
         this.toggleParkingBreak();
       }
+    }
+    if(this.tPressed && this.inSpaceShip && this.inSpaceShip.type == "jumpShip")
+    {
+      this.inSpaceShip.jumping = true;
     }
     if(this.tPressed && this.inSpaceShip && this.inSpaceShip.type == "towRocket")
     {

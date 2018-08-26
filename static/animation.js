@@ -130,7 +130,7 @@ var shipDrawer = function(ship, drawOn, localViewer = viewer, localZoomMult = zo
       drawOn.fill();
     }
   }
-  else if(ship.type == "baseRocket" || ship.type == "miningShip")
+  else if(ship.type == "baseRocket" || ship.type == "miningShip" || ship.type == "jumpShip")
   {
     let shipWidth = 1;
     if(ship.type == "miningShip")
@@ -145,6 +145,15 @@ var shipDrawer = function(ship, drawOn, localViewer = viewer, localZoomMult = zo
     //Point 2
     var angleLeft = tipPoint.addVector(shipDir.negate().rotate(Math.PI/6).normalize(shipWidth*ship.size/(4*localZoomMult)));
     drawOn.lineTo(angleLeft.x,angleLeft.y);
+    if(ship.type == "jumpShip")
+    {
+      var topFinLeft = angleLeft.subVector(shipDir.normalize(ship.size/(2*localZoomMult)));
+      drawOn.lineTo(topFinLeft.x,topFinLeft.y);
+      var finTipLeft = penLoc.addVector(shipDir.negate().normalize(ship.size/(2*localZoomMult))).addVector(shipDir.rotate(3*Math.PI/2).normalize(ship.size/(2*localZoomMult)));
+      drawOn.lineTo(finTipLeft.x,finTipLeft.y);
+      var inFinLeft = penLoc.addVector(shipDir.negate().normalize(ship.size/(2*localZoomMult))).addVector(shipDir.rotate(3*Math.PI/2).normalize(ship.size/(8*localZoomMult)));
+      drawOn.lineTo(inFinLeft.x,inFinLeft.y);
+    }
     //Point 3
     var baseLeft = angleLeft.addVector(shipDir.negate().normalize(ship.size*3/(2*localZoomMult)));
     drawOn.lineTo(baseLeft.x,baseLeft.y);
@@ -159,6 +168,15 @@ var shipDrawer = function(ship, drawOn, localViewer = viewer, localZoomMult = zo
     //Point 6
     var baseRight = angleRight.addVector(shipDir.negate().normalize(ship.size*3/(2*localZoomMult)));
     drawOn.lineTo(baseRight.x,baseRight.y);
+    if(ship.type == "jumpShip")
+    {
+      var inFinRight = penLoc.addVector(shipDir.negate().normalize(ship.size/(2*localZoomMult))).addVector(shipDir.rotate(Math.PI/2).normalize(ship.size/(8*localZoomMult)));
+      drawOn.lineTo(inFinRight.x,inFinRight.y);
+      var finTipRight = penLoc.addVector(shipDir.negate().normalize(ship.size/(2*localZoomMult))).addVector(shipDir.rotate(Math.PI/2).normalize(ship.size/(2*localZoomMult)));
+      drawOn.lineTo(finTipRight.x,finTipRight.y);
+      var topFinRight = angleRight.subVector(shipDir.normalize(ship.size/(2*localZoomMult)));
+      drawOn.lineTo(topFinRight.x,topFinRight.y);
+    }
     drawOn.lineTo(angleRight.x,angleRight.y);
     drawOn.closePath();
     drawOn.fill();
@@ -417,6 +435,10 @@ var specialDrawer = function(ship,drawOn,x,y)
         drawOn.fillText("1",x+15,y+50);
       }
     }
+    else if(ship.type == "jumpShip")
+    {
+      drawOn.fillText("J",x+15,y+50);
+    }
   }
 }
 
@@ -447,6 +469,9 @@ var menuAnimation =  function(drawOn)
   drawOn.fillText("Reality Rocket",875,150);
   drawOn.fillText("1 Iron 1 Chronos", 870,190);
   drawOn.fillText("Press T to Hop.",875,230);
+  drawOn.fillText("Jump Ship",1025,150);
+  drawOn.fillText("2 Iron 2 Chronos", 1020,190);
+  drawOn.fillText("Press T to Jump.",1025,230);
   drawOn.fillText("Base Car",130,600);
   drawOn.fillText("1 Iron", 150,640);
 }

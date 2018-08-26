@@ -35,7 +35,7 @@ server.listen(process.env.PORT || 5000, function() {
   //ships.push(new space.Car(500,25050,"red",planets));
   ships.push(new space.Ship(-43300/2,-25500/2,"blue",planets));
   ships.push(new space.Ship(43300/2,-25500/2,"yellow",planets));
-  //ships.push(new space.Ship(400,400,'green',planets,"realityRocket"));
+  //ships.push(new space.Ship(600,400,'green',planets,"jumpShip"));
   //ships.push(new space.Ship(200,400,'green',planets,"miningShip"));
   //ships.push(new space.Ship(400,200,'green',planets,"towRocket"));
   asteroids.push(new space.Asteroid(10000,0,0,4,100));
@@ -139,6 +139,20 @@ io.on('connection', function(socket) {
           index = player.inventory.indexOf("chronos");
           player.inventory.splice(index,1);
           ships.push(new space.Ship(player.loc.x,player.loc.y,player.color,planets.concat(asteroids),"realityRocket"));
+        }
+      }
+      if(data.build == "Jump Ship")
+      {
+        if(player.inventory.filter((x) => x == "iron").length > 1 && player.inventory.filter((x) => x == "chronos").length > 1)
+        {
+          for(let i = 0; i<2; i++)
+          {
+            let index = player.inventory.indexOf("iron");
+            player.inventory.splice(index,1);
+            index = player.inventory.indexOf("chronos");
+            player.inventory.splice(index,1);
+          }
+          ships.push(new space.Ship(player.loc.x,player.loc.y,player.color,planets.concat(asteroids),"jumpShip"));
         }
       }
     }
