@@ -469,9 +469,9 @@ var menuAnimation =  function(drawOn)
   drawOn.fillText("Reality Rocket",875,150);
   drawOn.fillText("1 Iron 1 Chronos", 870,190);
   drawOn.fillText("Press T to Hop.",875,230);
-  drawOn.fillText("Jump Ship",1025,150);
-  drawOn.fillText("2 Iron 2 Chronos", 1020,190);
-  drawOn.fillText("Press T to Jump.",1025,230);
+  drawOn.fillText("Jump Ship",1125,150);
+  drawOn.fillText("2 Iron 2 Chronos", 1120,190);
+  drawOn.fillText("Press T to Jump.",1120,230);
   drawOn.fillText("Base Car",130,600);
   drawOn.fillText("1 Iron", 150,640);
 }
