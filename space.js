@@ -767,6 +767,9 @@ class Player
       //this.inventory.push("iron");
       //this.inventory.push("chronos");
       //this.inventory.push("chronos");
+      this.inventory.push("fuel");
+      this.inventory.push("fuel");
+      this.inventory.push("iron");
     }
     else
     {
@@ -1249,6 +1252,22 @@ class Player
   }
 }
 
+class Building
+{
+  constructor(x,y,color,hostPlanet,type = "refinery")
+  {
+    let loc = new Vector(x,y);
+    this.color = color;
+    this.angle = hostPlanet.loc.direction(loc).angle();
+    this.type = type;
+    this.size = 40;
+    if(this.type == "refinery")
+    {
+      this.size = 100;
+    }
+  }
+}
+
 class Planet
 {
   constructor(startX,startY,startXD,startYD,size,color = 'red',atmosphereColor = "rgba(255,0,0,0.1)",density = 1, reality = 0)
@@ -1263,6 +1282,12 @@ class Planet
     this.reality = reality;
     this.fuelSources = [];
     this.mineTime = 200;
+    this.buildings = [];
+  }
+
+  build(x,y,color,type = "refinery")
+  {
+    this.buildings.push(new Building(x,y,color,this,type));
   }
 
   spawnFuel()

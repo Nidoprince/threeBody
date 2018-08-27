@@ -288,6 +288,50 @@ var alienDrawer = function(alien,drawOn)
     drawOn.fillRect((alien.loc.x-5-viewer.x)/zoomMult+800,(alien.loc.y-5-viewer.y)/zoomMult+400,10/zoomMult,10/zoomMult);
   }
 }
+
+var buildingDrawer = function(building,planet,drawOn)
+{
+  console.log(building);
+  if(building.type == "refinery")
+  {
+    let planetLoc = new Vector(planet.loc.x,planet.loc.y);
+    let dir = (new Vector(0,-1)).rotate(building.angle);
+    let planetTouch = planetLoc.addVector((new Vector(0,-planet.size).rotate(building.angle)));
+    planetTouch = new Vector((planetTouch.x-viewer.x)/zoomMult+800,(planetTouch.y-viewer.y)/zoomMult+400);
+    //Make Points
+    let upperLeftCorner = planetTouch.addVector(dir.multiplyScaler(building.size/zoomMult)).addVector(dir.multiplyScaler(building.size/zoomMult).rotate(3*Math.PI/2));
+    let upperRightCorner = planetTouch.addVector(dir.multiplyScaler(building.size/zoomMult)).addVector(dir.multiplyScaler(building.size/zoomMult).rotate(Math.PI/2));
+    let lowerLeftCorner = planetTouch.subVector(dir.multiplyScaler(building.size/zoomMult)).addVector(dir.multiplyScaler(building.size/zoomMult).rotate(3*Math.PI/2));
+    let lowerRightCorner = planetTouch.subVector(dir.multiplyScaler(building.size/zoomMult)).addVector(dir.multiplyScaler(building.size/zoomMult).rotate(Math.PI/2));
+    let leftSmokestack = planetTouch.addVector(dir.multiplyScaler(building.size/zoomMult)).addVector(dir.multiplyScaler(building.size/(2*zoomMult)).rotate(3*Math.PI/2));
+    let rightSmokestack = planetTouch.addVector(dir.multiplyScaler(building.size/zoomMult)).addVector(dir.multiplyScaler(building.size/(2*zoomMult)).rotate(Math.PI/2));
+    let leftBase = planetTouch.addVector(dir.multiplyScaler(building.size/(2*zoomMult))).addVector(dir.multiplyScaler(building.size/(2*zoomMult)).rotate(3*Math.PI/2));
+    let rightBase = planetTouch.addVector(dir.multiplyScaler(building.size/(2*zoomMult))).addVector(dir.multiplyScaler(building.size/(2*zoomMult)).rotate(Math.PI/2));
+    drawOn.beginPath();
+    drawOn.fillStyle = building.color;
+    drawOn.strokeStyle = "grey";
+    drawOn.moveTo(lowerLeftCorner.x,lowerLeftCorner.y);
+    drawOn.lineTo(upperLeftCorner.x,upperLeftCorner.y);
+    drawOn.lineTo(leftSmokestack.x,leftSmokestack.y);
+    drawOn.lineTo(leftBase.x,leftBase.y);
+    drawOn.lineTo(rightBase.x,rightBase.y);
+    drawOn.lineTo(rightSmokestack.x,rightSmokestack.y);
+    drawOn.lineTo(upperRightCorner.x,upperRightCorner.y);
+    drawOn.lineTo(lowerRightCorner.x,lowerRightCorner.y);
+    drawOn.closePath();
+    drawOn.fill();
+    drawOn.stroke();
+  }
+}
+
+var buildingsDrawer = function(planet,drawOn)
+{
+  for(let building of planet.buildings)
+  {
+    buildingDrawer(building, planet, drawOn);
+  }
+}
+
 var planetDrawer = function(planet,drawOn)
 {
   for(var fuel of planet.fuelSources)
@@ -298,6 +342,7 @@ var planetDrawer = function(planet,drawOn)
     drawOn.arc((fuelLoc.x-viewer.x)/zoomMult+800,(fuelLoc.y-viewer.y)/zoomMult+400, planet.size*0.03/zoomMult,0, 2 * Math.PI);
     drawOn.fill();
   }
+  buildingsDrawer(planet,drawOn);
   drawOn.fillStyle = planet.color;
   drawOn.beginPath();
   drawOn.arc((planet.loc.x-viewer.x)/zoomMult+800,(planet.loc.y-viewer.y)/zoomMult+400, planet.size/zoomMult, 0, 2 * Math.PI);
@@ -310,8 +355,9 @@ var planetDrawer = function(planet,drawOn)
 
 var asteroidDrawer = function(asteroid,drawOn)
 {
-  if(asteroid.size/zoomMult > 1)
+  if(asteroid.size/zoomMult > 0.5)
   {
+    buildingsDrawer(asteroid,drawOn);
     drawOn.fillStyle = asteroid.color;
     drawOn.beginPath();
     drawOn.arc((asteroid.loc.x-viewer.x)/zoomMult+800,(asteroid.loc.y-viewer.y)/zoomMult+400, asteroid.size/zoomMult, 0, 2 * Math.PI);
@@ -340,9 +386,11 @@ var playerDrawer = function(player,drawOn)
   if(!player.inSpaceShip && player != "dead")
   {
     drawOn.fillStyle = player.color;
+    drawOn.strokeStyle = "black";
     drawOn.beginPath();
     drawOn.arc((player.loc.x-viewer.x)/zoomMult+800,(player.loc.y-viewer.y)/zoomMult+400, player.size/zoomMult, 0, 2 * Math.PI);
     drawOn.fill();
+    drawOn.stroke();
   }
 }
 
@@ -474,4 +522,7 @@ var menuAnimation =  function(drawOn)
   drawOn.fillText("Press T to Jump.",1120,230);
   drawOn.fillText("Base Car",130,600);
   drawOn.fillText("1 Iron", 150,640);
+  drawOn.fillText("Refinery",875,600);
+  drawOn.fillText("2 Iron 2 Fuel", 870,640);
+  drawOn.fillText("Press E to Use.",875,680);
 }

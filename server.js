@@ -155,6 +155,20 @@ io.on('connection', function(socket) {
           ships.push(new space.Ship(player.loc.x,player.loc.y,player.color,planets.concat(asteroids),"jumpShip"));
         }
       }
+      if(data.build == "Refinery")
+      {
+        if(player.inventory.filter((x) => x == "iron").length > 1 && player.inventory.filter((x) => x == "fuel").length > 1 && player.controllingPlanet)
+        {
+          for(let i = 0; i<2; i++)
+          {
+            let index = player.inventory.indexOf("iron");
+            player.inventory.splice(index,1);
+            index = player.inventory.indexOf("fuel");
+            player.inventory.splice(index,1);
+          }
+          player.controllingPlanet.build(player.loc.x,player.loc.y,player.color);
+        }
+      }
     }
   });
 });

@@ -8,7 +8,8 @@ var planetCompress = function(planet)
     color: planet.color,
     atmosphereColor: planet.atmosphereColor,
     fuelSources: planet.fuelSources,
-    reality: planet.reality
+    reality: planet.reality,
+    buildings: planet.buildings
   }
 }
 
