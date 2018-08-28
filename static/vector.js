@@ -92,7 +92,7 @@ class Vector
      let aLength = Vector.dotProduct(this,b)/b.magnitude();
      return b.normalize(aLength);
    }
-   
+
    //Change Angle while Keeping Length Constant
    rotate(angle)
    {
@@ -162,5 +162,10 @@ class Vector
        difference = difference-Math.PI*2;
      }
      return difference;
+   }
+
+   static makeVec(vec)
+   {
+     return new Vector(vec.x,vec.y);
    }
 }

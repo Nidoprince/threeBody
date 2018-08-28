@@ -24,6 +24,27 @@ socket.on('message', function(data) {
 });
 
 setInterval(function() {
+  //Open or close the refine menu;
+  if(myPlayer && playerControl.e && myPlayer.controllingPlanet)
+  {
+    if(menuOpen == "refine")
+    {
+      menuOpen = false;
+    }
+    else
+    {
+      let playerAngle = Vector.makeVec(myPlayer.controllingPlanet.loc).direction(Vector.makeVec(myPlayer.loc)).angle();
+      for(let factory of myPlayer.controllingPlanet.buildings)
+      {
+        let difference = Math.abs(factory.angle-playerAngle);
+        if(difference < factory.size/myPlayer.controllingPlanet.size)
+        {
+          menuOpen = "refine";
+          menuLoc = 0;
+        }
+      }
+    }
+  }
   if(trigger.tX && trigger.tY)
   {
     playerControl.xGoal = (trigger.tX-800)*zoomMult+viewer.x;
@@ -192,7 +213,40 @@ socket.on('state',function(celestial) {
       }
     }
 
-    if(myPlayer && menuOpen)
+    if(myPlayer && menuOpen == "refine")
+    {
+      if(trigger.right)
+      {
+        menuLoc = (menuLoc+1)%8;
+      }
+      else if(trigger.left)
+      {
+        menuLoc = ((menuLoc-1)%8+8)%8;
+      }
+      else if(trigger.down)
+      {
+        menuLoc = (menuLoc+4)%8;
+      }
+      else if(trigger.up)
+      {
+        menuLoc = ((menuLoc-4)%8+8)%8;
+      }
+      else if(trigger.enter)
+      {
+        if(menuLoc == 0 && myPlayer.inventory.filter((x) => x == "iron").length > 0 && myPlayer.inventory.filter((x) => x == "fuel").length > 0)
+        {
+          playerControl.build = "Steel";
+          menuOpen = false;
+        }
+        else if(menuLoc == 1 && myPlayer.inventory.filter((x) => x == "chronos").length > 3)
+        {
+          playerControl.build = "Chaos";
+          menuOpen = false;
+        }
+      }
+      refineMenuAnimation(context);
+    }
+    else if(myPlayer && menuOpen == "build")
     {
       if(trigger.right)
       {
@@ -248,7 +302,7 @@ socket.on('state',function(celestial) {
           menuOpen = false;
         }
       }
-      menuAnimation(context);
+      buildMenuAnimation(context);
     }
   }
   else

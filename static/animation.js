@@ -498,7 +498,22 @@ var drawTouch = function(drawOn)
   drawOn.fill();
 }
 
-var menuAnimation =  function(drawOn)
+
+var refineMenuAnimation = function(drawOn)
+{
+  drawOn.fillStyle = "darkgrey";
+  drawOn.fillRect(50,50,1500,700);
+  drawOn.fillStyle = "orange";
+  drawOn.fillRect(100+375*(menuLoc%4),100+350*Math.floor(menuLoc/4),275,250);
+  drawOn.fillStyle = "white";
+  drawOn.font = "bold 16px Arial";
+  drawOn.fillText("Steel",200,150);
+  drawOn.fillText("1 Iron 1 Fuel",180,190);
+  drawOn.fillText("Chaos",575,150);
+  drawOn.fillText("4 Chronos",555,190);
+}
+
+var buildMenuAnimation =  function(drawOn)
 {
   drawOn.fillStyle = "grey";
   drawOn.fillRect(50,50,1500,700);

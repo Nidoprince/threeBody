@@ -197,9 +197,16 @@ function touchHandler(event,touchType)
       }
       if(trigger.tY > 700 && trigger.tX < 150)
       {
-        menuOpen = !menuOpen;
+        if(menuOpen == "build")
+        {
+          menuOpen = false;
+        }
+        else
+        {
+          menuOpen = "build";
+        }
       }
-      if(menuOpen && trigger.tY > 100 && trigger.tY < 700 && trigger.tX > 100 && trigger.tX < 1500)
+      if(menuOpen == "build" && trigger.tY > 100 && trigger.tY < 700 && trigger.tX > 100 && trigger.tX < 1500)
       {
         let clickWhere = Math.floor((trigger.tX-100)/250)+6*Math.floor((trigger.tY-100)/225);
         if(menuLoc == clickWhere)
@@ -210,7 +217,19 @@ function touchHandler(event,touchType)
         {
           menuLoc = clickWhere;
         }
-      }
+
+        if(menuOpen == "refine" && trigger.tY > 100 && trigger.tY < 700 && trigger.tX > 100 && trigger.tX < 1500)
+        {
+          let clickWhere = Math.floor((trigger.tX-100)/375)+4*Math.floor((trigger.tY-100)/350);
+          if(menuLoc == clickWhere)
+          {
+            trigger.enter = true;
+          }
+          else
+          {
+            menuLoc = clickWhere;
+          }
+        }
     }
   }
   else if(event.touches && event.touches.length == 3 && touchType == "start")
@@ -425,7 +444,14 @@ document.addEventListener('keyup', function(event) {
     case 66: //B
       if(trigger.b)
       {
-        menuOpen = !menuOpen;
+        if(menuOpen == "build")
+        {
+          menuOpen = false;
+        }
+        else
+        {
+          menuOpen = "build";
+        }
       }
       trigger.b = false;
       break;

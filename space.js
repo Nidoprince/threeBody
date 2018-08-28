@@ -768,8 +768,7 @@ class Player
       //this.inventory.push("chronos");
       //this.inventory.push("chronos");
       this.inventory.push("fuel");
-      this.inventory.push("fuel");
-      this.inventory.push("iron");
+
     }
     else
     {

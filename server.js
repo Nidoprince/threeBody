@@ -169,6 +169,48 @@ io.on('connection', function(socket) {
           player.controllingPlanet.build(player.loc.x,player.loc.y,player.color);
         }
       }
+      if(["Chaos","Steel"].includes(data.build))
+      {
+        let inFactory = false;
+        let playerAngle = player.controllingPlanet.loc.direction(player.loc).angle();
+        for(let factory of player.controllingPlanet.buildings)
+        {
+          let difference = Math.abs(factory.angle-playerAngle);
+          if(difference < factory.size/player.controllingPlanet.size)
+          {
+            inFactory = true;
+          }
+        }
+        if(inFactory)
+        {
+          if(data.build == "Steel")
+          {
+            if(player.inventory.filter((x) => x == "iron").length > 0 && player.inventory.filter((x) => x == "fuel").length > 0 && player.controllingPlanet)
+            {
+              for(let i = 0; i<1; i++)
+              {
+                let index = player.inventory.indexOf("iron");
+                player.inventory.splice(index,1);
+                index = player.inventory.indexOf("fuel");
+                player.inventory.splice(index,1);
+              }
+              player.inventory.push("steel");
+            }
+          }
+          if(data.build == "Chaos")
+          {
+            if(player.inventory.filter((x) => x == "chronos").length > 3)
+            {
+              for(let i = 0; i<4; i++)
+              {
+                let index = player.inventory.indexOf("chronos");
+                player.inventory.splice(index,1);
+              }
+              player.inventory.push("chaos");
+            }
+          }
+        }
+      }
     }
   });
 });
