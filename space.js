@@ -768,16 +768,12 @@ class Player
       //this.inventory.push("chronos");
       //this.inventory.push("chronos");
       this.inventory.push("fuel");
-
     }
     else
     {
       this.loc = new Vector(x,y);
       this.vel = new Vector(0,0);
-      this.inventory.push("fuel");
-      this.inventory.push("fuel");
-      this.inventory.push("fuel");
-      this.inventory.push("fuel");
+      this.inventory.push("fuel+");
       this.inventory.push("iron");
     }
     this.actingVel = new Vector(0,0);
@@ -841,6 +837,21 @@ class Player
           for (var i = 0; i< extrafuel; i++)
           {
             this.inventory.push("fuel");
+          }
+          if(ship.type != "SUV")
+          {
+            extrafuel = 0;
+            this.inSpaceShip.fuel += this.inventory.filter(x => x == "fuel+").length*20000;
+            if(this.inSpaceShip.fuel > this.inSpaceShip.fuelMax)
+            {
+              extrafuel = Math.floor((this.inSpaceShip.fuel - this.inSpaceShip.fuelMax)/20000);
+              this.inSpaceShip.fuel = this.inSpaceShip.fuelMax;
+            }
+            this.inventory = this.inventory.filter(x => x != "fuel+");
+            for (var i = 0; i< extrafuel; i++)
+            {
+              this.inventory.push("fuel+");
+            }
           }
           break;
         }

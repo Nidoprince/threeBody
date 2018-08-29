@@ -243,6 +243,12 @@ socket.on('state',function(celestial) {
           playerControl.build = "Chaos";
           menuOpen = false;
         }
+        else if(menuLoc == 2 && myPlayer.inventory.filter((x) => x == "fuel").length > 3)
+        {
+          playerControl.build = "Fuel+";
+          menuOpen = false;
+          console.log(playerControl.build)
+        }
       }
       refineMenuAnimation(context);
     }

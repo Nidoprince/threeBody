@@ -291,7 +291,6 @@ var alienDrawer = function(alien,drawOn)
 
 var buildingDrawer = function(building,planet,drawOn)
 {
-  console.log(building);
   if(building.type == "refinery")
   {
     let planetLoc = new Vector(planet.loc.x,planet.loc.y);
@@ -511,6 +510,8 @@ var refineMenuAnimation = function(drawOn)
   drawOn.fillText("1 Iron 1 Fuel",180,190);
   drawOn.fillText("Chaos",575,150);
   drawOn.fillText("4 Chronos",555,190);
+  drawOn.fillText("Fuel+",955,150);
+  drawOn.fillText("4 Fuel",955,190);
 }
 
 var buildMenuAnimation =  function(drawOn)

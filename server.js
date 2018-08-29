@@ -169,7 +169,7 @@ io.on('connection', function(socket) {
           player.controllingPlanet.build(player.loc.x,player.loc.y,player.color);
         }
       }
-      if(["Chaos","Steel"].includes(data.build))
+      if(["Chaos","Steel","Fuel+"].includes(data.build))
       {
         let inFactory = false;
         let playerAngle = player.controllingPlanet.loc.direction(player.loc).angle();
@@ -207,6 +207,18 @@ io.on('connection', function(socket) {
                 player.inventory.splice(index,1);
               }
               player.inventory.push("chaos");
+            }
+          }
+          if(data.build == "Fuel+")
+          {
+            if(player.inventory.filter((x) => x == "fuel").length > 3)
+            {
+              for(let i = 0; i<4; i++)
+              {
+                let index = player.inventory.indexOf("fuel");
+                player.inventory.splice(index,1);
+              }
+              player.inventory.push("fuel+");
             }
           }
         }
