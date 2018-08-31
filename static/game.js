@@ -82,6 +82,7 @@ socket.on('state',function(celestial) {
     let ships = celestial[2];
     let asteroids = celestial[3];
     let aliens = celestial[4];
+    let items = celestial[5];
 
     for (var id in players)
     {
@@ -103,6 +104,7 @@ socket.on('state',function(celestial) {
     ships = ships.filter((x)=>x.reality==reality);
     asteroids = asteroids.filter((x)=>x.reality==reality);
     aliens = aliens.filter((x)=>x.reality==reality);
+    items = items.filter((x)=>x.reality==reality);
 
     if(myPlayer && myPlayer == "dead")
     {
@@ -166,6 +168,10 @@ socket.on('state',function(celestial) {
     {
       playerDot(myPlayer,context)
     }
+    for (var id in items) {
+      var item = items[id];
+      itemDrawer(item,context);
+    }
     if(myPlayer && viewer.showVelocity && myPlayer != "dead")
     {
       var toMap = new Map(myPlayer.velocityComponents)
@@ -188,16 +194,7 @@ socket.on('state',function(celestial) {
     }
     if(myPlayer && myPlayer != "dead")
     {
-      for (var inv in myPlayer.inventory)
-      {
-        context.fillStyle = "white"
-        if(reality == 1)
-        {
-          context.fillStyle = "black";
-        }
-        context.font = "bold 14px Arial";
-        context.fillText(myPlayer.inventory[inv],50+inv*100,750)
-      }
+      drawInventory(myPlayer,context);
       if(myPlayer.inSpaceShip)
       {
         fuelBar(myPlayer, context);

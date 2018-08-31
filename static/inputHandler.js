@@ -7,6 +7,7 @@ var playerControl = {
   m: false,
   p: false,
   t: false,
+  inventory: false,
   build: false,
   xGoal: false,
   yGoal: false
@@ -110,6 +111,7 @@ var trigger = {
   t: false,
   tX: false,
   tY: false,
+  inventory: false,
   reset()
   {
     this.up = false;
@@ -127,6 +129,7 @@ var trigger = {
     playerControl.p = false;
     playerControl.t = false;
     playerControl.build = false;
+    playerControl.inventory = false;
   }
 }
 
@@ -193,6 +196,10 @@ function touchHandler(event,touchType)
         else if(trigger.tX > 1500 && trigger.tX < 1650)
         {
           playerControl.t = true;
+        }
+        else if(trigger.tY > 700 && trigger.tX >= 50 && trigger.tX < 850)
+        {
+          playerControl.inventory = Math.floor((trigger.tX-50)/100)+1;
         }
       }
       if(trigger.tY > 700 && trigger.tX < 150)
@@ -310,6 +317,30 @@ document.addEventListener("resize", function(event)
 
 document.addEventListener('keydown', function(event) {
   switch (event.keyCode) {
+    case 49: //1
+      trigger.inventory = 1;
+      break;
+    case 50: //2
+      trigger.inventory = 2;
+      break;
+    case 51: //3
+      trigger.inventory = 3;
+      break;
+    case 52: //4
+      trigger.inventory = 4;
+      break;
+    case 53: //5
+      trigger.inventory = 5;
+      break;
+    case 54: //6
+      trigger.inventory = 6;
+      break;
+    case 55: //7
+      trigger.inventory = 7;
+      break;
+    case 56: //8
+      trigger.inventory = 8;
+      break;
     case 65: //A
       playerControl.left = true;
       break;
@@ -380,6 +411,62 @@ document.addEventListener('keydown', function(event) {
 });
 document.addEventListener('keyup', function(event) {
   switch (event.keyCode) {
+    case 49: //1
+      if(trigger.inventory == 1)
+      {
+        playerControl.inventory = 1;
+      }
+      trigger.inventory = false;
+      break;
+    case 50: //2
+      if(trigger.inventory == 2)
+      {
+        playerControl.inventory = 2;
+      }
+      trigger.inventory = false;
+      break;
+    case 51: //3
+      if(trigger.inventory == 3)
+      {
+        playerControl.inventory = 3;
+      }
+      trigger.inventory = false;
+      break;
+    case 52: //4
+      if(trigger.inventory == 4)
+      {
+        playerControl.inventory = 4;
+      }
+      trigger.inventory = false;
+      break;
+    case 53: //5
+      if(trigger.inventory == 5)
+      {
+        playerControl.inventory = 5;
+      }
+      trigger.inventory = false;
+      break;
+    case 54: //6
+      if(trigger.inventory == 6)
+      {
+        playerControl.inventory = 6;
+      }
+      trigger.inventory = false;
+      break;
+    case 55: //7
+      if(trigger.inventory == 7)
+      {
+        playerControl.inventory = 7;
+      }
+      trigger.inventory = false;
+      break;
+    case 56: //8
+      if(trigger.inventory == 8)
+      {
+        playerControl.inventory = 8;
+      }
+      trigger.inventory = false;
+      break;
     case 65: //A
       if(playerControl.left)
       {

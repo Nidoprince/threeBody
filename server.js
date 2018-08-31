@@ -16,6 +16,7 @@ var planets = [];
 var ships = [];
 var asteroids = [];
 var aliens = [];
+var items = [];
 
 app.use(express.static('static'))
 app.use('/static', express.static(__dirname + '/static'));
@@ -67,7 +68,8 @@ io.on('connection', function(socket) {
     player.rightHeld = data.right;
     player.downHeld = data.down;
     player.mHeld = data.m;
-    if(data.e){
+    if(data.e)
+    {
       player.ePressed = data.e;
     }
     if(data.p)
@@ -77,6 +79,10 @@ io.on('connection', function(socket) {
     if(data.t)
     {
       player.tPressed = data.t;
+    }
+    if(data.inventory)
+    {
+      player.dropWhat = data.inventory;
     }
     if(data.xGoal && data.yGoal)
     {
@@ -230,6 +236,8 @@ io.on('connection', function(socket) {
 setInterval(function() {
   var currentTime = (new Date()).getTime();
   var timeDifferential = (currentTime - lastUpdateTime)/20;
+
+  //Generate Stuff
   if(Math.random()*1000 < (50-asteroids.length)/50)
   {
     let size = (Math.random()+Math.random()+Math.random()+Math.random())*40+20;
@@ -265,6 +273,9 @@ setInterval(function() {
   {
     aliens.push(new space.Flock(10+Math.random()*70,5,Math.random()*20000-10000,Math.random()*20000-10000,5,["red","green","blue","pink","grey","purple","yellow","white","orange","darkgrey"][Math.floor(Math.random()*10)],1000+Math.random()*9000));
   }
+
+
+  //Update Stuff
   for (var id in planets)
   {
     planets[id].updateVelocity(planets);
@@ -324,7 +335,7 @@ setInterval(function() {
   {
     if(players[id]!="dead")
     {
-      players[id].updatePlayer(timeDifferential,planetoids,ships);
+      players[id].updatePlayer(timeDifferential,planetoids,ships,items);
     }
   }
   for (var id in players)
@@ -334,8 +345,17 @@ setInterval(function() {
       players[id] = "dead";
     }
   }
+  for (var id in items)
+  {
+    items[id].updateVelocity(planetoids);
+  }
+  items = items.filter(item =>
+  {
+    item.updateLocation(timeDifferential,planetoids);
+    return item.stillCorporeal;
+  })
   lastUpdateTime = currentTime;
-  io.sockets.emit('state', [planets.map(compr.planetCompress),players,ships.map(compr.shipCompress),asteroids.map(compr.planetCompress),aliens.map(compr.alienCompress)]);
+  io.sockets.emit('state', [planets.map(compr.planetCompress),players,ships.map(compr.shipCompress),asteroids.map(compr.planetCompress),aliens.map(compr.alienCompress),items.map(compr.itemCompress)]);
   /*if(dog)
   {
     console.log(JSON.stringify([planets,players,ships,asteroids,aliens]).length);

@@ -88,6 +88,16 @@ var shipCompress = function(ship)
   }
 }
 
+var itemCompress = function(item)
+{
+  return {
+    loc: new space.Vector(Math.floor(item.loc.x),Math.floor(item.loc.y)),
+    color: item.color,
+    size: item.size,
+    reality: item.reality
+  }
+}
+
 var boidCompress = function(boid)
 {
   return {
@@ -111,3 +121,4 @@ var alienCompress = function(alien)
 module.exports.planetCompress = planetCompress;
 module.exports.shipCompress = shipCompress;
 module.exports.alienCompress = alienCompress;
+module.exports.itemCompress = itemCompress;

@@ -364,6 +364,17 @@ var asteroidDrawer = function(asteroid,drawOn)
   }
 }
 
+var itemDrawer = function(item,drawOn)
+{
+  if(item.size/zoomMult > 0.5)
+  {
+    drawOn.fillStyle = item.color;
+    drawOn.beginPath();
+    drawOn.arc((item.loc.x-viewer.x)/zoomMult+800,(item.loc.y-viewer.y)/zoomMult+400, item.size/zoomMult, 0, 2 * Math.PI);
+    drawOn.fill();
+  }
+}
+
 var fuelBar = function(player,drawOn)
 {
   drawOn.strokeStyle = "grey";
@@ -390,6 +401,20 @@ var playerDrawer = function(player,drawOn)
     drawOn.arc((player.loc.x-viewer.x)/zoomMult+800,(player.loc.y-viewer.y)/zoomMult+400, player.size/zoomMult, 0, 2 * Math.PI);
     drawOn.fill();
     drawOn.stroke();
+  }
+}
+
+var drawInventory = function(player, drawOn)
+{
+  for (var inv in player.inventory)
+  {
+    drawOn.fillStyle = "white"
+    if(reality == 1)
+    {
+      drawOn.fillStyle = "black";
+    }
+    drawOn.font = "bold 14px Arial";
+    drawOn.fillText(myPlayer.inventory[inv],50+inv*100,750)
   }
 }
 

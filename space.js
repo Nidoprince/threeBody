@@ -185,6 +185,102 @@ class Explosion
   }
 }
 
+//Inventory items outside the inventory.
+class Item
+{
+  constructor(x,y,type,reality = 0)
+  {
+    this.loc = new Vector(x,y);
+    this.vel = new Vector(0,0);
+    this.onPlanetVelocity = new Vector(0,0);
+    this.stillCorporeal = true;
+    this.reality = reality;
+    this.type = type;
+    if(this.type == "iron")
+    {
+      this.color = "grey";
+      this.size = 5;
+      this.density = 3;
+    }
+    else if(this.type == "steel")
+    {
+      this.color = "lightgrey";
+      this.size = 5;
+      this.density = 2.5;
+    }
+    else if(this.type == "fuel")
+    {
+      this.color = "brown";
+      this.size = 4;
+      this.density = 1;
+    }
+    else if(this.type == "fuel+")
+    {
+      this.color = "orange";
+      this.size = 3;
+      this.density = 4;
+    }
+    else if(this.type == "chronos")
+    {
+      this.color = "pink";
+      this.size = 8;
+      this.density = 0.1;
+    }
+    else if(this.type == "chaos")
+    {
+      this.color = "black";
+      this.size = 1;
+      this.density = 1000;
+    }
+    else
+    {
+      this.color = "white";
+      this.size = 2;
+      this.density = 1;
+    }
+  }
+
+  mass()
+  {
+    return this.size*this.density*this.size*3.14159265358979323646264338;
+  }
+
+  updateVelocity(planets)
+  {
+    //Only in same reality
+    planets = planets.filter((x)=>this.reality == x.reality)
+
+    this.onPlanetVelocity = new Vector(0,0);
+    for(let planet of planets)
+    {
+      this.vel = this.vel.addVector(gravityCalculator(this,planet));
+      if(Vector.distance(this.loc,planet.loc)<this.size+planet.size*1.2)
+      {
+        this.onPlanetVelocity = planet.vel.copy();
+      }
+    }
+    this.vel = this.vel.speedLimit(maxSpeed);
+  }
+
+  updateLocation(timeDifferential,planets)
+  {
+    this.loc = this.loc.addVector((this.vel.addVector(this.onPlanetVelocity)).multiplyScaler(timeDifferential*universeSpeed));
+
+    //Only in same reality
+    planets = planets.filter((x)=>this.reality == x.reality)
+
+    for(let planet of planets)
+    {
+      if(Vector.distance(this.loc,planet.loc)<planet.size+this.size)
+      {
+        this.vel = this.vel.addVector(planet.loc.addVector(planet.loc.direction(this.loc).normalize(planet.size+this.size)).subVector(this.loc));
+        this.loc = planet.loc.addVector(planet.loc.direction(this.loc).normalize(planet.size+this.size));
+      }
+    }
+  }
+
+}
+
 
 //Main way to travel between the stars.
 class Ship
@@ -764,9 +860,6 @@ class Player
       this.loc = this.controllingPlanet.loc.addVector((new Vector(this.controllingPlanet.size,0)).rotate(Math.random()*Math.PI*2));
       this.vel = this.controllingPlanet.vel.copy();
       this.inventory.push("iron");
-      //this.inventory.push("iron");
-      //this.inventory.push("chronos");
-      //this.inventory.push("chronos");
       this.inventory.push("fuel");
     }
     else
@@ -798,6 +891,8 @@ class Player
     this.currentlyLoading = false;
     this.air = 1000;
     this.airMax = 1000;
+    this.dropWhat = false;
+    this.pickUpTimer = 0;
   }
 
   mass()
@@ -1165,7 +1260,7 @@ class Player
     this.vel = this.vel.addVector(deltaVector.normalize(controlSpeed))
   }
 
-  updatePlayer(timeDifferential,planets,ships)
+  updatePlayer(timeDifferential,planets,ships,items)
   {
     //Only in same reality
     ships = ships.filter((x)=>this.reality == x.reality)
@@ -1256,6 +1351,31 @@ class Player
       }
     }
 
+    //Dealing with dropping and picking up items
+    if(this.dropWhat && this.inventory.length >= this.dropWhat)
+    {
+      let whatDropped = this.inventory[this.dropWhat-1];
+      this.inventory.splice(this.dropWhat-1,1);
+      items.push(new Item(this.loc.x,this.loc.y,whatDropped,this.reality));
+      this.pickUpTimer = 150;
+    }
+    else if(this.pickUpTimer > 0)
+    {
+      this.pickUpTimer -= 1;
+    }
+    else
+    {
+      for(let item of items)
+      {
+        if(Vector.distance(this.loc,item.loc)<this.size+item.size && this.inventory.length < 8 && item.stillCorporeal)
+        {
+          item.stillCorporeal = false;
+          this.inventory.push(item.type);
+        }
+      }
+    }
+
+    this.dropWhat = false;
     this.tPressed = false;
     this.pPressed = false;
     this.ePressed = false;
