@@ -732,14 +732,13 @@ class Car extends Ship
   //Different version of the control function that takes into account moving around a planet.
   shipControl(id,up,down,left,right,goal)
   {
-    console.log(this.drivingOn)
     if(this.drivingOn && Vector.distance(this.loc,this.drivingOn.loc)<=this.size+this.drivingOn.size+groundTouchError)
     {
       //Touch Controls
-      if(this.goal)
+      if(goal)
       {
         let planetLocAngle = this.drivingOn.loc.direction(this.loc).angle();
-        let goalLocAngle = this.drivingOn.loc.direction(this.goal).angle();
+        let goalLocAngle = this.drivingOn.loc.direction(goal).angle();
         let difference = goalLocAngle - planetLocAngle;
         if(difference < 0)
         {
@@ -753,12 +752,10 @@ class Car extends Ship
         {
           left = true;
         }
-        else if((difference < 0.2 || difference > 2*Math.PI-0.2) && Vector.distance(this.loc,this.goal) > 100 && Vector.distance(this.loc,this.controllingPlanet.loc) < Vector.distance(this.goal,this.controllingPlanet.loc))
+        else if((difference < 0.2 || difference > 2*Math.PI-0.2) && Vector.distance(this.loc,goal) > 100 && Vector.distance(this.loc,this.drivingOn.loc) < Vector.distance(goal,this.drivingOn.loc))
         {
           up = true;
         }
-        console.log(left)
-        console.log(right)
       }
 
       let moveSpeed;
