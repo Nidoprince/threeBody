@@ -756,6 +756,8 @@ class Car extends Ship
         {
           up = true;
         }
+        console.log(left)
+        console.log(right)
       }
 
       let moveSpeed;
@@ -773,17 +775,17 @@ class Car extends Ship
       let planetDirection = this.drivingOn.loc.direction(this.loc);
       if(right && this.fuel >= moveFuel)
       {
-        this.controlInput = this.controlInput.addVector(planetDirection.rotate(Math.PI/2).multiplyScaler(moveSpeed));
+        this.controlInput = this.controlInput.addVector(planetDirection.rotate(Math.PI/2).normalize(moveSpeed));
         this.fuel -= moveFuel;
       }
       else if(left && this.fuel >= moveFuel)
       {
-        this.controlInput = this.controlInput.addVector(planetDirection.rotate(3*Math.PI/2).multiplyScaler(moveSpeed));
+        this.controlInput = this.controlInput.addVector(planetDirection.rotate(3*Math.PI/2).normalize(moveSpeed));
         this.fuel -= moveFuel;
       }
       if(up && this.fuel >= jumpFuel)
       {
-        this.controlInput = this.controlInput.addVector(planetDirection.multiplyScaler(jumpForce));
+        this.controlInput = this.controlInput.addVector(planetDirection.normalize(jumpForce));
         this.fuel -= jumpFuel;
       }
     }
