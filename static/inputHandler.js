@@ -197,12 +197,12 @@ function touchHandler(event,touchType)
         {
           playerControl.t = true;
         }
-        else if(trigger.tY > 700 && trigger.tX >= 50 && trigger.tX < 850)
-        {
-          playerControl.inventory = Math.floor((trigger.tX-50)/100)+1;
-        }
       }
-      if(trigger.tY > 700 && trigger.tX < 150)
+      if(trigger.tY > 700 && trigger.tX >= 50 && trigger.tX < 850)
+      {
+        playerControl.inventory = Math.floor((trigger.tX-50)/100)+1;
+      }
+      if(trigger.tY < 100 && trigger.tX < 150)
       {
         if(menuOpen == "build")
         {

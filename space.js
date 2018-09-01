@@ -732,7 +732,7 @@ class Car extends Ship
   //Different version of the control function that takes into account moving around a planet.
   shipControl(id,up,down,left,right,goal)
   {
-    if(this.drivingOn && Vector.distance(this.loc,this.drivingOn.loc)<this.size+this.drivingOn.size+groundTouchError)
+    if(this.drivingOn && Vector.distance(this.loc,this.drivingOn.loc)<=this.size+this.drivingOn.size+groundTouchError)
     {
       //Touch Controls
       if(this.goal)
