@@ -226,9 +226,22 @@ function touchHandler(event,touchType)
         }
       }
 
-      if(menuOpen == "refine" && trigger.tY > 100 && trigger.tY < 700 && trigger.tX > 100 && trigger.tX < 1500)
+      if(menuOpen == "refinery" && trigger.tY > 100 && trigger.tY < 700 && trigger.tX > 100 && trigger.tX < 1500)
       {
         let clickWhere = Math.floor((trigger.tX-100)/375)+4*Math.floor((trigger.tY-100)/350);
+        if(menuLoc == clickWhere)
+        {
+          trigger.enter = true;
+        }
+        else
+        {
+          menuLoc = clickWhere;
+        }
+      }
+
+      if(menuOpen == "warehouse" && trigger.tY > 100 && trigger.tY < 700 && trigger.tX > 100 && trigger.tX < 1500)
+      {
+        let clickWhere = Math.floor((trigger.tX-100)/121)+12*Math.floor((trigger.tY-100)/175);
         if(menuLoc == clickWhere)
         {
           trigger.enter = true;

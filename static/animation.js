@@ -291,7 +291,7 @@ var alienDrawer = function(alien,drawOn)
 
 var buildingDrawer = function(building,planet,drawOn)
 {
-  if(building.type == "refinery")
+  if(building.type == "refinery" || building.type == "warehouse")
   {
     let planetLoc = new Vector(planet.loc.x,planet.loc.y);
     let dir = (new Vector(0,-1)).rotate(building.angle);
@@ -311,10 +311,13 @@ var buildingDrawer = function(building,planet,drawOn)
     drawOn.strokeStyle = "grey";
     drawOn.moveTo(lowerLeftCorner.x,lowerLeftCorner.y);
     drawOn.lineTo(upperLeftCorner.x,upperLeftCorner.y);
-    drawOn.lineTo(leftSmokestack.x,leftSmokestack.y);
-    drawOn.lineTo(leftBase.x,leftBase.y);
-    drawOn.lineTo(rightBase.x,rightBase.y);
-    drawOn.lineTo(rightSmokestack.x,rightSmokestack.y);
+    if(building.type == "refinery")
+    {
+      drawOn.lineTo(leftSmokestack.x,leftSmokestack.y);
+      drawOn.lineTo(leftBase.x,leftBase.y);
+      drawOn.lineTo(rightBase.x,rightBase.y);
+      drawOn.lineTo(rightSmokestack.x,rightSmokestack.y);
+    }
     drawOn.lineTo(upperRightCorner.x,upperRightCorner.y);
     drawOn.lineTo(lowerRightCorner.x,lowerRightCorner.y);
     drawOn.closePath();
@@ -522,6 +525,16 @@ var drawTouch = function(drawOn)
   drawOn.fill();
 }
 
+var warehouseMenuAnimation = function(drawOn)
+{
+  drawOn.fillStyle = "brown";
+  drawOn.fillRect(50,50,1500,700);
+  drawOn.fillStyle = "darkgrey";
+  drawOn.fillRect(100+121*(menuLoc%12),100+175*Math.floor(menuLoc/12),71,75);
+  drawOn.fillStyle = "white";
+  drawOn.font = "bold 14px Arial";
+}
+
 
 var refineMenuAnimation = function(drawOn)
 {
@@ -566,4 +579,7 @@ var buildMenuAnimation =  function(drawOn)
   drawOn.fillText("Refinery",875,600);
   drawOn.fillText("2 Iron 2 Fuel", 870,640);
   drawOn.fillText("Press E to Use.",875,680);
+  drawOn.fillText("Warehouse",1125,600);
+  drawOn.fillText("2 Steel", 1120,640);
+  drawOn.fillText("Press E to Use.",1120,680);
 }

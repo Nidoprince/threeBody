@@ -175,6 +175,18 @@ io.on('connection', function(socket) {
           player.controllingPlanet.build(player.loc.x,player.loc.y,player.color);
         }
       }
+      if(data.build == "Warehouse")
+      {
+        if(player.inventory.filter((x) => x == "steel").length > 1)
+        {
+          for(let i = 0; i<2; i++)
+          {
+            let index = player.inventory.indexOf("steel");
+            player.inventory.splice(index,1);
+          }
+          player.controllingPlanet.build(player.loc.x,player.loc.y,player.color,"warehouse");
+        }
+      }
       if(["Chaos","Steel","Fuel+"].includes(data.build))
       {
         let inFactory = false;

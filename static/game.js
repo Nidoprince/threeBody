@@ -24,10 +24,10 @@ socket.on('message', function(data) {
 });
 
 setInterval(function() {
-  //Open or close the refine menu;
+  //Open or close any of the building menus;
   if(myPlayer && playerControl.e && myPlayer.controllingPlanet)
   {
-    if(menuOpen == "refine")
+    if(["refinery","warehouse"].includes(menuOpen))
     {
       menuOpen = false;
     }
@@ -39,7 +39,7 @@ setInterval(function() {
         let difference = Math.abs(factory.angle-playerAngle);
         if(difference < factory.size/myPlayer.controllingPlanet.size)
         {
-          menuOpen = "refine";
+          menuOpen = factory.type;
           menuLoc = 0;
         }
       }
@@ -210,7 +210,7 @@ socket.on('state',function(celestial) {
       }
     }
 
-    if(myPlayer && menuOpen == "refine")
+    if(myPlayer && menuOpen == "refinery")
     {
       if(trigger.right)
       {
@@ -304,8 +304,33 @@ socket.on('state',function(celestial) {
           playerControl.build = "Refinery";
           menuOpen = false;
         }
+        if(menuLoc == 16 && myPlayer.inventory.filter((x) => x == "steel").length > 1)
+        {
+          playerControl.build = "Warehouse";
+          menuOpen = false;
+        }
       }
       buildMenuAnimation(context);
+    }
+    else if(myPlayer && menuOpen == "warehouse")
+    {
+      if(trigger.right)
+      {
+        menuLoc = (menuLoc+1)%48;
+      }
+      else if(trigger.left)
+      {
+        menuLoc = ((menuLoc-1)%48+48)%48;
+      }
+      else if(trigger.down)
+      {
+        menuLoc = (menuLoc+12)%48;
+      }
+      else if(trigger.up)
+      {
+        menuLoc = ((menuLoc-12)%48+48)%48;
+      }
+      warehouseMenuAnimation(context);
     }
   }
   else

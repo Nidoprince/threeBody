@@ -861,6 +861,8 @@ class Player
       this.vel = this.controllingPlanet.vel.copy();
       this.inventory.push("iron");
       this.inventory.push("fuel");
+      this.inventory.push("steel")
+      this.inventory.push("steel")
     }
     else
     {
@@ -1394,6 +1396,10 @@ class Building
     if(this.type == "refinery")
     {
       this.size = 100;
+    }
+    else if(this.type == "warehouse")
+    {
+      this.size = 80;
     }
   }
 }
