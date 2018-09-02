@@ -92,6 +92,27 @@ io.on('connection', function(socket) {
     {
       player.goal = false;
     }
+    if(data.give || data.take)
+    {
+      let playerAngle = player.controllingPlanet.loc.direction(player.loc).angle();
+      for(let factory of player.controllingPlanet.buildings)
+      {
+        let difference = Math.abs(factory.angle-playerAngle);
+        if(difference < factory.size/player.controllingPlanet.size)
+        {
+          if(data.take && data.take <= factory.storage.length && player.inventory.length < 8)
+          {
+            player.inventory.push(factory.storage[data.take-1]);
+            factory.storage.splice(data.take-1,1);
+          }
+          if(data.give && data.give <= player.inventory.length && factory.storage.length < 48)
+          {
+            factory.storage.push(player.inventory[data.give-1]);
+            player.inventory.splice(data.give-1,1);
+          }
+        }
+      }
+    }
     if(data.build)
     {
       if(data.build == "Base Rocket")

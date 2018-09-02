@@ -417,7 +417,7 @@ var drawInventory = function(player, drawOn)
       drawOn.fillStyle = "black";
     }
     drawOn.font = "bold 14px Arial";
-    drawOn.fillText(myPlayer.inventory[inv],50+inv*100,750)
+    drawOn.fillText(myPlayer.inventory[inv],50+inv*100,770)
   }
 }
 
@@ -525,7 +525,7 @@ var drawTouch = function(drawOn)
   drawOn.fill();
 }
 
-var warehouseMenuAnimation = function(drawOn)
+var warehouseMenuAnimation = function(drawOn,whichHouse)
 {
   drawOn.fillStyle = "brown";
   drawOn.fillRect(50,50,1500,700);
@@ -533,6 +533,10 @@ var warehouseMenuAnimation = function(drawOn)
   drawOn.fillRect(100+121*(menuLoc%12),100+175*Math.floor(menuLoc/12),71,75);
   drawOn.fillStyle = "white";
   drawOn.font = "bold 14px Arial";
+  for(let i in whichHouse.storage)
+  {
+    drawOn.fillText(whichHouse.storage[i],110+121*(i%12),150+175*Math.floor(i/12));
+  }
 }
 
 

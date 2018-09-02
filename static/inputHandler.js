@@ -10,7 +10,28 @@ var playerControl = {
   inventory: false,
   build: false,
   xGoal: false,
-  yGoal: false
+  yGoal: false,
+  give: false,
+  take: false,
+  menuMode()
+  {
+    return {
+      up:false,
+      down: false,
+      left: false,
+      right: false,
+      e: false,
+      m: false,
+      p: false,
+      t: false,
+      inventory: false,
+      build: false,
+      xGoal: false,
+      yGoal: false,
+      give: playerControl.give,
+      take: playerControl.take
+    }
+  }
 }
 var adminControls = {
   q: false
@@ -130,6 +151,8 @@ var trigger = {
     playerControl.t = false;
     playerControl.build = false;
     playerControl.inventory = false;
+    playerControl.give = false;
+    playerControl.take = false;
   }
 }
 

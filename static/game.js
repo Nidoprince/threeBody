@@ -18,6 +18,8 @@ var cursorLoc = 0;
 var menuOpen = false;
 var menuLoc = 0;
 
+var openBuilding = false;
+
 var socket = io();
 socket.on('message', function(data) {
   console.log(data);
@@ -41,8 +43,17 @@ setInterval(function() {
         {
           menuOpen = factory.type;
           menuLoc = 0;
+          openBuilding = factory;
         }
       }
+    }
+  }
+  if(myPlayer && menuOpen == "warehouse" && playerControl.inventory)
+  {
+    if(openBuilding.storage.length < 48)
+    {
+      playerControl.give = playerControl.inventory;
+      playerControl.inventory = false;
     }
   }
   if(trigger.tX && trigger.tY)
@@ -57,6 +68,9 @@ setInterval(function() {
   }
   if(!menuOpen){
     socket.emit('playerControl', playerControl);
+  }
+  else{
+    socket.emit('playerControl', playerControl.menuMode());
   }
   trigger.resetPlayer();
 }, 1000/60);
@@ -244,7 +258,6 @@ socket.on('state',function(celestial) {
         {
           playerControl.build = "Fuel+";
           menuOpen = false;
-          console.log(playerControl.build)
         }
       }
       refineMenuAnimation(context);
@@ -314,6 +327,16 @@ socket.on('state',function(celestial) {
     }
     else if(myPlayer && menuOpen == "warehouse")
     {
+      let playerAngle = Vector.makeVec(myPlayer.controllingPlanet.loc).direction(Vector.makeVec(myPlayer.loc)).angle();
+      openBuilding = false;
+      for(let factory of myPlayer.controllingPlanet.buildings)
+      {
+        let difference = Math.abs(factory.angle-playerAngle);
+        if(difference < factory.size/myPlayer.controllingPlanet.size && factory.type == "warehouse")
+        {
+          openBuilding = factory;
+        }
+      }
       if(trigger.right)
       {
         menuLoc = (menuLoc+1)%48;
@@ -330,7 +353,24 @@ socket.on('state',function(celestial) {
       {
         menuLoc = ((menuLoc-12)%48+48)%48;
       }
-      warehouseMenuAnimation(context);
+      else if(trigger.enter)
+      {
+        if(openBuilding.storage.length > menuLoc)
+        {
+          if(player.inventory.length < 8)
+          {
+            playerControl.take = menuLoc+1;
+          }
+        }
+      }
+      if(openBuilding)
+      {
+        warehouseMenuAnimation(context,openBuilding);
+      }
+      else
+      {
+        menuOpen = false;
+      }
     }
   }
   else

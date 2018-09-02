@@ -1400,6 +1400,7 @@ class Building
     else if(this.type == "warehouse")
     {
       this.size = 80;
+      this.storage = [];
     }
   }
 }
