@@ -1264,6 +1264,10 @@ class Player
 
   updatePlayer(timeDifferential,planets,ships,items)
   {
+    if(this.inSpaceShip)
+    {
+      this.reality = this.inSpaceShip.reality;
+    }
     //Only in same reality
     ships = ships.filter((x)=>this.reality == x.reality)
     planets = planets.filter((x)=>this.reality == x.reality)
@@ -1517,6 +1521,51 @@ class Asteroid extends Planet
 }
 
 
+class Wormhole
+{
+  constructor(x1,y1,z1,x2,y2,z2,color,size)
+  {
+    this.worm1 = new Vector(x1,y1);
+    this.worm1reality = z1;
+    this.worm2 = new Vector(x2,y2);
+    this.worm2reality = z2;
+    this.color = color;
+    this.size = size;
+  }
+  warpStuff(ships,items,players)
+  {
+    let stuff = ships.concat(items,Object.values(players));
+    stuff = stuff.filter((x) => x!="dead");
+    for(let thing of stuff)
+    {
+      let angleTowards1 = Math.abs(thing.vel.angle()-thing.loc.direction(this.worm1).angle());
+      let angleTowards2 = Math.abs(thing.vel.angle()-thing.loc.direction(this.worm2).angle());
+      if(Vector.distance(thing.loc,this.worm1)<this.size+thing.size/2 && angleTowards1 < Math.PI/2 && thing.reality == this.worm1reality)
+      {
+        let randDirection = Math.random()*Math.PI*2;
+        thing.loc = this.worm2.addVector(Vector.unitVector().rotate(randDirection).multiplyScaler(this.size+1));
+        thing.vel = thing.vel.rotate(randDirection);
+        if("direction" in thing)
+        {
+          thing.direction = thing.direction.rotate(randDirection);
+        }
+        thing.reality = this.worm2reality;
+      }
+      else if(Vector.distance(thing.loc,this.worm2)<this.size+thing.size/2 && angleTowards1 < Math.PI/2 && thing.reality == this.worm2reality)
+      {
+        let randDirection = Math.random()*Math.PI*2;
+        thing.loc = this.worm1.addVector(Vector.unitVector().rotate(randDirection).multiplyScaler(this.size+1));
+        thing.vel = thing.vel.rotate(randDirection);
+        if("direction" in thing)
+        {
+          thing.direction = thing.direction.rotate(randDirection);
+        }
+        thing.reality = this.worm1reality;
+      }
+    }
+  }
+}
+
 //For Holding 2d Data and Doing Vector Math
 class Vector
 {
@@ -1682,6 +1731,12 @@ class Vector
      }
      return difference;
    }
+
+   //Simple 1 Unit Vector
+   static unitVector()
+   {
+     return new Vector(0,-1);
+   }
 }
 
 
@@ -1693,3 +1748,4 @@ module.exports.Car = Car;
 module.exports.Asteroid = Asteroid;
 module.exports.Flock = Flock;
 module.exports.Explosion = Explosion;
+module.exports.Wormhole = Wormhole;

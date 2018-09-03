@@ -97,6 +97,7 @@ socket.on('state',function(celestial) {
     let asteroids = celestial[3];
     let aliens = celestial[4];
     let items = celestial[5];
+    let tears = celestial[6];
 
     for (var id in players)
     {
@@ -185,6 +186,10 @@ socket.on('state',function(celestial) {
     for (var id in items) {
       var item = items[id];
       itemDrawer(item,context);
+    }
+    for (var id in tears) {
+      var tear = tears[id];
+      tearDrawer(tear,context);
     }
     if(myPlayer && viewer.showVelocity && myPlayer != "dead")
     {

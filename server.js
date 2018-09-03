@@ -17,6 +17,7 @@ var ships = [];
 var asteroids = [];
 var aliens = [];
 var items = [];
+var tears = [];
 
 app.use(express.static('static'))
 app.use('/static', express.static(__dirname + '/static'));
@@ -44,6 +45,7 @@ server.listen(process.env.PORT || 5000, function() {
   asteroids.push(new space.Asteroid(500,500,0,0.5,200,"iron","brown",1,1));
   //asteroids.push(new space.Asteroid(800,800,0,0.5,200,"chronos","pink"));
   aliens.push(new space.Flock(50,3,100,100,5,"pink",3000));
+  tears.push(new space.Wormhole(200,200,0,500,0,1,'rgba(0,255,255,0.2)',40));
 
 });
 
@@ -337,6 +339,10 @@ setInterval(function() {
     alien.updateLocation(timeDifferential);
     return alien.lifespan > 0;
   })
+  for(var id in tears)
+  {
+    tears[id].warpStuff(ships,items,players);
+  }
   for (var id in ships)
   {
     ships[id].updateVelocity(planetoids);
@@ -388,7 +394,7 @@ setInterval(function() {
     return item.stillCorporeal;
   })
   lastUpdateTime = currentTime;
-  io.sockets.emit('state', [planets.map(compr.planetCompress),players,ships.map(compr.shipCompress),asteroids.map(compr.planetCompress),aliens.map(compr.alienCompress),items.map(compr.itemCompress)]);
+  io.sockets.emit('state', [planets.map(compr.planetCompress),players,ships.map(compr.shipCompress),asteroids.map(compr.planetCompress),aliens.map(compr.alienCompress),items.map(compr.itemCompress),tears]);
   /*if(dog)
   {
     console.log(JSON.stringify([planets,players,ships,asteroids,aliens]).length);

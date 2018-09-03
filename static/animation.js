@@ -429,6 +429,23 @@ var playerDot = function(player, drawOn)
   drawOn.fill();
 }
 
+var tearDrawer = function(tear, drawOn)
+{
+  drawOn.fillStyle = tear.color;
+  if(tear.worm1reality == reality)
+  {
+    drawOn.beginPath();
+    drawOn.arc((tear.worm1.x-viewer.x)/zoomMult+800,(tear.worm1.y-viewer.y)/zoomMult+400, tear.size/zoomMult, 0, 2*Math.PI);
+    drawOn.fill();
+  }
+  if(tear.worm2reality == reality)
+  {
+    drawOn.beginPath();
+    drawOn.arc((tear.worm2.x-viewer.x)/zoomMult+800,(tear.worm2.y-viewer.y)/zoomMult+400, tear.size/zoomMult, 0, 2*Math.PI);
+    drawOn.fill();
+  }
+}
+
 var starForger = function(drawOn)
 {
   //Make Stars
