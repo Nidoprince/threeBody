@@ -89,6 +89,11 @@ socket.on('state',function(celestial) {
     context.fillStyle = "white";
     context.fillRect(0,0,1600,800);
   }
+  else if(reality == 2)
+  {
+    context.fillStyle = "lightblue";
+    context.fillRect(0,0,1600,800);
+  }
   if(colorSelected)
   {
     let players = celestial[1];
@@ -132,6 +137,7 @@ socket.on('state',function(celestial) {
         colorSelected = false;
         cursorLoc = 0;
         cursorMove = 0;
+        reality = 0;
         socket.emit("dead");
         viewer.space = false;
         viewer.enter = false;

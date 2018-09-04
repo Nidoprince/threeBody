@@ -45,7 +45,7 @@ server.listen(process.env.PORT || 5000, function() {
   asteroids.push(new space.Asteroid(500,500,0,0.5,200,"iron","brown",1,1));
   //asteroids.push(new space.Asteroid(800,800,0,0.5,200,"chronos","pink"));
   aliens.push(new space.Flock(50,3,100,100,5,"pink",3000));
-  tears.push(new space.Wormhole(200,200,0,500,0,1,'rgba(0,255,255,0.2)',40));
+  tears.push(new space.Wormhole(200,200,0,500,0,2,'rgba(0,255,255,0.2)',40));
 
 });
 
@@ -273,6 +273,45 @@ setInterval(function() {
   var timeDifferential = (currentTime - lastUpdateTime)/20;
 
   //Generate Stuff
+  if(Math.random()*3000 < (5-tears.length)/5)
+  {
+    let size = (Math.random()*Math.random()*Math.random()*Math.random()*4000+100);
+    let x1 = Math.random()*200000-100000;
+    let y1 = Math.random()*200000-100000;
+    let x2 = Math.random()*200000-100000;
+    let y2 = Math.random()*200000-100000;
+    let color = ['rgba(255,0,0,0.2)','rgba(0,255,0,0.2)','rgba(0,0,255,0.2)','rgba(0,255,255,0.2)','rgba(255,255,0,0.2)','rgba(255,0,255,0.2)'][Math.floor(Math.random()*6)];
+    let randoReality = Math.random()*1000;
+    let z1;
+    let z2;
+    if(randoReality < 300)
+    {
+      z1 = 0;
+      z2 = 0;
+    }
+    else if(randoReality < 900)
+    {
+      z1 = 1;
+      z2 = 1;
+    }
+    else if(randoReality < 990)
+    {
+      z1 = 0;
+      z2 = 1;
+    }
+    else if(randoReality < 999)
+    {
+      z1 = 1;
+      z2 = 2;
+    }
+    else
+    {
+      z1 = 0;
+      z2 = 2;
+    }
+    tears.push(new space.Wormhole(x1,y1,z1,x2,y2,z2,color,size));
+    console.log("New Wormhole "+x1+" "+y1);
+  }
   if(Math.random()*1000 < (50-asteroids.length)/50)
   {
     let size = (Math.random()+Math.random()+Math.random()+Math.random())*40+20;
@@ -339,10 +378,19 @@ setInterval(function() {
     alien.updateLocation(timeDifferential);
     return alien.lifespan > 0;
   })
-  for(var id in tears)
+  tears = tears.filter(tear =>
   {
-    tears[id].warpStuff(ships,items,players);
-  }
+    tear.warpStuff(ships,items,players);
+    if(Math.random()*4000 > 1)
+    {
+      return true;
+    }
+    else
+    {
+      console.log("One gone");
+      return false;
+    }
+  })
   for (var id in ships)
   {
     ships[id].updateVelocity(planetoids);

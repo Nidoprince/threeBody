@@ -463,6 +463,10 @@ var starForger = function(drawOn)
     {
       colorStart = "rgba(0,0,0,0."
     }
+    else if(reality == 2)
+    {
+      colorStart = "rgba(255,0,0,0."
+    }
     if((time+2001*i)%100000 <= 500)
     {
       drawOn.fillStyle = colorStart+((Math.abs(i*i+i)%60)+49).toString()+")";

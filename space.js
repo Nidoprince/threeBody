@@ -1091,7 +1091,7 @@ class Player
       }
     }
 
-    if(Vector.distance(closestPlanet.loc,this.loc) < closestPlanet.size*1.2+this.size+100)
+    if(closestPlanet && Vector.distance(closestPlanet.loc,this.loc) < closestPlanet.size*1.2+this.size+100)
     {
       this.controllingPlanet = closestPlanet;
     }
