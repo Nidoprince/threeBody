@@ -37,7 +37,7 @@ server.listen(process.env.PORT || 5000, function() {
   //ships.push(new space.Car(500,25050,"red",planets));
   ships.push(new space.Ship(-43300/2,-25500/2,"blue",planets));
   ships.push(new space.Ship(43300/2,-25500/2,"yellow",planets));
-  //ships.push(new space.Ship(600,400,'green',planets,"jumpShip"));
+  ships.push(new space.Ship(600,400,'green',planets,"capitolShip"));
   //ships.push(new space.Ship(200,400,'green',planets,"miningShip"));
   //ships.push(new space.Ship(400,200,'green',planets,"towRocket"));
   asteroids.push(new space.Asteroid(10000,0,0,4,100));
@@ -45,7 +45,7 @@ server.listen(process.env.PORT || 5000, function() {
   asteroids.push(new space.Asteroid(500,500,0,0.5,200,"iron","brown",1,1));
   //asteroids.push(new space.Asteroid(800,800,0,0.5,200,"chronos","pink"));
   aliens.push(new space.Flock(50,3,100,100,5,"pink",3000));
-  tears.push(new space.Wormhole(200,200,0,500,0,2,'rgba(0,255,255,0.2)',40));
+  //tears.push(new space.Wormhole(200,200,0,500,0,2,'rgba(0,255,255,0.2)',40));
 
 });
 

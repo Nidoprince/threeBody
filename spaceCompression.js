@@ -72,6 +72,22 @@ var shipCompress = function(ship)
       reality: ship.reality
     }
   }
+  else if(ship.type == "capitolShip")
+  {
+    return {
+      type: ship.type,
+      loc: ship.loc,
+      direction: ship.direction,
+      size: ship.size,
+      color: ship.color,
+      controlInput: ship.controlInput,
+      controlRotation: ship.controlRotation,
+      driverColor: ship.driverColor,
+      leftColor: ship.leftColor,
+      rightColor: ship.rightColor,
+      reality: ship.reality
+    }
+  }
   else
   {
     return {

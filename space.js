@@ -323,6 +323,17 @@ class Ship
     {
       this.jumping = false;
     }
+    else if(this.type == "capitolShip")
+    {
+      this.density *= 10;
+      this.leftOfficer = false;
+      this.leftColor = false;
+      this.rightOfficer = false;
+      this.rightColor = false;
+      this.mineSpeed = 3;
+      this.size *= 3;
+      this.fuelMax *= 20;
+    }
 
     //Only in same reality
     planets = planets.filter((x)=>this.reality == x.reality)
@@ -374,6 +385,10 @@ class Ship
     {
       return !this.miner;
     }
+    else if(["capitolShip"].includes(this.type))
+    {
+      return !this.rightOfficer;
+    }
     else
     {
       return false;
@@ -401,6 +416,27 @@ class Ship
         this.driverColor = color;
       }
     }
+    else if(["capitolShip"].includes(this.type))
+    {
+      if(this.driver)
+      {
+        if(this.leftOfficer)
+        {
+          this.rightOfficer = id;
+          this.rightColor = color;
+        }
+        else
+        {
+          this.leftOfficer = id;
+          this.leftColor = color;
+        }
+      }
+      else
+      {
+        this.driver = id;
+        this.driverColor = color;
+      }
+    }
   }
 
   //Gives the location of a given player within the space ship.
@@ -419,6 +455,21 @@ class Ship
       else if(this.miner == id)
       {
         return this.loc.subVector(this.direction.normalize(this.size/2));
+      }
+    }
+    else if(["capitolShip"].includes(this.type))
+    {
+      if(this.driver == id)
+      {
+        return this.loc.addVector(this.direction.normalize(this.size/2));
+      }
+      else if(this.leftOfficer == id)
+      {
+        return this.loc.addVector(this.direction.rotate(3*Math.PI/2).normalize(this.size/1.5));
+      }
+      else
+      {
+        return this.loc.addVector(this.direction.rotate(Math.PI/2).normalize(this.size/1.5));
       }
     }
   }
@@ -442,6 +493,24 @@ class Ship
       {
         this.miner = false;
         this.minerColor = false;
+      }
+    }
+    else if(["capitolShip"].includes(this.type))
+    {
+      if(this.driver == id)
+      {
+        this.driver = false;
+        this.driverColor = false;
+      }
+      else if(this.leftOfficer == id)
+      {
+        this.leftOfficer = false;
+        this.leftColor = false;
+      }
+      else if(this.rightOfficer == id)
+      {
+        this.rightOfficer = false;
+        this.rightColor = false;
       }
     }
   }
@@ -530,6 +599,27 @@ class Ship
         turnFuel = 0;
         slowFuel = 0;
         thrustMultiplier = 0;
+        edgeMultiplier = 0;
+        slowMultiplier = 0;
+      }
+    }
+    else if(this.type == "capitolShip")
+    {
+      if(id == this.driver || (!this.driver && id == this.leftOfficer) || (!this.driver && !this.leftOfficer && this.rightOfficer == id))
+      {
+        thrustFuel = 20;
+        turnFuel = 5;
+        slowFuel = 50;
+        thrustMultiplier = 2;
+        edgeMultiplier = 0.7;
+        slowMultiplier = 4;
+      }
+      else
+      {
+        thrustFuel = 10;
+        turnFuel = 0;
+        slowFuel = 0;
+        thrustMultiplier = 2;
         edgeMultiplier = 0;
         slowMultiplier = 0;
       }
