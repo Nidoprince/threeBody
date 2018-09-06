@@ -387,7 +387,7 @@ class Ship
     }
     else if(["capitolShip"].includes(this.type))
     {
-      return !this.rightOfficer;
+      return !this.rightOfficer || !this.leftOfficer;
     }
     else
     {

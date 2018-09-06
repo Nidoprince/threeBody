@@ -277,6 +277,93 @@ var shipDrawer = function(ship, drawOn, localViewer = viewer, localZoomMult = zo
     drawOn.beginPath();
     drawOn.arc(midThruster.x,midThruster.y,ship.size/(2*localZoomMult),shipDir.angle(),shipDir.angle()+Math.PI,true);
     drawOn.fill();
+    if(ship.driverColor)
+    {
+      drawOn.fillStyle = ship.driverColor;
+      drawOn.beginPath();
+      drawOn.arc(forwardCircle.x,forwardCircle.y,ship.size/(6*localZoomMult), 0, 2 * Math.PI);
+      drawOn.fill();
+    }
+    if(ship.leftColor)
+    {
+      drawOn.fillStyle = ship.leftColor;
+      drawOn.beginPath();
+      drawOn.arc(leftHalfCircle.x,leftHalfCircle.y,ship.size/(6*localZoomMult), 0, 2 * Math.PI);
+      drawOn.fill();
+    }
+    if(ship.rightColor)
+    {
+      drawOn.fillStyle = ship.rightColor;
+      drawOn.beginPath();
+      drawOn.arc(rightHalfCircle.x,rightHalfCircle.y,ship.size/(6*localZoomMult), 0, 2 * Math.PI);
+      drawOn.fill();
+    }
+    var shipControl = new Vector(ship.controlInput.x,ship.controlInput.y);
+    let forwardThrust = Math.abs(shipControl.angle()-shipDir.angle())<Math.PI/3 && shipControl.magnitude()>0;
+    if(ship.controlRotation > 0 || forwardThrust)
+    {
+      let intensity = 1;
+      if(ship.controlRotation > 0 && forwardThrust)
+      {
+        intensity = 1.3;
+      }
+      angleLeft = leftThruster.addVector(shipDir.negate().normalize(ship.size/(2*localZoomMult)));
+      drawOn.fillStyle = "blue";
+      drawOn.beginPath();
+      drawOn.arc(angleLeft.x,angleLeft.y,intensity*ship.size/(3*localZoomMult),0,2*Math.PI)
+      drawOn.fill();
+      angleLeft = leftThruster.addVector(shipDir.negate().normalize(ship.size/(3*localZoomMult)));
+      drawOn.fillStyle = "lightblue";
+      drawOn.beginPath();
+      drawOn.arc(angleLeft.x,angleLeft.y,intensity*ship.size/(6*localZoomMult),0,2*Math.PI)
+      drawOn.fill();
+      angleLeft = leftThruster.addVector(shipDir.negate().normalize(ship.size/(3.5*localZoomMult)));
+      drawOn.fillStyle = "white";
+      drawOn.beginPath();
+      drawOn.arc(angleLeft.x,angleLeft.y,intensity*ship.size/(9*localZoomMult),0,2*Math.PI)
+      drawOn.fill();
+    }
+    if(ship.controlRotation < 0 || forwardThrust)
+    {
+      let intensity = 1;
+      if(ship.controlRotation < 0 && forwardThrust)
+      {
+        intensity = 1.3;
+      }
+      angleRight = rightThruster.addVector(shipDir.negate().normalize(ship.size/(2*localZoomMult)));
+      drawOn.fillStyle = "blue";
+      drawOn.beginPath();
+      drawOn.arc(angleRight.x,angleRight.y,intensity*ship.size/(3*localZoomMult),0,2*Math.PI)
+      drawOn.fill();
+      angleRight = rightThruster.addVector(shipDir.negate().normalize(ship.size/(3*localZoomMult)));
+      drawOn.fillStyle = "lightblue";
+      drawOn.beginPath();
+      drawOn.arc(angleRight.x,angleRight.y,intensity*ship.size/(6*localZoomMult),0,2*Math.PI)
+      angleRight = rightThruster.addVector(shipDir.negate().normalize(ship.size/(3.5*localZoomMult)));
+      drawOn.fill();
+      drawOn.fillStyle = "white";
+      drawOn.beginPath();
+      drawOn.arc(angleRight.x,angleRight.y,intensity*ship.size/(9*localZoomMult),0,2*Math.PI)
+      drawOn.fill();
+    }
+    if(forwardThrust)
+    {
+      let intensity = shipControl.magnitude();
+      let engineLoc = midThruster.addVector(shipDir.negate().normalize(ship.size*1.2/localZoomMult));
+      drawOn.fillStyle = "blue";
+      drawOn.beginPath();
+      drawOn.arc(engineLoc.x,engineLoc.y,intensity*ship.size/(1.5*localZoomMult),0,2*Math.PI)
+      drawOn.fill();
+      engineLoc = midThruster.addVector(shipDir.negate().normalize(ship.size*1.1/localZoomMult));
+      drawOn.fillStyle = "lightblue";
+      drawOn.beginPath();
+      drawOn.arc(engineLoc.x,engineLoc.y,intensity*ship.size/(2.5*localZoomMult),0,2*Math.PI)
+      drawOn.fill();
+      drawOn.fillStyle = "white";
+      drawOn.beginPath();
+      drawOn.arc(engineLoc.x,engineLoc.y,intensity*ship.size/(4*localZoomMult),0,2*Math.PI)
+      drawOn.fill();
+    }
   }
 }
 var boidDrawer = function(boid,drawOn,size)
