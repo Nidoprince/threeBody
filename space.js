@@ -159,7 +159,7 @@ class Explosion
   {
     for(let i = 0;i<numberOfParticles;i++)
     {
-      this.particles.push(new Particle(this.loc,(new Vector(0,-1)).rotate(Math.random()*Math.PI*2).multiplyScaler(0.1+Math.random()*0.5),this.size*(0.5+Math.random()),this.lifespan,this.colors[Math.floor(this.colors.length*Math.random())],this.relative));
+      this.particles.push(new Particle(this.loc,(new Vector(0,-1)).rotate(Math.random()*Math.PI*2).multiplyScaler((0.1+Math.random()*0.5)*this.size/10),this.size*(0.5+Math.random()),this.lifespan,this.colors[Math.floor(this.colors.length*Math.random())],this.relative));
     }
   }
   updateVelocity()

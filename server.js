@@ -396,7 +396,7 @@ setInterval(function() {
     ships[id].updateVelocity(planetoids);
     if("isDead" in ships[id] && ships[id].isDead)
     {
-      ships[id] = new space.Explosion(ships[id].loc.x,ships[id].loc.y,20,500,ships[id].planetThatMurderedMe,ships[id].reality);
+      ships[id] = new space.Explosion(ships[id].loc.x,ships[id].loc.y,ships[id].size/2,500,ships[id].planetThatMurderedMe,ships[id].reality);
     }
   }
   ships = ships.filter(ship =>
