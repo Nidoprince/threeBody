@@ -342,12 +342,12 @@ setInterval(function() {
     }
     asteroids.push(new space.Asteroid(x,y,xV,yV,size,contents,color,1,reality));
   }
-  let planetoids = planets.concat(asteroids);
   if(Math.random()*3000 < 1)
   {
     aliens.push(new space.Flock(10+Math.random()*70,5,Math.random()*20000-10000,Math.random()*20000-10000,5,["red","green","blue","pink","grey","purple","yellow","white","orange","darkgrey"][Math.floor(Math.random()*10)],1000+Math.random()*9000));
   }
 
+  let planetoids = planets.concat(asteroids,ships.filter((x)=>x.type == "capitolShip" && x.gravityDrive));
 
   //Update Stuff
   for (var id in planets)

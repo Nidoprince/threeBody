@@ -252,6 +252,20 @@ var shipDrawer = function(ship, drawOn, localViewer = viewer, localZoomMult = zo
   }
   else if(ship.type == "capitolShip")
   {
+    if(ship.gravityDrive && localZoomMult == zoomMult)
+    {
+      if(ship.gravityDrive == "white")
+      {
+        drawOn.fillStyle = "rgba(255,255,255,0.7)";
+      }
+      else if(ship.gravityDrive == "black")
+      {
+        drawOn.fillStyle = "rgba(0,0,0,0.7)";
+      }
+      drawOn.beginPath();
+      drawOn.arc(penLoc.x,penLoc.y,50*ship.size/localZoomMult,0,2*Math.PI)
+      drawOn.fill();
+    }
     drawOn.fillStyle = ship.color;
     drawOn.beginPath();
     let forwardCircle = penLoc.addVector(shipDir.normalize(ship.size/(4*localZoomMult)));
@@ -259,11 +273,11 @@ var shipDrawer = function(ship, drawOn, localViewer = viewer, localZoomMult = zo
     drawOn.fill();
     let leftHalfCircle = penLoc.addVector(shipDir.rotate(3*Math.PI/2).normalize(ship.size/(1.5*localZoomMult)));
     drawOn.beginPath();
-    drawOn.arc(leftHalfCircle.x,leftHalfCircle.y,ship.size/(1.5*localZoomMult),shipDir.angle()+Math.PI/4,shipDir.angle()+Math.PI+Math.PI/4);
+    drawOn.arc(leftHalfCircle.x,leftHalfCircle.y,ship.size/(1.5*localZoomMult),shipDir.angle()+Math.PI/4+ship.leftFinAngle,shipDir.angle()+Math.PI+Math.PI/4+ship.leftFinAngle);
     drawOn.fill();
     let rightHalfCircle = penLoc.addVector(shipDir.rotate(Math.PI/2).normalize(ship.size/(1.5*localZoomMult)));
     drawOn.beginPath();
-    drawOn.arc(rightHalfCircle.x,rightHalfCircle.y,ship.size/(1.5*localZoomMult),shipDir.angle()-Math.PI/4,shipDir.angle()+Math.PI-Math.PI/4);
+    drawOn.arc(rightHalfCircle.x,rightHalfCircle.y,ship.size/(1.5*localZoomMult),shipDir.angle()-Math.PI/4+ship.rightFinAngle,shipDir.angle()+Math.PI-Math.PI/4+ship.rightFinAngle);
     drawOn.fill();
     let leftThruster = leftHalfCircle.addVector(shipDir.negate().normalize(ship.size/localZoomMult));
     drawOn.beginPath();

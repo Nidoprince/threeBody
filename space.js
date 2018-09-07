@@ -333,6 +333,11 @@ class Ship
       this.mineSpeed = 3;
       this.size *= 3;
       this.fuelMax *= 20;
+      this.leftFinAngle = 0;
+      this.rightFinAngle = 0;
+      this.gravityDrive = false;
+      this.oldVel = this.vel.copy();
+      this.fuel = 1000000;
     }
 
     //Only in same reality
@@ -367,7 +372,21 @@ class Ship
 
   mass()
   {
-    return this.size*this.density*this.size*3.14159265358979323646264338 + this.fuel*fuelWeight;
+    if(this.type == "capitolShip" && this.gravityDrive)
+    {
+      if(this.gravityDrive == "black")
+      {
+        return 100000000;
+      }
+      else if(this.gravityDrive == "white")
+      {
+        return -100000000;
+      }
+    }
+    else
+    {
+      return this.size*this.density*this.size*3.14159265358979323646264338 + this.fuel*fuelWeight;
+    }
   }
 
   //Checks if a spaceship has room for another player to board it.
@@ -622,6 +641,39 @@ class Ship
         thrustMultiplier = 2;
         edgeMultiplier = 0;
         slowMultiplier = 0;
+        if(right && this.leftOfficer == id)
+        {
+          this.leftFinAngle += this.turnRate;
+          if(this.leftFinAngle > Math.PI/4)
+          {
+            this.leftFinAngle = Math.PI/4;
+          }
+        }
+        else if(left && this.leftOfficer == id)
+        {
+          this.leftFinAngle -= this.turnRate;
+          if(this.leftFinAngle < -Math.PI/4)
+          {
+            this.leftFinAngle = -Math.PI/4;
+          }
+        }
+        else if(right && this.rightOfficer == id)
+        {
+          this.rightFinAngle += this.turnRate;
+          if(this.rightFinAngle > Math.PI/4)
+          {
+            this.rightFinAngle = Math.PI/4;
+          }
+        }
+        else if(left && this.rightOfficer == id)
+        {
+          this.rightFinAngle -= this.turnRate;
+          if(this.rightFinAngle < -Math.PI/4)
+          {
+            this.rightFinAngle = -Math.PI/4;
+          }
+        }
+
       }
     }
     //Thrust
@@ -656,7 +708,7 @@ class Ship
   updateVelocity(planets)
   {
     //Only in same reality
-    planets = planets.filter((x)=>this.reality == x.reality)
+    planets = planets.filter((x)=>this.reality == x.reality && !this.loc.isEqual(x.loc));
 
     if(this.parked)
     {
@@ -801,6 +853,22 @@ class Ship
         this.vel = this.vel.addVector(planet.loc.addVector(planet.loc.direction(this.loc).normalize(planet.size+this.size)).subVector(this.loc));
         this.loc = planet.loc.addVector(planet.loc.direction(this.loc).normalize(planet.size+this.size));
       }
+    }
+
+    if(this.type == "capitolShip")
+    {
+      if(this.gravityDrive)
+      {
+        if(this.fuel < 1000)
+        {
+          this.gravityDrive = false;
+        }
+        else
+        {
+          this.fuel -= 1000;
+        }
+      }
+      this.oldVel = this.vel.copy();
     }
 
     //Reset the control inputs.
@@ -1043,6 +1111,21 @@ class Player
           break;
         }
       }
+    }
+  }
+  changeGravityDrive()
+  {
+    if(!this.inSpaceShip.gravityDrive && this.inSpaceShip.fuel >= 1000)
+    {
+      this.inSpaceShip.gravityDrive = "black";
+    }
+    else if(this.inSpaceShip.gravityDrive == "black")
+    {
+      this.inSpaceShip.gravityDrive = "white";
+    }
+    else if(this.inSpaceShip.gravityDrive == "white")
+    {
+      this.inSpaceShip.gravityDrive = false;
     }
   }
   attachOrReleaseTowLine(ships)
@@ -1411,22 +1494,32 @@ class Player
         this.toggleParkingBreak();
       }
     }
-    if(this.tPressed && this.inSpaceShip && this.inSpaceShip.type == "jumpShip")
+    if(this.tPressed && this.inSpaceShip)
     {
-      this.inSpaceShip.jumping = true;
-    }
-    if(this.tPressed && this.inSpaceShip && this.inSpaceShip.type == "towRocket")
-    {
-      this.attachOrReleaseTowLine(ships);
-    }
-    if(this.tPressed && this.inSpaceShip && this.inSpaceShip.type == "realityRocket")
-    {
-      if(this.inSpaceShip.fuel > 50)
+      if(this.inSpaceShip.type == "jumpShip")
       {
-        this.inSpaceShip.fuel -= 50;
-        this.inSpaceShip.reality = 1-this.inSpaceShip.reality;
-        this.reality = 1-this.reality;
-        this.inSpaceShip.parked = false;
+        this.inSpaceShip.jumping = true;
+      }
+      if(this.inSpaceShip.type == "towRocket")
+      {
+        this.attachOrReleaseTowLine(ships);
+      }
+      if(this.inSpaceShip.type == "realityRocket")
+      {
+        if(this.inSpaceShip.fuel > 50)
+        {
+          this.inSpaceShip.fuel -= 50;
+          this.inSpaceShip.reality = 1-this.inSpaceShip.reality;
+          this.reality = 1-this.reality;
+          this.inSpaceShip.parked = false;
+        }
+      }
+      if(this.inSpaceShip.type == "capitolShip")
+      {
+        if(this.inSpaceShip.driver == this.id)
+        {
+          this.changeGravityDrive();
+        }
       }
     }
 
@@ -1571,7 +1664,7 @@ class Planet
       //}
 
       //Bounce off each other.
-      if(Vector.distance(this.loc,planet.loc) <= this.size+planet.size)
+      if(Vector.distance(this.loc,planet.loc) <= this.size+planet.size && "mineTime" in planet)
       {
         var stepOne = Vector.dotProduct(this.vel.subVector(planet.oldVel),this.loc.subVector(planet.loc))/Math.pow((this.loc.subVector(planet.loc).magnitude()),2);
         var stepTwo = 2*planet.mass()/(this.mass()+planet.mass());

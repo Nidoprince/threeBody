@@ -85,7 +85,10 @@ var shipCompress = function(ship)
       driverColor: ship.driverColor,
       leftColor: ship.leftColor,
       rightColor: ship.rightColor,
-      reality: ship.reality
+      reality: ship.reality,
+      leftFinAngle: ship.leftFinAngle,
+      rightFinAngle: ship.rightFinAngle,
+      gravityDrive: ship.gravityDrive
     }
   }
   else
