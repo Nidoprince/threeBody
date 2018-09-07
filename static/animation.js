@@ -254,16 +254,20 @@ var shipDrawer = function(ship, drawOn, localViewer = viewer, localZoomMult = zo
   {
     if(ship.gravityDrive && localZoomMult == zoomMult)
     {
+      let gradient = drawOn.createRadialGradient(penLoc.x,penLoc.y,10*ship.size/localZoomMult,penLoc.x,penLoc.y,60*ship.size/localZoomMult);
       if(ship.gravityDrive == "white")
       {
-        drawOn.fillStyle = "rgba(255,255,255,0.7)";
+        gradient.addColorStop(0,"rgba(255,255,255,0.9)");
+        gradient.addColorStop(1,"rgba(255,255,255,0)");
       }
       else if(ship.gravityDrive == "black")
       {
-        drawOn.fillStyle = "rgba(0,0,0,0.7)";
+        gradient.addColorStop(0,"rgba(0,0,0,0.9)");
+        gradient.addColorStop(1,"rgba(0,0,0,0)");
       }
+      drawOn.fillStyle = gradient;
       drawOn.beginPath();
-      drawOn.arc(penLoc.x,penLoc.y,50*ship.size/localZoomMult,0,2*Math.PI)
+      drawOn.arc(penLoc.x,penLoc.y,60*ship.size/localZoomMult,0,2*Math.PI)
       drawOn.fill();
     }
     drawOn.fillStyle = ship.color;
