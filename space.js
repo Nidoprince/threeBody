@@ -15,6 +15,7 @@ const walkSpeed = 3; //Acceleration on a planet
 const maxSpeed = 20; //Max velocity for player not in a ship.
 const friction = 0.2; //How much friction affects things.
 const airResistance = 0.001;  //How much air resistance affects things.
+const projectileSpeed = 30;
 
 //Calculates the effect of gravity on a body.
 const gravityCalculator = function(body,attractor)
@@ -129,6 +130,59 @@ class Particle
     this.loc = this.loc.addVector(this.vel.multiplyScaler(timeDifferential*universeSpeed));
     this.lifespan--;
     this.size = this.lifespan/this.startLife*this.startSize;
+  }
+}
+
+class Projectile extends Particle
+{
+  constructor(loc,vel,size,lifespan,color,reality = 0,relative = false)
+  {
+    super(loc,vel,size,lifespan,color,relative);
+    this.reality = reality;
+    this.size = size;
+  }
+  updateLocation(timeDifferential,planets,items)
+  {
+    this.loc = this.loc.addVector(this.vel.multiplyScaler(timeDifferential*universeSpeed));
+    this.lifespan--;
+    for(let planet of planets)
+    {
+      if(Vector.distance(this.loc,planet.loc)<this.size+planet.size)
+      {
+        this.lifespan = 0;
+        if("contents" in planet)
+        {
+          planet.size -= 50;
+          for(let i = 0; i<8; i++)
+          {
+            items.push(new Item(planet.loc.x+Math.random()*10-5,planet.loc.y+Math.random()*10-5,planet.contents,planet.reality));
+          }
+        }
+        if(planet.buildings.length > 0)
+        {
+          for(let building of planet.buildings)
+          {
+            let buildingLoc = planet.loc.addVector(Vector.unitVector().rotate(building.angle).multiplyScaler(planet.size));
+            if(Vector.distance(buildingLoc,this.loc)<building.size+this.size)
+            {
+              if(building.type == "refinery")
+              {
+                items.push(new Item(buildingLoc.x+Math.random()*10-5,buildingLoc.y+Math.random()*10-5,"steel",planet.reality));
+                items.push(new Item(buildingLoc.x+Math.random()*10-5,buildingLoc.y+Math.random()*10-5,"steel",planet.reality));
+              }
+              else if(building.type == "warehouse")
+              {
+                for(let parcel of building.storage)
+                {
+                  items.push(new Item(buildingLoc.x+Math.random()*10-5,buildingLoc.y+Math.random()*10-5,parcel,planet.reality));
+                }
+              }
+              building.isDead = true;
+            }
+          }
+        }
+      }
+    }
   }
 }
 
@@ -338,6 +392,7 @@ class Ship
       this.gravityDrive = false;
       this.oldVel = this.vel.copy();
       this.fuel = 1000000;
+      this.firedBlasts = [];
     }
 
     //Only in same reality
@@ -723,6 +778,14 @@ class Ship
       this.updateVelocityFree(planets);
     }
     this.vel = this.vel.speedLimit(shipSpeedLimit);
+
+    if(this.type == "capitolShip")
+    {
+      for(let projectile of this.firedBlasts)
+      {
+        projectile.updateVelocity();
+      }
+    }
   }
 
   //Handles if a player is driving.
@@ -802,7 +865,7 @@ class Ship
     }
   }
 
-  updateLocation(timeDifferential,planets)
+  updateLocation(timeDifferential,planets,items)
   {
     //Only in same reality
     planets = planets.filter((x)=>this.reality == x.reality)
@@ -869,6 +932,11 @@ class Ship
         }
       }
       this.oldVel = this.vel.copy();
+      this.firedBlasts = this.firedBlasts.filter((projectile) =>
+      {
+        projectile.updateLocation(timeDifferential,planets,items);
+        return projectile.lifespan > 0;
+      })
     }
 
     //Reset the control inputs.
@@ -1126,6 +1194,27 @@ class Player
     else if(this.inSpaceShip.gravityDrive == "white")
     {
       this.inSpaceShip.gravityDrive = false;
+    }
+  }
+  fireDisintegrator(whichCannon)
+  {
+    if(this.inSpaceShip.fuel >= 200)
+    {
+      this.inSpaceShip.fuel -= 200;
+      let firingDirection = this.inSpaceShip.direction.copy();
+      let originPoint = this.inSpaceShip.loc.copy();
+      if(whichCannon == "left")
+      {
+        firingDirection = firingDirection.rotate(this.inSpaceShip.leftFinAngle-Math.PI/4);
+        originPoint = originPoint.addVector(this.inSpaceShip.direction.multiplyScaler(this.inSpaceShip.size/1.5).rotate(3*Math.PI/2));
+      }
+      else if(whichCannon == "right")
+      {
+        firingDirection = firingDirection.rotate(this.inSpaceShip.rightFinAngle+Math.PI/4);
+        originPoint = originPoint.addVector(this.inSpaceShip.direction.multiplyScaler(this.inSpaceShip.size/1.5).rotate(Math.PI/2));
+      }
+      originPoint = originPoint.addVector(firingDirection.normalize(this.inSpaceShip.size));
+      this.inSpaceShip.firedBlasts.push(new Projectile(originPoint,firingDirection.normalize(projectileSpeed).addVector(this.inSpaceShip.vel),30,500,this.inSpaceShip.color,this.inSpaceShip.reality));
     }
   }
   attachOrReleaseTowLine(ships)
@@ -1520,6 +1609,14 @@ class Player
         {
           this.changeGravityDrive();
         }
+        else if(this.inSpaceShip.leftOfficer == this.id)
+        {
+          this.fireDisintegrator("left");
+        }
+        else if(this.inSpaceShip.rightOfficer == this.id)
+        {
+          this.fireDisintegrator("right");
+        }
       }
     }
 
@@ -1589,6 +1686,7 @@ class Building
       this.size = 80;
       this.storage = [];
     }
+    this.isDead = false;
   }
 }
 
@@ -1643,6 +1741,7 @@ class Planet
         planet.vel = planet.vel.subVector(movement.multiplyScaler(0.01/planet.mass()));
       }
     }
+    this.buildings = this.buildings.filter((x) => !x.isDead);
   }
 
   updateVelocity(planets)

@@ -367,8 +367,9 @@ setInterval(function() {
   asteroids = asteroids.filter(asteroid =>
   {
     asteroid.updateLocation(timeDifferential,planetoids);
-    return space.Vector.distance(asteroid.loc,new space.Vector(0,0)) < 500000;
+    return space.Vector.distance(asteroid.loc,new space.Vector(0,0)) < 500000 && asteroid.size > 20;
   })
+  planetoids = planets.concat(asteroids,ships.filter((x)=>x.type == "capitolShip" && x.gravityDrive));
   for (var id in aliens)
   {
     aliens[id].updateVelocity();
@@ -401,7 +402,7 @@ setInterval(function() {
   }
   ships = ships.filter(ship =>
   {
-    ship.updateLocation(timeDifferential,planetoids);
+    ship.updateLocation(timeDifferential,planetoids,items);
     if("isDead" in ship)
     {
       return true;

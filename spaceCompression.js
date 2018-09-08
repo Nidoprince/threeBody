@@ -88,7 +88,8 @@ var shipCompress = function(ship)
       reality: ship.reality,
       leftFinAngle: ship.leftFinAngle,
       rightFinAngle: ship.rightFinAngle,
-      gravityDrive: ship.gravityDrive
+      gravityDrive: ship.gravityDrive,
+      firedBlasts: ship.firedBlasts.map(itemCompress)
     }
   }
   else

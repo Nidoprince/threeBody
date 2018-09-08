@@ -382,6 +382,11 @@ var shipDrawer = function(ship, drawOn, localViewer = viewer, localZoomMult = zo
       drawOn.arc(engineLoc.x,engineLoc.y,intensity*ship.size/(4*localZoomMult),0,2*Math.PI)
       drawOn.fill();
     }
+    for(let projectile of ship.firedBlasts)
+    {
+      console.log(projectile)
+      itemDrawer(projectile,drawOn);
+    }
   }
 }
 var boidDrawer = function(boid,drawOn,size)
