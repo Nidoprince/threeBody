@@ -330,6 +330,11 @@ socket.on('state',function(celestial) {
           playerControl.build = "Reality Rocket";
           menuOpen = false;
         }
+        if(menuLoc == 5 && myPlayer.inventory.filter((x) => x == "steel").length > 3 && myPlayer.inventory.filter((x) => x == "chaos").length > 1 && myPlayer.inventory.filter((x) => x == "omega").length > 1)
+        {
+          playerControl.build = "Capitol Ship";
+          menuOpen = false;
+        }
         if(menuLoc == 12 && myPlayer.inventory.filter((x) => x == "iron").length > 0)
         {
           playerControl.build = "SUV";

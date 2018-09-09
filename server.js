@@ -184,6 +184,25 @@ io.on('connection', function(socket) {
           ships.push(new space.Ship(player.loc.x,player.loc.y,player.color,planets.concat(asteroids),"realityRocket"));
         }
       }
+      if(data.build == "Capitol Ship")
+      {
+        if(player.inventory.filter((x) => x == "steel").length > 3 && player.inventory.filter((x) => x == "chaos").length > 1 && player.inventory.filter((x) => x == "omega").length > 1)
+        {
+          for(let i = 0; i<4; i++)
+          {
+            let index = player.inventory.indexOf("steel");
+            player.inventory.splice(index,1);
+            if(i%2 == 0)
+            {
+              index = player.inventory.indexOf("chaos");
+              player.inventory.splice(index,1);
+              index = player.inventory.indexOf("omega");
+              player.inventory.splice(index,1);
+            }
+          }
+          ships.push(new space.Ship(player.loc.x,player.loc.y,player.color,planets.concat(asteroids),"capitolShip"));
+        }
+      }
       if(data.build == "Refinery")
       {
         if(player.inventory.filter((x) => x == "iron").length > 1 && player.inventory.filter((x) => x == "fuel").length > 1 && player.controllingPlanet)

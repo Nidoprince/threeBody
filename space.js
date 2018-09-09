@@ -443,11 +443,11 @@ class Ship
     {
       if(this.gravityDrive == "black")
       {
-        return 100000000;
+        return 300000000;
       }
       else if(this.gravityDrive == "white")
       {
-        return -100000000;
+        return -300000000;
       }
     }
     else
@@ -1097,14 +1097,16 @@ class Player
     {
       this.loc = this.controllingPlanet.loc.addVector((new Vector(this.controllingPlanet.size,0)).rotate(Math.random()*Math.PI*2));
       this.vel = this.controllingPlanet.vel.copy();
-      this.inventory.push("iron");
-      this.inventory.push("fuel");
-      this.inventory.push("iron");
-      this.inventory.push("fuel");
-      this.inventory.push("iron");
-      this.inventory.push("chronos");
-      this.inventory.push("dark");
-      this.inventory.push("fuel");
+      //this.inventory.push("iron");
+      //this.inventory.push("fuel");
+      this.inventory.push("steel");
+      this.inventory.push("steel");
+      this.inventory.push("steel");
+      this.inventory.push("steel");
+      this.inventory.push("chaos");
+      this.inventory.push("chaos");
+      this.inventory.push("omega");
+      this.inventory.push("omega");
     }
     else
     {
