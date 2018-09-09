@@ -262,6 +262,19 @@ io.on('connection', function(socket) {
               player.inventory.push("fuel+");
             }
           }
+          if(data.build == "Omega")
+          {
+            if(player.inventory.includes("iron") && player.inventory.includes("chronos") && player.inventory.includes("dark"))
+            {
+              let index = player.inventory.indexOf("iron");
+              player.inventory.splice(index,1);
+              index = player.inventory.indexOf("chronos");
+              player.inventory.splice(index,1);
+              index = player.inventory.indexOf("dark");
+              player.inventory.splice(index,1);
+              player.inventory.push("omega");
+            }
+          }
         }
       }
     }
