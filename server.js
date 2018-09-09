@@ -210,7 +210,7 @@ io.on('connection', function(socket) {
           player.controllingPlanet.build(player.loc.x,player.loc.y,player.color,"warehouse");
         }
       }
-      if(["Chaos","Steel","Fuel+"].includes(data.build))
+      if(["Chaos","Steel","Fuel+","Omega"].includes(data.build))
       {
         let inFactory = false;
         let playerAngle = player.controllingPlanet.loc.direction(player.loc).angle();

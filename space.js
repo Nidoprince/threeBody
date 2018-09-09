@@ -1087,8 +1087,12 @@ class Player
       this.vel = this.controllingPlanet.vel.copy();
       this.inventory.push("iron");
       this.inventory.push("fuel");
-      this.inventory.push("steel")
-      this.inventory.push("steel")
+      this.inventory.push("iron");
+      this.inventory.push("fuel");
+      this.inventory.push("iron");
+      this.inventory.push("chronos");
+      this.inventory.push("dark");
+      this.inventory.push("fuel");
     }
     else
     {
