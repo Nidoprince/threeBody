@@ -310,7 +310,6 @@ setInterval(function() {
       z2 = 2;
     }
     tears.push(new space.Wormhole(x1,y1,z1,x2,y2,z2,color,size));
-    console.log("New Wormhole "+x1+" "+y1);
   }
   if(Math.random()*1000 < (50-asteroids.length)/50)
   {
@@ -327,12 +326,17 @@ setInterval(function() {
       contents = "chronos";
       color = "pink";
     }
+    else if(Math.random()*100 < 10)
+    {
+      contents = "dark";
+      color = "black";
+    }
     else
     {
       contents = "iron";
       color = "brown";
     }
-    if(Math.random()*100 < 10)
+    if(Math.random()*100 < 50)
     {
       reality = 1;
     }
@@ -388,7 +392,6 @@ setInterval(function() {
     }
     else
     {
-      console.log("One gone");
       return false;
     }
   })
