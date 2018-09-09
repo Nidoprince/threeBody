@@ -3,7 +3,7 @@ const bouncyness = 0.9; //How hard things richet off each other
 const playerBounce = false; //Whether or not we do the bounce formula for players.
 const groundTouchError = 0; //How many pixels something can be above the ground for it to count as touching the ground.
 const similarEnoughVelocities = 0.3; //No Idea  -------------------Check On This------------------------------------
-const fallingAngle = Math.PI/4; //Angle at which things tilt over.  Pretty bugged.
+const fallingAngle = Math.PI/6; //Angle at which things tilt over.
 const jumpForce = 15; //How much force players jump with.
 const fuelWeight = 0.05; //How much one unit of fuel weighs
 
@@ -901,7 +901,7 @@ class Ship
       var angleFromStraight = this.parked.loc.direction(this.loc).angle()-this.direction.angle();
       if(Math.abs(angleFromStraight) > fallingAngle && Math.abs(angleFromStraight) < Math.PI/2)
       {
-        this.direction = this.direction.rotate(angleFromStraight/120*timeDifferential*universeSpeed);
+        this.direction = this.direction.rotate(-angleFromStraight/60*timeDifferential*universeSpeed);
       }
       //Stops being parked if knocked too far away.
       if(Vector.distance(this.loc,this.parked.loc) > this.size+this.parked.size+5)
