@@ -733,11 +733,11 @@ var buildMenuAnimation =  function(drawOn)
   drawOn.fillText("Mining Ship",630,150);
   drawOn.fillText("8 Iron", 650,190);
   drawOn.fillText("Holds 2 Players.",625,230);
-  drawOn.fillText("Reality Rocket",875,150);
-  drawOn.fillText("1 Iron 1 Chronos", 870,190);
+  drawOn.fillText("Jump Ship",875,150);
+  drawOn.fillText("1 Steel 1 Chronos", 870,190);
   drawOn.fillText("Press T to Hop.",875,230);
-  drawOn.fillText("Jump Ship",1125,150);
-  drawOn.fillText("2 Iron 2 Chronos", 1120,190);
+  drawOn.fillText("Reality Rocket",1125,150);
+  drawOn.fillText("2 Steel 2 Chronos", 1120,190);
   drawOn.fillText("Press T to Jump.",1120,230);
   drawOn.fillText("Base Car",130,600);
   drawOn.fillText("1 Iron", 150,640);

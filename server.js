@@ -159,29 +159,29 @@ io.on('connection', function(socket) {
           ships.push(new space.Ship(player.loc.x,player.loc.y,player.color,planets.concat(asteroids),"miningShip"));
         }
       }
-      if(data.build == "Reality Rocket")
+      if(data.build == "Jump Ship")
       {
-        if(player.inventory.filter((x) => x == "iron").length > 0 && player.inventory.filter((x) => x == "chronos").length > 0)
+        if(player.inventory.filter((x) => x == "steel").length > 0 && player.inventory.filter((x) => x == "chronos").length > 0)
         {
-          let index = player.inventory.indexOf("iron");
+          let index = player.inventory.indexOf("steel");
           player.inventory.splice(index,1);
           index = player.inventory.indexOf("chronos");
           player.inventory.splice(index,1);
-          ships.push(new space.Ship(player.loc.x,player.loc.y,player.color,planets.concat(asteroids),"realityRocket"));
+          ships.push(new space.Ship(player.loc.x,player.loc.y,player.color,planets.concat(asteroids),"jumpShip"));
         }
       }
-      if(data.build == "Jump Ship")
+      if(data.build == "Reality Rocket")
       {
-        if(player.inventory.filter((x) => x == "iron").length > 1 && player.inventory.filter((x) => x == "chronos").length > 1)
+        if(player.inventory.filter((x) => x == "steel").length > 1 && player.inventory.filter((x) => x == "chronos").length > 1)
         {
           for(let i = 0; i<2; i++)
           {
-            let index = player.inventory.indexOf("iron");
+            let index = player.inventory.indexOf("steel");
             player.inventory.splice(index,1);
             index = player.inventory.indexOf("chronos");
             player.inventory.splice(index,1);
           }
-          ships.push(new space.Ship(player.loc.x,player.loc.y,player.color,planets.concat(asteroids),"jumpShip"));
+          ships.push(new space.Ship(player.loc.x,player.loc.y,player.color,planets.concat(asteroids),"realityRocket"));
         }
       }
       if(data.build == "Refinery")
