@@ -286,6 +286,18 @@ class Item
       this.size = 1;
       this.density = 1000;
     }
+    else if(this.type == "dark")
+    {
+      this.color = "black";
+      this.size = 20;
+      this.density = 200;
+    }
+    else if(this.type == "omega")
+    {
+      this.color = "white";
+      this.size = 5;
+      this.density = 0.001;
+    }
     else
     {
       this.color = "white";
@@ -889,7 +901,7 @@ class Ship
       var angleFromStraight = this.parked.loc.direction(this.loc).angle()-this.direction.angle();
       if(Math.abs(angleFromStraight) > fallingAngle && Math.abs(angleFromStraight) < Math.PI/2)
       {
-        this.direction = this.direction.rotate(angleFromStraight/10*timeDifferential*universeSpeed);
+        this.direction = this.direction.rotate(angleFromStraight/120*timeDifferential*universeSpeed);
       }
       //Stops being parked if knocked too far away.
       if(Vector.distance(this.loc,this.parked.loc) > this.size+this.parked.size+5)
@@ -1797,7 +1809,11 @@ class Asteroid extends Planet
     }
     else if(this.contents == "chronos")
     {
-      this.mineTime = 100;
+      this.mineTime = 500;
+    }
+    else if(this.contents == "dark")
+    {
+      this.mineTime = 2000;
     }
     else
     {
