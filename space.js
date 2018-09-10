@@ -400,7 +400,9 @@ class Ship
       this.size *= 3;
       this.fuelMax *= 20;
       this.leftFinAngle = 0;
+      this.leftFinCooldown = 0;
       this.rightFinAngle = 0;
+      this.rightFinCooldown = 0;
       this.gravityDrive = false;
       this.oldVel = this.vel.copy();
       this.fuel = 1000000;
@@ -949,6 +951,14 @@ class Ship
         projectile.updateLocation(timeDifferential,planets,items);
         return projectile.lifespan > 0;
       })
+      if(this.leftFinCooldown > 0)
+      {
+        this.leftFinCooldown -= 1;
+      }
+      if(this.rightFinCooldown > 0)
+      {
+        this.rightFinCooldown -= 1;
+      }
     }
 
     //Reset the control inputs.
@@ -1223,20 +1233,27 @@ class Player
   }
   fireDisintegrator(whichCannon)
   {
-    if(this.inSpaceShip.fuel >= 200)
+    let cooldown = this.inSpaceShip.leftFinCooldown;
+    if(whichCannon == "right")
     {
-      this.inSpaceShip.fuel -= 200;
+      cooldown = this.inSpaceShip.rightFinCooldown;
+    }
+    if(this.inSpaceShip.fuel >= 1000 && cooldown == 0)
+    {
+      this.inSpaceShip.fuel -= 1000;
       let firingDirection = this.inSpaceShip.direction.copy();
       let originPoint = this.inSpaceShip.loc.copy();
       if(whichCannon == "left")
       {
         firingDirection = firingDirection.rotate(this.inSpaceShip.leftFinAngle-Math.PI/4);
         originPoint = originPoint.addVector(this.inSpaceShip.direction.multiplyScaler(this.inSpaceShip.size/1.5).rotate(3*Math.PI/2));
+        this.inSpaceShip.leftFinCooldown = 30;
       }
       else if(whichCannon == "right")
       {
         firingDirection = firingDirection.rotate(this.inSpaceShip.rightFinAngle+Math.PI/4);
         originPoint = originPoint.addVector(this.inSpaceShip.direction.multiplyScaler(this.inSpaceShip.size/1.5).rotate(Math.PI/2));
+        this.inSpaceShip.rightFinCooldown = 30;
       }
       originPoint = originPoint.addVector(firingDirection.normalize(this.inSpaceShip.size));
       this.inSpaceShip.firedBlasts.push(new Projectile(originPoint,firingDirection.normalize(projectileSpeed).addVector(this.inSpaceShip.vel),30,500,this.inSpaceShip.color,this.inSpaceShip.reality));
