@@ -463,7 +463,7 @@ class Ship
     {
       return true;
     }
-    else if(["baseRocket","towRocket","realityRocket","SUV","jumpShip"].includes(this.type))
+    else if(["baseRocket","towRocket","realityRocket","SUV","hopper","jumpShip"].includes(this.type))
     {
       return false;
     }
@@ -484,7 +484,7 @@ class Ship
   //Puts a player in the appropriate part of the ship when they board.
   setDriver(color,id)
   {
-    if(["baseRocket","towRocket","realityRocket","SUV","jumpShip"].includes(this.type))
+    if(["baseRocket","towRocket","realityRocket","SUV","hopper","jumpShip"].includes(this.type))
     {
       this.driverColor = color;
       this.driver = id;
@@ -528,7 +528,7 @@ class Ship
   //Gives the location of a given player within the space ship.
   driverLocation(id)
   {
-    if(["baseRocket","towRocket","realityRocket","SUV","jumpShip"].includes(this.type))
+    if(["baseRocket","towRocket","realityRocket","SUV","hopper","jumpShip"].includes(this.type))
     {
       return this.loc.copy();
     }
@@ -563,7 +563,7 @@ class Ship
   //Removes a player from a ship.
   removeDriver(id)
   {
-    if(["baseRocket","towRocket","realityRocket","SUV","jumpShip"].includes(this.type))
+    if(["baseRocket","towRocket","realityRocket","SUV","hopper","jumpShip"].includes(this.type))
     {
       this.driver = false;
       this.driverColor = false;
@@ -825,7 +825,7 @@ class Ship
       let gravityForce = gravityCalculator(this,planet);
       this.vel = this.vel.addVector(gravityForce);
 
-      if(this.type != "SUV")
+      if(this.type != "SUV" && this.type != "hopper")
       {
         //Bounce off each other.
         if(Vector.distance(this.loc,planet.loc) <= this.size+planet.size)
@@ -1007,6 +1007,13 @@ class Car extends Ship
         jumpForce = 0;
         jumpFuel = 0;
       }
+      else if(this.type == "hopper")
+      {
+        moveSpeed = 7;
+        moveFuel = 0.7;
+        jumpForce = 10;
+        jumpFuel = 100;
+      }
 
       let planetDirection = this.drivingOn.loc.direction(this.loc);
       if(right && this.fuel >= moveFuel)
@@ -1097,16 +1104,16 @@ class Player
     {
       this.loc = this.controllingPlanet.loc.addVector((new Vector(this.controllingPlanet.size,0)).rotate(Math.random()*Math.PI*2));
       this.vel = this.controllingPlanet.vel.copy();
-      //this.inventory.push("iron");
-      //this.inventory.push("fuel");
+      this.inventory.push("iron");
+      this.inventory.push("fuel");
       this.inventory.push("steel");
       this.inventory.push("steel");
-      this.inventory.push("steel");
-      this.inventory.push("steel");
-      this.inventory.push("chaos");
-      this.inventory.push("chaos");
-      this.inventory.push("omega");
-      this.inventory.push("omega");
+      //this.inventory.push("steel");
+      //this.inventory.push("steel");
+      //this.inventory.push("chaos");
+      //this.inventory.push("chaos");
+      //this.inventory.push("omega");
+      //this.inventory.push("omega");
     }
     else
     {
@@ -1179,7 +1186,7 @@ class Player
           {
             this.inventory.push("fuel");
           }
-          if(ship.type != "SUV")
+          if(ship.type != "SUV" && ship.type != "hopper")
           {
             extrafuel = 0;
             this.inSpaceShip.fuel += this.inventory.filter(x => x == "fuel+").length*20000;
@@ -1578,7 +1585,7 @@ class Player
     {
       this.mineAsteroids(planets);
     }
-    if(this.mHeld && ((!this.inSpaceShip) || this.inSpaceShip.type == "SUV") && this.controllingPlanet)
+    if(this.mHeld && ((!this.inSpaceShip) || this.inSpaceShip.type == "SUV" || this.inSpaceShip.type == "hopper") && this.controllingPlanet)
     {
       this.minePlanet();
     }

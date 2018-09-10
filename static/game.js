@@ -340,6 +340,11 @@ socket.on('state',function(celestial) {
           playerControl.build = "SUV";
           menuOpen = false;
         }
+        if(menuLoc == 13 && myPlayer.inventory.filter((x) => x == "steel").length > 0)
+        {
+          playerControl.build = "Hopper";
+          menuOpen = false;
+        }
         if(menuLoc == 15 && myPlayer.inventory.filter((x) => x == "iron").length > 1 && myPlayer.inventory.filter((x) => x == "fuel").length > 1 && myPlayer.controllingPlanet)
         {
           playerControl.build = "Refinery";

@@ -104,12 +104,19 @@ var shipDrawer = function(ship, drawOn, localViewer = viewer, localZoomMult = zo
       drawOn.stroke();
     }
   }
-  else if(ship.type == "SUV")
+  else if(ship.type == "SUV" || ship.type == "hopper")
   {
     drawOn.fillStyle = ship.color;
     drawOn.beginPath();
     //Point1
-    var topLeft = penLoc.addVector(shipDir.normalize(ship.size/localZoomMult).rotate(3*Math.PI/2)).addVector(shipDir.normalize(ship.size/4/localZoomMult));
+    if(ship.type == "SUV")
+    {
+      var topLeft = penLoc.addVector(shipDir.normalize(ship.size/localZoomMult).rotate(3*Math.PI/2)).addVector(shipDir.normalize(ship.size/4/localZoomMult));
+    }
+    else if(ship.type == "hopper")
+    {
+      var topLeft = penLoc.addVector(shipDir.normalize(1.5*ship.size/localZoomMult).rotate(3*Math.PI/2)).addVector(shipDir.normalize(ship.size/3/localZoomMult));
+    }
     drawOn.moveTo(topLeft.x,topLeft.y);
     //Point2
     var bottomLeft = penLoc.addVector(shipDir.normalize(ship.size/localZoomMult).rotate(3*Math.PI/2)).subVector(shipDir.normalize(ship.size/2/localZoomMult));
@@ -118,7 +125,14 @@ var shipDrawer = function(ship, drawOn, localViewer = viewer, localZoomMult = zo
     var bottomRight = penLoc.addVector(shipDir.normalize(ship.size/localZoomMult).rotate(Math.PI/2)).subVector(shipDir.normalize(ship.size/2/localZoomMult));
     drawOn.lineTo(bottomRight.x,bottomRight.y);
     //Point4
-    var topRight = penLoc.addVector(shipDir.normalize(ship.size/localZoomMult).rotate(Math.PI/2)).addVector(shipDir.normalize(ship.size/4/localZoomMult));
+    if(ship.type == "SUV")
+    {
+      var topRight = penLoc.addVector(shipDir.normalize(ship.size/localZoomMult).rotate(Math.PI/2)).addVector(shipDir.normalize(ship.size/4/localZoomMult));
+    }
+    else if(ship.type == "hopper")
+    {
+      var topRight = penLoc.addVector(shipDir.normalize(1.5*ship.size/localZoomMult).rotate(Math.PI/2)).addVector(shipDir.normalize(ship.size/3/localZoomMult));
+    }
     drawOn.lineTo(topRight.x,topRight.y);
     drawOn.closePath();
     drawOn.fill();
@@ -747,6 +761,8 @@ var buildMenuAnimation =  function(drawOn)
   drawOn.fillText("Press T for Blast",1360,220);
   drawOn.fillText("Base Car",130,570);
   drawOn.fillText("1 Iron", 150,590);
+  drawOn.fillText("Hopper",400,570);
+  drawOn.fillText("1 Steel",400,590);
   drawOn.fillText("Refinery",875,570);
   drawOn.fillText("2 Iron 2 Fuel", 870,590);
   drawOn.fillText("Press E to Use.",875,610);
