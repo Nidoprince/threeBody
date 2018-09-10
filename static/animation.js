@@ -651,7 +651,7 @@ var parkDrawer = function(isParked,drawOn,x,y)
 
 var specialDrawer = function(ship,drawOn,x,y)
 {
-  if(["towRocket","realityRocket","miningShip"].includes(ship.type))
+  if(["towRocket","realityRocket","miningShip","capitolShip"].includes(ship.type))
   {
     drawOn.strokeStyle = "grey";
     drawOn.strokeRect(x,y-1,65,65);
@@ -686,6 +686,40 @@ var specialDrawer = function(ship,drawOn,x,y)
     else if(ship.type == "jumpShip")
     {
       drawOn.fillText("J",x+15,y+50);
+    }
+    else if(ship.type == "capitolShip")
+    {
+      if(myPlayer.id == ship.driver)
+      {
+        let show = "X";
+        if(ship.gravityDrive == "black")
+        {
+          show = "B";
+        }
+        else if(ship.gravityDrive == "white")
+        {
+          show = "W";
+        }
+        drawOn.fillText(show,x+15,y+50);
+      }
+      else if(myPlayer.id == ship.leftOfficer)
+      {
+        let show = "D";
+        if(ship.leftFinCooldown > 0)
+        {
+          show = "X";
+        }
+        drawOn.fillText(show,x+15,y+50);
+      }
+      else if(myPlayer.id == ship.rightOfficer)
+      {
+        let show = "D";
+        if(ship.rightFinCooldown > 0)
+        {
+          show = "X";
+        }
+        drawOn.fillText(show,x+15,y+50);
+      }
     }
   }
 }
