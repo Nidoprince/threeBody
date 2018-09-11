@@ -19,6 +19,14 @@ var aliens = [];
 var items = [];
 var tears = [];
 
+var currentNumbers =
+{
+  red: {number:0,score:0},
+  blue: {number:0,score:0},
+  yellow: {number:0,score:0},
+  green: {number:0,score:0}
+}
+
 app.use(express.static('static'))
 app.use('/static', express.static(__dirname + '/static'));
 app.get('/', function(req, res) {
@@ -54,11 +62,16 @@ var io = socketIO(server);
 var players = {};
 io.on('connection', function(socket) {
   socket.on('new player', function(faction) {
-    var colors = ["red","blue","yellow","green"];
+    let colors = ["red","blue","yellow","green"];
     players[socket.id] = new space.Player(300,300,colors[faction],planets,socket.id);
+    currentNumbers[colors[faction]].number+=1;
   });
   socket.on('disconnect', function() {
-    delete players[socket.id];
+    if(socket.id in players)
+    {
+      currentNumbers[players[socket.id].color].number-=1;
+      delete players[socket.id];
+    }
   });
   socket.on('dead', function() {
     delete players[socket.id];
@@ -474,6 +487,7 @@ setInterval(function() {
   {
     if(players[id].isDead)
     {
+      currentNumbers[players[id].color].number-=1;
       players[id] = "dead";
     }
   }
@@ -487,7 +501,7 @@ setInterval(function() {
     return item.stillCorporeal;
   })
   lastUpdateTime = currentTime;
-  io.sockets.emit('state', [planets.map(compr.planetCompress),players,ships.map(compr.shipCompress),asteroids.map(compr.planetCompress),aliens.map(compr.alienCompress),items.map(compr.itemCompress),tears]);
+  io.sockets.emit('state', [planets.map(compr.planetCompress),players,ships.map(compr.shipCompress),asteroids.map(compr.planetCompress),aliens.map(compr.alienCompress),items.map(compr.itemCompress),tears,currentNumbers]);
   /*if(dog)
   {
     console.log(JSON.stringify([planets,players,ships,asteroids,aliens]).length);

@@ -408,19 +408,30 @@ socket.on('state',function(celestial) {
   }
   else
   {
+    let colorNumbers = celestial[7];
     context.fillStyle = "white"
     context.font = "bold 30px Arial";
-    context.fillText("Please select a faction:",400,200);
+    context.fillText("Please select a faction:",100,100);
+    context.fillText("# of Players",1100,100);
+    context.fillText("Score",1400,100);
     context.fillStyle = "red";
-    context.fillText("Radical Extermination Deployment",500,350);
+    context.fillText("Radical Extermination Deployment",200,250);
+    context.fillText(colorNumbers.red.number,1200,250);
+    context.fillText(colorNumbers.red.score,1450,250);
     context.fillStyle = "blue";
-    context.fillText("Bombastic Lizards Using Explosives",500,450);
+    context.fillText("Bombastic Lizards Using Explosives",200,350);
+    context.fillText(colorNumbers.blue.number,1200,350);
+    context.fillText(colorNumbers.blue.score,1450,350);
     context.fillStyle = "yellow";
-    context.fillText("Yammering Eccentric Llama Lovers Of Woe",500,550);
+    context.fillText("Yammering Eccentric Llama Lovers Of Woe",200,450);
+    context.fillText(colorNumbers.yellow.number,1200,450);
+    context.fillText(colorNumbers.yellow.score,1450,450);
     context.fillStyle = "green";
-    context.fillText("Generally Really Entrancingly Entertaining Nomads",500,650);
+    context.fillText("Generally Really Entrancingly Entertaining Nomads",200,550);
+    context.fillText(colorNumbers.green.number,1200,550);
+    context.fillText(colorNumbers.green.score,1450,550);
     context.fillStyle = "white"
-    context.fillText("->",400,350+100*cursorLoc);
+    context.fillText("->",100,250+100*cursorLoc);
     if(viewer.up || playerControl.up)
     {
       cursorMove--;
