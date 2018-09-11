@@ -157,6 +157,20 @@ io.on('connection', function(socket) {
           ships.push(new space.Car(player.loc.x,player.loc.y,player.color,planets.concat(asteroids),"hopper"));
         }
       }
+      if(data.build == "Tank")
+      {
+        if(player.inventory.filter((x) => x == "iron").length > 3 && player.inventory.filter((x) => x == "chronos").length > 0)
+        {
+          let index = player.inventory.indexOf("chronos");
+          player.inventory.splice(index,1);
+          for(let i = 0; i<4; i++)
+          {
+            index = player.inventory.indexOf("iron");
+            player.inventory.splice(index,1);
+          }
+          ships.push(new space.Car(player.loc.x,player.loc.y,player.color,planets.concat(asteroids),"tank"));
+        }
+      }
       if(data.build == "Tow Rocket")
       {
         if(player.inventory.filter((x) => x == "iron").length > 3)

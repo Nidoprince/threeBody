@@ -381,8 +381,8 @@ class Ship
     }
     else if(this.type == "miningShip")
     {
-      this.miner = false;  //Adds a passenger spot in the ship.
-      this.minerColor = false;
+      this.officer = false;  //Adds a passenger spot in the ship.
+      this.officerColor = false;
       this.mineSpeed = 10;
     }
     else if(this.type == "jumpShip")
@@ -469,13 +469,13 @@ class Ship
     {
       return false;
     }
-    else if(["miningShip"].includes(this.type))
-    {
-      return !this.miner;
-    }
     else if(["capitolShip"].includes(this.type))
     {
       return !this.rightOfficer || !this.leftOfficer;
+    }
+    else if(["tank","miningShip"].includes(this.type))
+    {
+      return !this.officer;
     }
     else
     {
@@ -491,12 +491,12 @@ class Ship
       this.driverColor = color;
       this.driver = id;
     }
-    else if(["miningShip"].includes(this.type))
+    else if(["tank","miningShip"].includes(this.type))
     {
       if(this.driver)
       {
-        this.miner = id;
-        this.minerColor = color;
+        this.officer = id;
+        this.officerColor = color;
       }
       else
       {
@@ -540,9 +540,20 @@ class Ship
       {
         return this.loc.copy();
       }
-      else if(this.miner == id)
+      else if(this.officer == id)
       {
         return this.loc.subVector(this.direction.normalize(this.size/2));
+      }
+    }
+    else if(["tank"].includes(this.type))
+    {
+      if(this.driver == id)
+      {
+        return this.loc.copy();
+      }
+      else if(this.officer == id)
+      {
+        return this.loc.addVector(this.direction.normalize(this.size/3));
       }
     }
     else if(["capitolShip"].includes(this.type))
@@ -570,17 +581,17 @@ class Ship
       this.driver = false;
       this.driverColor = false;
     }
-    else if(["miningShip"].includes(this.type))
+    else if(["miningShip","tank"].includes(this.type))
     {
       if(this.driver == id)
       {
         this.driver = false;
         this.driverColor = false;
       }
-      else if(this.miner == id)
+      else if(this.officer == id)
       {
-        this.miner = false;
-        this.minerColor = false;
+        this.officer = false;
+        this.officerColor = false;
       }
     }
     else if(["capitolShip"].includes(this.type))
@@ -827,7 +838,7 @@ class Ship
       let gravityForce = gravityCalculator(this,planet);
       this.vel = this.vel.addVector(gravityForce);
 
-      if(this.type != "SUV" && this.type != "hopper")
+      if(this.type != "SUV" && this.type != "hopper" && this.type != "tank")
       {
         //Bounce off each other.
         if(Vector.distance(this.loc,planet.loc) <= this.size+planet.size)
@@ -975,6 +986,17 @@ class Car extends Ship
     super(x,y,color,planets,type,size,density,reality);
     this.drivingOn = this.parked;
     this.fuelMax = 3000; //Smaller fuel tank than spaceships have.
+    if(this.type == "tank")
+    {
+      this.officer = false;
+      this.officerColor = false;
+      this.turretAngle = 0;
+      this.firedBlasts = [];
+      this.turretCooldown = 0;
+      this.density *= 5;
+      this.size *= 1.5;
+      this.fuelMax = 5000;
+    }
   }
 
   //Different version of the control function that takes into account moving around a planet.
@@ -1024,6 +1046,39 @@ class Car extends Ship
         jumpForce = 10;
         jumpFuel = 100;
       }
+      else if(this.type == "tank")
+      {
+        if(id == this.driver)
+        {
+          moveSpeed = 3;
+          moveFuel = 10;
+          jumpForce = 0.5;
+          jumpFuel = 1000;
+        }
+        else if(id == this.officer)
+        {
+          moveSpeed = 0;
+          moveFuel = 0;
+          jumpForce = 0;
+          jumpFuel = 0;
+          if(right)
+          {
+            this.turretAngle += this.turnRate;
+            if(this.turretAngle > Math.PI/2)
+            {
+              this.turretAngle = Math.PI/2;
+            }
+          }
+          else if(left)
+          {
+            this.turretAngle -= this.turnRate;
+            if(this.turretAngle < -Math.PI/2)
+            {
+              this.turretAngle = -Math.PI/2;
+            }
+          }
+        }
+      }
 
       let planetDirection = this.drivingOn.loc.direction(this.loc);
       if(right && this.fuel >= moveFuel)
@@ -1046,7 +1101,7 @@ class Car extends Ship
   }
 
   //Kinda an extended function compared to the defualt.  In order to not have to overwrite more functions, I stuck some extra functionality in here.
-  updateLocation(timeDifferential,planets)
+  updateLocation(timeDifferential,planets,items)
   {
     //Only in same reality
     planets = planets.filter((x)=>this.reality == x.reality)
@@ -1092,6 +1147,19 @@ class Car extends Ship
     }
     this.controlInput = new Vector(0,0);
     this.controlRotation = 0;
+
+    if(this.type == "tank")
+    {
+      this.firedBlasts = this.firedBlasts.filter((projectile) =>
+      {
+        projectile.updateLocation(timeDifferential,planets,items);
+        return projectile.lifespan > 0;
+      })
+      if(this.turretCooldown > 0)
+      {
+        this.turretCooldown -= 1;
+      }
+    }
   }
 }
 
@@ -1116,11 +1184,11 @@ class Player
       this.vel = this.controllingPlanet.vel.copy();
       this.inventory.push("iron");
       this.inventory.push("fuel");
-      this.inventory.push("steel");
-      this.inventory.push("steel");
+      this.inventory.push("iron");
+      this.inventory.push("iron");
+      this.inventory.push("iron");
       //this.inventory.push("steel");
-      //this.inventory.push("steel");
-      //this.inventory.push("chaos");
+      this.inventory.push("chronos");
       //this.inventory.push("chaos");
       //this.inventory.push("omega");
       //this.inventory.push("omega");
@@ -1196,7 +1264,7 @@ class Player
           {
             this.inventory.push("fuel");
           }
-          if(ship.type != "SUV" && ship.type != "hopper")
+          if(ship.type != "SUV" && ship.type != "hopper" && this.type != "tank")
           {
             extrafuel = 0;
             this.inSpaceShip.fuel += this.inventory.filter(x => x == "fuel+").length*20000;
@@ -1233,14 +1301,24 @@ class Player
   }
   fireDisintegrator(whichCannon)
   {
-    let cooldown = this.inSpaceShip.leftFinCooldown;
-    if(whichCannon == "right")
+    let cooldown;
+    let cost = 1000;
+    if(whichCannon == "left")
+    {
+      cooldown = this.inSpaceShip.leftFinCooldown;
+    }
+    else if(whichCannon == "right")
     {
       cooldown = this.inSpaceShip.rightFinCooldown;
     }
-    if(this.inSpaceShip.fuel >= 1000 && cooldown == 0)
+    else if(whichCannon == "tank")
     {
-      this.inSpaceShip.fuel -= 1000;
+      cooldown = this.inSpaceShip.turretCooldown;
+      cost = 200;
+    }
+    if(this.inSpaceShip.fuel >= cost && cooldown == 0)
+    {
+      this.inSpaceShip.fuel -= cost;
       let firingDirection = this.inSpaceShip.direction.copy();
       let originPoint = this.inSpaceShip.loc.copy();
       if(whichCannon == "left")
@@ -1254,6 +1332,12 @@ class Player
         firingDirection = firingDirection.rotate(this.inSpaceShip.rightFinAngle+Math.PI/4);
         originPoint = originPoint.addVector(this.inSpaceShip.direction.multiplyScaler(this.inSpaceShip.size/1.5).rotate(Math.PI/2));
         this.inSpaceShip.rightFinCooldown = 30;
+      }
+      else if(whichCannon == "tank")
+      {
+        firingDirection = firingDirection.rotate(this.inSpaceShip.turretAngle);
+        originPoint = originPoint.addVector(this.inSpaceShip.direction.multiplyScaler(this.inSpaceShip.size/1.5));
+        this.inSpaceShip.turretCooldown = 30;
       }
       originPoint = originPoint.addVector(firingDirection.normalize(this.inSpaceShip.size));
       this.inSpaceShip.firedBlasts.push(new Projectile(originPoint,firingDirection.normalize(projectileSpeed).addVector(this.inSpaceShip.vel),30,500,this.inSpaceShip.color,this.inSpaceShip.reality));
@@ -1658,6 +1742,13 @@ class Player
         else if(this.inSpaceShip.rightOfficer == this.id)
         {
           this.fireDisintegrator("right");
+        }
+      }
+      if(this.inSpaceShip.type == "tank")
+      {
+        if(this.inSpaceShip.officer == this.id)
+        {
+          this.fireDisintegrator("tank");
         }
       }
     }

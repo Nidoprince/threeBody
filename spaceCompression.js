@@ -68,7 +68,7 @@ var shipCompress = function(ship)
       controlInput: ship.controlInput,
       controlRotation: ship.controlRotation,
       driverColor: ship.driverColor,
-      minerColor: ship.minerColor,
+      minerColor: ship.officerColor,
       reality: ship.reality
     }
   }
@@ -89,6 +89,23 @@ var shipCompress = function(ship)
       leftFinAngle: ship.leftFinAngle,
       rightFinAngle: ship.rightFinAngle,
       gravityDrive: ship.gravityDrive,
+      firedBlasts: ship.firedBlasts.map(itemCompress)
+    }
+  }
+  else if(ship.type == "tank")
+  {
+    return {
+      type: ship.type,
+      loc: ship.loc,
+      direction: ship.direction,
+      size: ship.size,
+      color: ship.color,
+      controlInput: ship.controlInput,
+      controlRotation: ship.controlRotation,
+      driverColor: ship.driverColor,
+      officerColor: ship.officerColor,
+      reality: ship.reality,
+      turretAngle: ship.turretAngle,
       firedBlasts: ship.firedBlasts.map(itemCompress)
     }
   }

@@ -104,12 +104,12 @@ var shipDrawer = function(ship, drawOn, localViewer = viewer, localZoomMult = zo
       drawOn.stroke();
     }
   }
-  else if(ship.type == "SUV" || ship.type == "hopper")
+  else if(ship.type == "SUV" || ship.type == "hopper" || ship.type == "tank")
   {
     drawOn.fillStyle = ship.color;
     drawOn.beginPath();
     //Point1
-    if(ship.type == "SUV")
+    if(ship.type == "SUV" || ship.type == "tank")
     {
       var topLeft = penLoc.addVector(shipDir.normalize(ship.size/localZoomMult).rotate(3*Math.PI/2)).addVector(shipDir.normalize(ship.size/4/localZoomMult));
     }
@@ -125,7 +125,7 @@ var shipDrawer = function(ship, drawOn, localViewer = viewer, localZoomMult = zo
     var bottomRight = penLoc.addVector(shipDir.normalize(ship.size/localZoomMult).rotate(Math.PI/2)).subVector(shipDir.normalize(ship.size/2/localZoomMult));
     drawOn.lineTo(bottomRight.x,bottomRight.y);
     //Point4
-    if(ship.type == "SUV")
+    if(ship.type == "SUV" || ship.type == "tank")
     {
       var topRight = penLoc.addVector(shipDir.normalize(ship.size/localZoomMult).rotate(Math.PI/2)).addVector(shipDir.normalize(ship.size/4/localZoomMult));
     }
@@ -142,6 +142,40 @@ var shipDrawer = function(ship, drawOn, localViewer = viewer, localZoomMult = zo
       drawOn.beginPath();
       drawOn.arc(penLoc.x,penLoc.y,ship.size/(6*localZoomMult), 0, 2 * Math.PI);
       drawOn.fill();
+    }
+    if(ship.type == "tank")
+    {
+      let hardPoint = penLoc.addVector(shipDir.normalize(ship.size/(3*localZoomMult)));
+      drawOn.beginPath();
+      drawOn.arc(hardPoint.x,hardPoint.y,ship.size/(3*localZoomMult), 0, 2*Math.PI);
+      drawOn.fill();
+      let turretDirection = shipDir.rotate(ship.turretAngle);
+      //Turret Point 1
+      let turretBottomLeft = hardPoint.addVector(turretDirection.rotate(3*Math.PI/2).normalize(ship.size/(10*localZoomMult)));
+      //Turret Point 2
+      let turretBottomRight = hardPoint.addVector(turretDirection.rotate(Math.PI/2).normalize(ship.size/(10*localZoomMult)));
+      //Turret Point 3
+      let turretTopRight = turretBottomRight.addVector(turretDirection.normalize(ship.size/localZoomMult));
+      //Turret Point 4
+      let turretTopLeft = turretBottomLeft.addVector(turretDirection.normalize(ship.size/localZoomMult));
+      drawOn.beginPath();
+      drawOn.moveTo(turretBottomLeft.x,turretBottomLeft.y);
+      drawOn.lineTo(turretBottomRight.x,turretBottomRight.y);
+      drawOn.lineTo(turretTopRight.x,turretTopRight.y);
+      drawOn.lineTo(turretTopLeft.x,turretTopLeft.y);
+      drawOn.closePath();
+      drawOn.fill();
+      if(ship.officerColor)
+      {
+        drawOn.fillStyle = ship.officerColor;
+        drawOn.beginPath();
+        drawOn.arc(hardPoint.x,hardPoint.y,ship.size/(6*localZoomMult), 0, 2 * Math.PI);
+        drawOn.fill();
+      }
+      for(let projectile of ship.firedBlasts)
+      {
+        itemDrawer(projectile,drawOn);
+      }
     }
   }
   else if(ship.type == "baseRocket" || ship.type == "miningShip" || ship.type == "jumpShip")
@@ -398,7 +432,6 @@ var shipDrawer = function(ship, drawOn, localViewer = viewer, localZoomMult = zo
     }
     for(let projectile of ship.firedBlasts)
     {
-      console.log(projectile)
       itemDrawer(projectile,drawOn);
     }
   }
@@ -797,6 +830,10 @@ var buildMenuAnimation =  function(drawOn)
   drawOn.fillText("1 Iron", 150,590);
   drawOn.fillText("Hopper",400,570);
   drawOn.fillText("1 Steel",400,590);
+  drawOn.fillText("Tank",650,570);
+  drawOn.fillText("4 Iron 1 Chronos",620,590);
+  drawOn.fillText("1 Officer",640,610);
+  drawOn.fillText("Press T for Blast",620,630);
   drawOn.fillText("Refinery",875,570);
   drawOn.fillText("2 Iron 2 Fuel", 870,590);
   drawOn.fillText("Press E to Use.",875,610);
