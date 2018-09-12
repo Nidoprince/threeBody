@@ -304,6 +304,12 @@ class Item
       this.size = 3;
       this.density = 1;
     }
+    else if(this.type == "dragonball")
+    {
+      this.color = "gold";
+      this.size = 10;
+      this.density = 2;
+    }
     else
     {
       this.color = "white";

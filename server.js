@@ -55,6 +55,12 @@ server.listen(process.env.PORT || 5000, function() {
   aliens.push(new space.Flock(50,3,100,100,5,"pink",3000));
   //tears.push(new space.Wormhole(200,200,0,500,0,2,'rgba(0,255,255,0.2)',40));
 
+  //Add the dragonballs
+  for(let i = 0; i<7; i++)
+  {
+    items.push(new space.Item(Math.random()*200000-100000,Math.random()*200000-100000,"dragonball",Math.floor(Math.random()*1.3)));
+  }
+
 });
 
 var io = socketIO(server);
