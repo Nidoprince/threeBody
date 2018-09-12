@@ -234,6 +234,10 @@ socket.on('state',function(celestial) {
         context.strokeStyle = "grey";
         context.strokeRect(1400,0,200,200);
         parkDrawer(myPlayer.inSpaceShip.parked, context, 1400,200);
+        if(myPlayer.inventory.includes("scanner"))
+        {
+          scannerDrawer(myPlayer,asteroids,context,1465,200);
+        }
         specialDrawer(myPlayer.inSpaceShip, context, 1530,200);
       }
       else if(myPlayer.air < myPlayer.airMax)
@@ -333,6 +337,11 @@ socket.on('state',function(celestial) {
         if(menuLoc == 5 && myPlayer.inventory.filter((x) => x == "steel").length > 3 && myPlayer.inventory.filter((x) => x == "chaos").length > 1 && myPlayer.inventory.filter((x) => x == "omega").length > 1)
         {
           playerControl.build = "Capitol Ship";
+          menuOpen = false;
+        }
+        if(menuLoc == 6 && myPlayer.inventory.filter((x) => x == "iron").length > 1)
+        {
+          playerControl.build = "Scanner";
           menuOpen = false;
         }
         if(menuLoc == 12 && myPlayer.inventory.filter((x) => x == "iron").length > 0)

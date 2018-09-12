@@ -298,6 +298,12 @@ class Item
       this.size = 5;
       this.density = 0.001;
     }
+    else if(this.type == "scanner")
+    {
+      this.color = "gold";
+      this.size = 3;
+      this.density = 1;
+    }
     else
     {
       this.color = "white";
@@ -1412,6 +1418,7 @@ class Player
         {
           this.inventory[this.inventory.length-1] = asteroid.contents;
           asteroid.mineTime *= 1.1;
+          asteroid.size -= 5;
           this.currentlyLoading = false;
         }
       }
@@ -1890,10 +1897,6 @@ class Planet
 
       //Gravitational Attraction
       this.vel = this.vel.addVector(gravityCalculator(this,planet));
-      //if(this.size > 1000)
-      //{
-      //  console.log(gravityCalculator(this,planet).magnitude());
-      //}
 
       //Bounce off each other.
       if(Vector.distance(this.loc,planet.loc) <= this.size+planet.size && "mineTime" in planet)

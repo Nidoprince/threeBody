@@ -139,6 +139,17 @@ io.on('connection', function(socket) {
           ships.push(new space.Ship(player.loc.x,player.loc.y,player.color,planets.concat(asteroids)));
         }
       }
+      if(data.build == "Scanner")
+      {
+        if(player.inventory.filter((x) => x == "iron").length > 1)
+        {
+          let index = player.inventory.indexOf("iron");
+          player.inventory.splice(index,1);
+          index = player.inventory.indexOf("iron");
+          player.inventory.splice(index,1);
+          player.inventory.push("scanner");
+        }
+      }
       if(data.build == "SUV")
       {
         if(player.inventory.filter((x) => x == "iron").length > 0)
@@ -515,7 +526,7 @@ setInterval(function() {
     return item.stillCorporeal;
   })
   lastUpdateTime = currentTime;
-  io.sockets.emit('state', [planets.map(compr.planetCompress),players,ships.map(compr.shipCompress),asteroids.map(compr.planetCompress),aliens.map(compr.alienCompress),items.map(compr.itemCompress),tears,currentNumbers]);
+  io.sockets.emit('state', [planets.map(compr.planetCompress),players,ships.map(compr.shipCompress),asteroids.map(compr.asteroidCompress),aliens.map(compr.alienCompress),items.map(compr.itemCompress),tears,currentNumbers]);
   /*if(dog)
   {
     console.log(JSON.stringify([planets,players,ships,asteroids,aliens]).length);

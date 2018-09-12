@@ -682,6 +682,60 @@ var parkDrawer = function(isParked,drawOn,x,y)
   }
 }
 
+var scannerDrawer = function(player,asteroids,drawOn,x,y)
+{
+  drawOn.fillStyle = "grey";
+  drawOn.strokeStyle = "grey";
+  drawOn.strokeRect(x,y-1,65,65);
+  drawOn.font = "bold 50px Arial";
+  let symbol;
+  if(viewer.item.lookingFor == "iron")
+  {
+    symbol = "I";
+  }
+  else if(viewer.item.lookingFor == "chronos")
+  {
+    symbol = "C";
+  }
+  else if(viewer.item.lookingFor == "dark")
+  {
+    symbol = "D";
+  }
+  drawOn.fillText(symbol,x+15,y+50);
+  asteroids = asteroids.filter((x) => x.reality == myPlayer.reality && x.contents == viewer.item.lookingFor);
+  if(asteroids.length > 0)
+  {
+    let playerLoc = new Vector(player.loc.x,player.loc.y);
+    let maxScanningDistance = 50000;
+    let closestAsteroid = false;
+    for(let asteroid of asteroids)
+    {
+      let asteroidLoc = new Vector(asteroid.loc.x,asteroid.loc.y);
+      let distance = Vector.distance(playerLoc,asteroidLoc);
+      if(distance < maxScanningDistance)
+      {
+        maxScanningDistance = distance;
+        closestAsteroid = asteroid;
+      }
+    }
+    if(closestAsteroid)
+    {
+      let asteroidLoc = new Vector(closestAsteroid.loc.x,closestAsteroid.loc.y);
+      let towardsAsteroid = playerLoc.direction(asteroidLoc);
+      let penLoc = new Vector((playerLoc.x-viewer.x)/zoomMult+800,(playerLoc.y-viewer.y)/zoomMult+400);
+      let pointerTip = penLoc.addVector(towardsAsteroid.normalize(80));
+      let leftBack = pointerTip.addVector(towardsAsteroid.normalize(15).rotate(-Math.PI*9/10));
+      let rightBack = pointerTip.addVector(towardsAsteroid.normalize(15).rotate(Math.PI*9/10));
+      drawOn.beginPath();
+      drawOn.moveTo(pointerTip.x,pointerTip.y);
+      drawOn.lineTo(leftBack.x,leftBack.y);
+      drawOn.lineTo(rightBack.x,rightBack.y);
+      drawOn.closePath();
+      drawOn.fill();
+    }
+  }
+}
+
 var specialDrawer = function(ship,drawOn,x,y)
 {
   if(["towRocket","realityRocket","miningShip","capitolShip"].includes(ship.type))
@@ -826,6 +880,10 @@ var buildMenuAnimation =  function(drawOn)
   drawOn.fillText("Press T for Gravity",1360,180);
   drawOn.fillText("2 Officers.",1365,200);
   drawOn.fillText("Press T for Blast",1360,220);
+  drawOn.fillText("Asteroid Scanner",120,350);
+  drawOn.fillText("2 Iron",150,370);
+  drawOn.fillText("Press I to Switch",120,390);
+  drawOn.fillText("Between Types",120,410);
   drawOn.fillText("Base Car",130,570);
   drawOn.fillText("1 Iron", 150,590);
   drawOn.fillText("Hopper",400,570);

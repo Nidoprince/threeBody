@@ -115,7 +115,25 @@ var viewer = {
   focus: false,
   focusPlayer: true,
   log: false,
-  enter: false
+  enter: false,
+  item: {
+    lookingFor: "iron",
+    next()
+    {
+      if(this.lookingFor == "iron")
+      {
+        this.lookingFor = "chronos";
+      }
+      else if(this.lookingFor == "chronos")
+      {
+        this.lookingFor = "dark";
+      }
+      else if(this.lookingFor == "dark")
+      {
+        this.lookingFor = "iron";
+      }
+    }
+  }
 }
 var trigger = {
   up: false,
@@ -132,6 +150,7 @@ var trigger = {
   t: false,
   tX: false,
   tY: false,
+  i: false,
   inventory: false,
   reset()
   {
@@ -212,11 +231,15 @@ function touchHandler(event,touchType)
     {
       if(trigger.tY > 180 && trigger.tY < 280)
       {
-        if(trigger.tX > 1350 && trigger.tX < 1500)
+        if(trigger.tX > 1350 && trigger.tX < 1465)
         {
           playerControl.p = true;
         }
-        else if(trigger.tX > 1500 && trigger.tX < 1650)
+        else if(trigger.tX > 1465 && trigger.tX < 1530)
+        {
+          viewer.item.next();
+        }
+        else if(trigger.tX > 1530 && trigger.tX < 1650)
         {
           playerControl.t = true;
         }
@@ -400,6 +423,9 @@ document.addEventListener('keydown', function(event) {
       break;
     case 69: //E
       trigger.e = true;
+      break;
+    case 73: //I
+      trigger.i = true;
       break;
     case 77: //M
       playerControl.m = true;
@@ -585,6 +611,13 @@ document.addEventListener('keyup', function(event) {
         playerControl.t = true;
       }
       trigger.t = false;
+      break;
+    case 73: //I
+      if(trigger.i)
+      {
+        viewer.item.next();
+      }
+      trigger.i = false;
       break;
     case 81: //Q
       adminControls.q = false;

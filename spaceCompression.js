@@ -13,6 +13,20 @@ var planetCompress = function(planet)
   }
 }
 
+var asteroidCompress = function(planet)
+{
+  return {
+    loc: new space.Vector(Math.floor(planet.loc.x),Math.floor(planet.loc.y)),
+    size: planet.size,
+    color: planet.color,
+    atmosphereColor: planet.atmosphereColor,
+    fuelSources: planet.fuelSources,
+    reality: planet.reality,
+    buildings: planet.buildings,
+    contents: planet.contents
+  }
+}
+
 var particleCompress = function(particle)
 {
   return {
@@ -156,6 +170,7 @@ var alienCompress = function(alien)
 }
 
 module.exports.planetCompress = planetCompress;
+module.exports.asteroidCompress = asteroidCompress;
 module.exports.shipCompress = shipCompress;
 module.exports.alienCompress = alienCompress;
 module.exports.itemCompress = itemCompress;
