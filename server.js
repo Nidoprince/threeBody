@@ -75,7 +75,12 @@ io.on('connection', function(socket) {
   socket.on('disconnect', function() {
     if(socket.id in players)
     {
-      currentNumbers[players[socket.id].color].number-=1;
+      let player = players[socket.id];
+      currentNumbers[player.color].number-=1;
+      for(let item of player.inventory.filter((x) => x == "dragonball"))
+      {
+        items.push(new space.Item(player.loc.x+Math.random()*10-5,player.loc.y+Math.random()*10-5,item,player.reality));
+      }
       delete players[socket.id];
     }
   });
@@ -544,6 +549,11 @@ setInterval(function() {
     if(players[id].isDead)
     {
       currentNumbers[players[id].color].number-=1;
+      let player = players[id];
+      for(let item of player.inventory.filter((x) => x == "dragonball"))
+      {
+        items.push(new space.Item(player.loc.x+Math.random()*10-5,player.loc.y+Math.random()*10-5,item,player.reality));
+      }
       players[id] = "dead";
     }
   }

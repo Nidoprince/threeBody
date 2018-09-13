@@ -1229,7 +1229,7 @@ class Player
       this.vel = new Vector(0,0);
       this.inventory.push("fuel+");
       this.inventory.push("iron");
-      this.inventory.push("suit")
+      this.inventory.push("suit");
     }
     this.actingVel = new Vector(0,0);
     this.leftHeld = false;
