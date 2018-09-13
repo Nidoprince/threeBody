@@ -322,6 +322,12 @@ class Item
       this.size = 6;
       this.density = 3;
     }
+    else if(this.type == "suit")
+    {
+      this.color = "slategrey";
+      this.size = 10;
+      this.density = 3;
+    }
     else
     {
       this.color = "white";
@@ -1209,7 +1215,7 @@ class Player
       this.inventory.push("iron");
       this.inventory.push("fuel");
       this.inventory.push("steel");
-      this.inventory.push("iron");
+      this.inventory.push("steel");
       this.inventory.push("iron");
       //this.inventory.push("steel");
       this.inventory.push("chronos");
@@ -1223,6 +1229,7 @@ class Player
       this.vel = new Vector(0,0);
       this.inventory.push("fuel+");
       this.inventory.push("iron");
+      this.inventory.push("suit")
     }
     this.actingVel = new Vector(0,0);
     this.leftHeld = false;
@@ -1482,13 +1489,23 @@ class Player
 
     if(this.inSpaceShip)
     {
-      if("lifespan" in this.inSpaceShip)
+      if(this.inventory.includes("suit"))
       {
-        this.isDead = true;
+        if(this.inSpaceShip.isDead || "lifespan" in this.inSpaceShip)
+        {
+          this.inSpaceShip = false;
+        }
       }
       else
       {
-        this.isDead = this.inSpaceShip.isDead;
+        if("lifespan" in this.inSpaceShip)
+        {
+          this.isDead = true;
+        }
+        else
+        {
+          this.isDead = this.inSpaceShip.isDead;
+        }
       }
     }
     var closestPlanetDistance = Number.MAX_SAFE_INTEGER;

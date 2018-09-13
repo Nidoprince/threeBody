@@ -585,6 +585,10 @@ var playerDrawer = function(player,drawOn)
   {
     drawOn.fillStyle = player.color;
     drawOn.strokeStyle = "black";
+    if(player.inventory.includes("suit"))
+    {
+      drawOn.strokeStyle = "grey";
+    }
     drawOn.beginPath();
     drawOn.arc((player.loc.x-viewer.x)/zoomMult+800,(player.loc.y-viewer.y)/zoomMult+400, player.size/zoomMult, 0, 2 * Math.PI);
     drawOn.fill();
@@ -887,6 +891,9 @@ var buildMenuAnimation =  function(drawOn)
   drawOn.fillText("Space Helmet",380,350);
   drawOn.fillText("1 Steel 1 Fuel",380,370);
   drawOn.fillText("Breath in Space",375,390);
+  drawOn.fillText("Crash Suit",630,350);
+  drawOn.fillText("2 Iron 2 Steel",625,370);
+  drawOn.fillText("Don't die in Crash", 615,390);
   drawOn.fillText("Base Car",130,570);
   drawOn.fillText("1 Iron", 150,590);
   drawOn.fillText("Hopper",400,570);

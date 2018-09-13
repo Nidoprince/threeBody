@@ -167,6 +167,20 @@ io.on('connection', function(socket) {
           player.inventory.push("helmet");
         }
       }
+      if(data.build == "Crash Suit")
+      {
+        if(player.inventory.filter((x) => x == "steel").length > 1 && player.inventory.filter((x) => x == "iron").length > 1)
+        {
+          for(let i = 0; i<2; i++)
+          {
+            let index = player.inventory.indexOf("steel");
+            player.inventory.splice(index,1);
+            index = player.inventory.indexOf("iron");
+            player.inventory.splice(index,1);
+          }
+          player.inventory.push("suit");
+        }
+      }
       if(data.build == "SUV")
       {
         if(player.inventory.filter((x) => x == "iron").length > 0)

@@ -349,6 +349,11 @@ socket.on('state',function(celestial) {
           playerControl.build = "Helmet";
           menuOpen = false;
         }
+        if(menuLoc == 8 && myPlayer.inventory.filter((x) => x == "steel").length > 1 && myPlayer.inventory.filter((x) => x == "iron").length > 1)
+        {
+          playerControl.build = "Crash Suit";
+          menuOpen = false;
+        }
         if(menuLoc == 12 && myPlayer.inventory.filter((x) => x == "iron").length > 0)
         {
           playerControl.build = "SUV";
