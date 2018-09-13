@@ -156,6 +156,17 @@ io.on('connection', function(socket) {
           player.inventory.push("scanner");
         }
       }
+      if(data.build == "Helmet")
+      {
+        if(player.inventory.filter((x) => x == "steel").length > 0 && player.inventory.filter((x) => x == "fuel").length > 0)
+        {
+          let index = player.inventory.indexOf("steel");
+          player.inventory.splice(index,1);
+          index = player.inventory.indexOf("fuel");
+          player.inventory.splice(index,1);
+          player.inventory.push("helmet");
+        }
+      }
       if(data.build == "SUV")
       {
         if(player.inventory.filter((x) => x == "iron").length > 0)

@@ -310,6 +310,18 @@ class Item
       this.size = 10;
       this.density = 2;
     }
+    else if(this.type == "rock")
+    {
+      this.color = "gold";
+      this.size = 10;
+      this.density = 1;
+    }
+    else if(this.type == "helmet")
+    {
+      this.color = "whitesmoke";
+      this.size = 6;
+      this.density = 3;
+    }
     else
     {
       this.color = "white";
@@ -1196,7 +1208,7 @@ class Player
       this.vel = this.controllingPlanet.vel.copy();
       this.inventory.push("iron");
       this.inventory.push("fuel");
-      this.inventory.push("iron");
+      this.inventory.push("steel");
       this.inventory.push("iron");
       this.inventory.push("iron");
       //this.inventory.push("steel");
@@ -1767,7 +1779,7 @@ class Player
     }
 
     //Deal with air.
-    if(!this.inSpaceShip && (!this.controllingPlanet || "contents" in this.controllingPlanet))
+    if(!this.inSpaceShip && !this.inventory.includes("helmet") && (!this.controllingPlanet || "contents" in this.controllingPlanet))
     {
       this.air -= 1;
       if(this.air == 0)
@@ -1784,7 +1796,7 @@ class Player
     }
 
     //Dealing with dropping and picking up items
-    if(this.dropWhat && this.inventory.length >= this.dropWhat)
+    if(this.dropWhat && this.inventory.length >= this.dropWhat && isNaN(this.inventory[this.dropWhat-1]))
     {
       let whatDropped = this.inventory[this.dropWhat-1];
       this.inventory.splice(this.dropWhat-1,1);
@@ -1802,7 +1814,16 @@ class Player
         if(Vector.distance(this.loc,item.loc)<this.size+item.size && this.inventory.length < 8 && item.stillCorporeal)
         {
           item.stillCorporeal = false;
-          this.inventory.push(item.type);
+          if(isNaN(this.inventory[this.inventory.length - 1]))
+          {
+            this.inventory.push(item.type);
+          }
+          else
+          {
+            let num = this.inventory[this.inventory.length - 1];
+            this.inventory[this.inventory.length - 1] = item.type;
+            this.inventory.push(num);
+          }
         }
       }
     }
@@ -2177,3 +2198,4 @@ module.exports.Asteroid = Asteroid;
 module.exports.Flock = Flock;
 module.exports.Explosion = Explosion;
 module.exports.Wormhole = Wormhole;
+module.exports.Item = Item;

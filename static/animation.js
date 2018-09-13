@@ -884,6 +884,9 @@ var buildMenuAnimation =  function(drawOn)
   drawOn.fillText("2 Iron",150,370);
   drawOn.fillText("Press I to Switch",120,390);
   drawOn.fillText("Between Types",120,410);
+  drawOn.fillText("Space Helmet",380,350);
+  drawOn.fillText("1 Steel 1 Fuel",380,370);
+  drawOn.fillText("Breath in Space",375,390);
   drawOn.fillText("Base Car",130,570);
   drawOn.fillText("1 Iron", 150,590);
   drawOn.fillText("Hopper",400,570);
