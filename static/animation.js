@@ -583,6 +583,26 @@ var playerDrawer = function(player,drawOn)
 {
   if(!player.inSpaceShip && player != "dead")
   {
+    if(player.inventory.includes("jetpack"))
+    {
+      let playerLoc = new Vector((player.loc.x-viewer.x)/zoomMult+800,(player.loc.y-viewer.y)/zoomMult+400);
+      let velDirect = player.velocityComponents[8][1];
+      velDirect = (new Vector(velDirect.x,velDirect.y))
+      let vel = velDirect.multiplyScaler(99).addVector((new Vector(player.vel.x,player.vel.y)).multiplyScaler(1)).multiplyScaler(0.01);
+      let fireLoc = playerLoc.subVector(vel.normalize(player.size*1.5/zoomMult));
+      if(velDirect.magnitude() > 0)
+      {
+        drawOn.fillStyle = "orange";
+        drawOn.beginPath();
+        drawOn.arc(fireLoc.x,fireLoc.y,player.size*0.75/zoomMult,0,2*Math.PI);
+        drawOn.fill();
+        fireLoc = playerLoc.subVector(vel.normalize(player.size*1.2/zoomMult));
+        drawOn.fillStyle = "white";
+        drawOn.beginPath();
+        drawOn.arc(fireLoc.x,fireLoc.y,player.size*0.4/zoomMult,0,2*Math.PI);
+        drawOn.fill();
+      }
+    }
     drawOn.fillStyle = player.color;
     drawOn.strokeStyle = "black";
     if(player.inventory.includes("suit"))
@@ -893,7 +913,18 @@ var buildMenuAnimation =  function(drawOn)
   drawOn.fillText("Breath in Space",375,390);
   drawOn.fillText("Crash Suit",630,350);
   drawOn.fillText("2 Iron 2 Steel",625,370);
-  drawOn.fillText("Don't die in Crash", 615,390);
+  drawOn.fillText("Don't Die in Crash", 615,390);
+  drawOn.fillText("Jet Pack",885,350);
+  drawOn.fillText("1 Steel 1 Fuel+",865,370);
+  drawOn.fillText("Fly",910,390);
+  drawOn.fillText("Gravity Cannon",1125,350);
+  drawOn.fillText("1 Chronos 1 Iron",1120,370);
+  drawOn.fillText("Repulse People",1125,390);
+  drawOn.fillText("and Items",1150,410);
+  drawOn.fillText("Dragon Radar",1375,350);
+  drawOn.fillText("2 Dark 2 Chronos",1365,370);
+  drawOn.fillText("2 Iron",1400,390);
+  drawOn.fillText("Find Dragonballs",1365,410);
   drawOn.fillText("Base Car",130,570);
   drawOn.fillText("1 Iron", 150,590);
   drawOn.fillText("Hopper",400,570);

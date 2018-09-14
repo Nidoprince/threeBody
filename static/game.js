@@ -354,6 +354,21 @@ socket.on('state',function(celestial) {
           playerControl.build = "Crash Suit";
           menuOpen = false;
         }
+        if(menuLoc == 9 && myPlayer.inventory.filter((x) => x == "steel").length > 0 && myPlayer.inventory.filter((x) => x == "fuel+").length > 0)
+        {
+          playerControl.build = "Jet Pack";
+          menuOpen = false;
+        }
+        if(menuLoc == 10 && myPlayer.inventory.filter((x) => x == "chronos").length > 0 && myPlayer.inventory.filter((x) => x == "iron").length > 0)
+        {
+          playerControl.build = "Gravity Cannon";
+          menuOpen = false;
+        }
+        if(menuLoc == 11 && myPlayer.inventory.filter((x) => x == "dark").length > 1 && myPlayer.inventory.filter((x) => x == "chronos").length > 1 && myPlayer.inventory.filter((x) => x == "iron").length > 1)
+        {
+          playerControl.build = "Dragon Radar";
+          menuOpen = false;
+        }
         if(menuLoc == 12 && myPlayer.inventory.filter((x) => x == "iron").length > 0)
         {
           playerControl.build = "SUV";

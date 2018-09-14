@@ -328,6 +328,24 @@ class Item
       this.size = 10;
       this.density = 3;
     }
+    else if(this.type == "jetpack")
+    {
+      this.color = "pink";
+      this.size = 5;
+      this.density = 10;
+    }
+    else if(this.type == "cannon")
+    {
+      this.color = "darkviolet";
+      this.size = 9;
+      this.density = 3;
+    }
+    else if(this.type == "radar")
+    {
+      this.color = "orange";
+      this.size = 5;
+      this.density = 3;
+    }
     else
     {
       this.color = "white";
@@ -1213,11 +1231,11 @@ class Player
       this.loc = this.controllingPlanet.loc.addVector((new Vector(this.controllingPlanet.size,0)).rotate(Math.random()*Math.PI*2));
       this.vel = this.controllingPlanet.vel.copy();
       this.inventory.push("iron");
-      this.inventory.push("fuel");
-      this.inventory.push("steel");
-      this.inventory.push("steel");
+      this.inventory.push("chronos");
+      this.inventory.push("dark");
+      this.inventory.push("fuel+");
       this.inventory.push("iron");
-      //this.inventory.push("steel");
+      this.inventory.push("steel");
       this.inventory.push("chronos");
       //this.inventory.push("chaos");
       //this.inventory.push("omega");
@@ -1567,7 +1585,7 @@ class Player
         this.vel = this.vel.subVector(direction.multiplyScaler(stepOne*stepTwo*bouncyness));
       }
     }
-    if(this.controllingPlanet && Vector.distance(this.controllingPlanet.loc,this.loc) < this.controllingPlanet.size*1.2)
+    if(this.controllingPlanet && Vector.distance(this.controllingPlanet.loc,this.loc) < this.controllingPlanet.size*1.2 && !this.inventory.includes("jetpack"))
     {
       this.updateVelocityAtmosphere(planets)
     }
@@ -1645,6 +1663,11 @@ class Player
   }
   updateVelocitySpace(planets)
   {
+    let thrust = 1;
+    if(this.inventory.includes("jetpack"))
+    {
+      thrust = 4;
+    }
     //Touch Controls
     if(this.goal)
     {
@@ -1688,8 +1711,8 @@ class Player
     this.velocityComponents.set("NoRoll",new Vector(0,0));
     this.velocityComponents.set("Frictn",new Vector(0,0));
     this.velocityComponents.set("AirRes",new Vector(0,0));
-    this.velocityComponents.set("SpCtrl",deltaVector.normalize(controlSpeed).copy());
-    this.vel = this.vel.addVector(deltaVector.normalize(controlSpeed))
+    this.velocityComponents.set("SpCtrl",deltaVector.normalize(controlSpeed*thrust).copy());
+    this.vel = this.vel.addVector(deltaVector.normalize(controlSpeed*thrust))
   }
 
   updatePlayer(timeDifferential,planets,ships,items)

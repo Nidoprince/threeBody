@@ -186,6 +186,44 @@ io.on('connection', function(socket) {
           player.inventory.push("suit");
         }
       }
+      if(data.build == "Jet Pack")
+      {
+        if(player.inventory.filter((x) => x == "steel").length > 0 && player.inventory.filter((x) => x == "fuel+").length > 0)
+        {
+          let index = player.inventory.indexOf("steel");
+          player.inventory.splice(index,1);
+          index = player.inventory.indexOf("fuel+");
+          player.inventory.splice(index,1);
+          player.inventory.push("jetpack");
+        }
+      }
+      if(data.build == "Gravity Cannon")
+      {
+        if(player.inventory.filter((x) => x == "chronos").length > 0 && player.inventory.filter((x) => x == "iron").length > 0)
+        {
+          let index = player.inventory.indexOf("chronos");
+          player.inventory.splice(index,1);
+          index = player.inventory.indexOf("iron");
+          player.inventory.splice(index,1);
+          player.inventory.push("cannon");
+        }
+      }
+      if(data.build == "Dragon Radar")
+      {
+        if(player.inventory.filter((x) => x == "iron").length > 1 && player.inventory.filter((x) => x == "dark").length > 1 && player.inventory.filter((x) => x == "chronos").length > 1)
+        {
+          for(let i = 0; i<2; i++)
+          {
+            let index = player.inventory.indexOf("iron");
+            player.inventory.splice(index,1);
+            index = player.inventory.indexOf("dark");
+            player.inventory.splice(index,1);
+            index = player.inventory.indexOf("chronos");
+            player.inventory.splice(index,1);
+          }
+          player.inventory.push("radar");
+        }
+      }
       if(data.build == "SUV")
       {
         if(player.inventory.filter((x) => x == "iron").length > 0)
