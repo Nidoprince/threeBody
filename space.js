@@ -135,53 +135,61 @@ class Particle
 
 class Projectile extends Particle
 {
-  constructor(loc,vel,size,lifespan,color,reality = 0,relative = false)
+  constructor(loc,vel,size,lifespan,color,reality = 0,type = "disintegration",relative = false)
   {
     super(loc,vel,size,lifespan,color,relative);
     this.reality = reality;
     this.size = size;
+    this.type = type;
   }
   updateLocation(timeDifferential,planets,items)
   {
     this.loc = this.loc.addVector(this.vel.multiplyScaler(timeDifferential*universeSpeed));
     this.lifespan--;
-    for(let planet of planets)
+    if(this.type == "disintegration")
     {
-      if(Vector.distance(this.loc,planet.loc)<this.size+planet.size)
+      for(let planet of planets)
       {
-        this.lifespan = 0;
-        if("contents" in planet)
+        if(Vector.distance(this.loc,planet.loc)<this.size+planet.size)
         {
-          planet.size -= 50;
-          for(let i = 0; i<8; i++)
+          this.lifespan = 0;
+          if("contents" in planet)
           {
-            items.push(new Item(planet.loc.x+Math.random()*10-5,planet.loc.y+Math.random()*10-5,planet.contents,planet.reality));
-          }
-        }
-        if(planet.buildings.length > 0)
-        {
-          for(let building of planet.buildings)
-          {
-            let buildingLoc = planet.loc.addVector(Vector.unitVector().rotate(building.angle).multiplyScaler(planet.size));
-            if(Vector.distance(buildingLoc,this.loc)<building.size+this.size)
+            planet.size -= 50;
+            for(let i = 0; i<8; i++)
             {
-              if(building.type == "refinery")
+              items.push(new Item(planet.loc.x+Math.random()*10-5,planet.loc.y+Math.random()*10-5,planet.contents,planet.reality));
+            }
+          }
+          if(planet.buildings.length > 0)
+          {
+            for(let building of planet.buildings)
+            {
+              let buildingLoc = planet.loc.addVector(Vector.unitVector().rotate(building.angle).multiplyScaler(planet.size));
+              if(Vector.distance(buildingLoc,this.loc)<building.size+this.size)
               {
-                items.push(new Item(buildingLoc.x+Math.random()*10-5,buildingLoc.y+Math.random()*10-5,"steel",planet.reality));
-                items.push(new Item(buildingLoc.x+Math.random()*10-5,buildingLoc.y+Math.random()*10-5,"steel",planet.reality));
-              }
-              else if(building.type == "warehouse")
-              {
-                for(let parcel of building.storage)
+                if(building.type == "refinery")
                 {
-                  items.push(new Item(buildingLoc.x+Math.random()*10-5,buildingLoc.y+Math.random()*10-5,parcel,planet.reality));
+                  items.push(new Item(buildingLoc.x+Math.random()*10-5,buildingLoc.y+Math.random()*10-5,"steel",planet.reality));
+                  items.push(new Item(buildingLoc.x+Math.random()*10-5,buildingLoc.y+Math.random()*10-5,"steel",planet.reality));
                 }
+                else if(building.type == "warehouse")
+                {
+                  for(let parcel of building.storage)
+                  {
+                    items.push(new Item(buildingLoc.x+Math.random()*10-5,buildingLoc.y+Math.random()*10-5,parcel,planet.reality));
+                  }
+                }
+                building.isDead = true;
               }
-              building.isDead = true;
             }
           }
         }
       }
+    }
+    else if(this.type == "repulsion")
+    {
+      console.log("do stuff");
     }
   }
 }
@@ -1273,6 +1281,8 @@ class Player
     this.airMax = 1000;
     this.dropWhat = false;
     this.pickUpTimer = 0;
+    this.cannonCooldown = 0;
+    this.shotsFired = [];
   }
 
   mass()
@@ -1282,7 +1292,37 @@ class Player
 
   tellVelocityComponent()
   {
-    return this.velocityComponents
+    return this.velocityComponents;
+  }
+  fireGravityCannon()
+  {
+    let fireDirection = this.velocityComponents.get("SpCtrl");
+    if(fireDirection.magnitude() == 0)
+    {
+      if(this.velocityComponents.has("RolLft") && this.velocityComponents.get("RolLft").magnitude() > 0)
+      {
+        fireDirection = this.velocityComponents.get("RolLft");
+      }
+      else if(this.velocityComponents.has("RolRgt") && this.velocityComponents.get("RolRgt").magnitude() > 0)
+      {
+        fireDirection = this.velocityComponents.get("RolRgt");
+      }
+      else if(this.controllingPlanet && this.vel.subVector(this.vel.projectOnto(this.loc.direction(this.controllingPlanet.loc))).magnitude() > 0.1)
+      {
+        fireDirection = this.vel.subVector(this.vel.projectOnto(this.loc.direction(this.controllingPlanet.loc)));
+      }
+      else
+      {
+        fireDirection = false;
+      }
+    }
+    //console.log(this.vel.subVector(this.vel.projectOnto(this.loc.direction(this.controllingPlanet.loc))))
+    if(fireDirection && this.cannonCooldown == 0)
+    {
+      this.vel = this.vel.subVector(fireDirection.normalize(100000/this.mass()));
+      this.cannonCooldown = 50;
+      //Do actual turret stuff.
+    }
   }
   enterOrExitSpaceship(ships)
   {
@@ -1721,6 +1761,10 @@ class Player
     {
       this.reality = this.inSpaceShip.reality;
     }
+    else if(this.inventory.includes("cannon") && this.tPressed)
+    {
+      this.fireGravityCannon();
+    }
     //Only in same reality
     ships = ships.filter((x)=>this.reality == x.reality)
     planets = planets.filter((x)=>this.reality == x.reality)
@@ -1866,6 +1910,12 @@ class Player
           }
         }
       }
+    }
+
+    //Dealing with cannon stuff
+    if(this.cannonCooldown > 0)
+    {
+      this.cannonCooldown -= 1;
     }
 
     this.dropWhat = false;

@@ -579,38 +579,60 @@ var airBar = function(player,drawOn)
   drawOn.fillRect(30,30+500-500*(player.air/player.airMax),30,500*player.air/player.airMax);
 }
 
-var playerDrawer = function(player,drawOn)
+var playerDrawer = function(player,drawOn,localViewer = viewer, localZoomMult = zoomMult)
 {
   if(!player.inSpaceShip && player != "dead")
   {
-    if(player.inventory.includes("jetpack"))
+    let playerLoc = new Vector((player.loc.x-localViewer.x)/localZoomMult+800,(player.loc.y-localViewer.y)/localZoomMult+400);
+    let velDirect = player.velocityComponents[8][1];
+    let earthMove = (new Vector(player.velocityComponents[5][1].x,player.velocityComponents[5][1].y)).addVector(new Vector(player.velocityComponents[4][1].x,player.velocityComponents[4][1].y));
+    velDirect = (new Vector(velDirect.x,velDirect.y));
+    if(player.inventory.includes("jetpack") && velDirect.magnitude() > 0)
     {
-      let playerLoc = new Vector((player.loc.x-viewer.x)/zoomMult+800,(player.loc.y-viewer.y)/zoomMult+400);
-      let velDirect = player.velocityComponents[8][1];
-      velDirect = (new Vector(velDirect.x,velDirect.y))
       let vel = velDirect.multiplyScaler(99).addVector((new Vector(player.vel.x,player.vel.y)).multiplyScaler(1)).multiplyScaler(0.01);
-      let fireLoc = playerLoc.subVector(vel.normalize(player.size*1.5/zoomMult));
-      if(velDirect.magnitude() > 0)
+      let fireLoc = playerLoc.subVector(vel.normalize(player.size*1.5/localZoomMult));
+      drawOn.fillStyle = "orange";
+      drawOn.beginPath();
+      drawOn.arc(fireLoc.x,fireLoc.y,player.size*0.75/localZoomMult,0,2*Math.PI);
+      drawOn.fill();
+      fireLoc = playerLoc.subVector(vel.normalize(player.size*1.2/localZoomMult));
+      drawOn.fillStyle = "white";
+      drawOn.beginPath();
+      drawOn.arc(fireLoc.x,fireLoc.y,player.size*0.4/localZoomMult,0,2*Math.PI);
+      drawOn.fill();
+    }
+    if(earthMove.magnitude() > 0)
+    {
+      velDirect = earthMove.copy();
+    }
+    else if(!player.inventory.includes("jetpack") && player.controllingPlanet)
+    {
+      let gravityDirection = Vector.makeVec(player.loc).direction(Vector.makeVec(player.controllingPlanet.loc));
+      let velWithoutGravity = Vector.makeVec(player.vel).subVector(Vector.makeVec(player.vel).projectOnto(gravityDirection));
+      if(velWithoutGravity.magnitude() > 0.1)
       {
-        drawOn.fillStyle = "orange";
-        drawOn.beginPath();
-        drawOn.arc(fireLoc.x,fireLoc.y,player.size*0.75/zoomMult,0,2*Math.PI);
-        drawOn.fill();
-        fireLoc = playerLoc.subVector(vel.normalize(player.size*1.2/zoomMult));
-        drawOn.fillStyle = "white";
-        drawOn.beginPath();
-        drawOn.arc(fireLoc.x,fireLoc.y,player.size*0.4/zoomMult,0,2*Math.PI);
-        drawOn.fill();
+        velDirect = velWithoutGravity.copy();
       }
     }
     drawOn.fillStyle = player.color;
+    if(player.inventory.includes("cannon") && velDirect.magnitude() > 0)
+    {
+      drawOn.beginPath();
+      drawOn.moveTo(playerLoc.x,playerLoc.y);
+      let topCannon = playerLoc.addVector(velDirect.normalize(player.size*2/localZoomMult)).subVector(velDirect.rotate(Math.PI/2).normalize(player.size/(2*localZoomMult)));
+      let bottomCannon = playerLoc.addVector(velDirect.normalize(player.size*2/localZoomMult)).addVector(velDirect.rotate(Math.PI/2).normalize(player.size/(2*localZoomMult)));
+      drawOn.lineTo(topCannon.x,topCannon.y);
+      drawOn.lineTo(bottomCannon.x,bottomCannon.y);
+      drawOn.closePath();
+      drawOn.fill();
+    }
     drawOn.strokeStyle = "black";
     if(player.inventory.includes("suit"))
     {
       drawOn.strokeStyle = "grey";
     }
     drawOn.beginPath();
-    drawOn.arc((player.loc.x-viewer.x)/zoomMult+800,(player.loc.y-viewer.y)/zoomMult+400, player.size/zoomMult, 0, 2 * Math.PI);
+    drawOn.arc(playerLoc.x,playerLoc.y, player.size/localZoomMult, 0, 2 * Math.PI);
     drawOn.fill();
     drawOn.stroke();
   }
