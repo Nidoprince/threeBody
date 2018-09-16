@@ -551,17 +551,17 @@ setInterval(function() {
   for (var id in ships)
   {
     ships[id].updateVelocity(planetoids);
-    if("isDead" in ships[id] && ships[id].isDead)
+    if("isDead" in ships[id] && ships[id].isDead == "explosion")
     {
       ships[id] = new space.Explosion(ships[id].loc.x,ships[id].loc.y,ships[id].size/2,500,ships[id].planetThatMurderedMe,ships[id].reality);
     }
   }
   ships = ships.filter(ship =>
   {
-    ship.updateLocation(timeDifferential,planetoids,items);
+    ship.updateLocation(timeDifferential,planetoids,items,ships);
     if("isDead" in ship)
     {
-      return true;
+      return !ship.isDead;
     }
     else
     {
@@ -579,7 +579,7 @@ setInterval(function() {
   {
     if(players[id]!="dead")
     {
-      players[id].updatePlayer(timeDifferential,planetoids,ships,items);
+      players[id].updatePlayer(timeDifferential,planetoids,ships,items,players);
     }
   }
   for (var id in players)

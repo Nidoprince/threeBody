@@ -142,12 +142,87 @@ class Projectile extends Particle
     this.size = size;
     this.type = type;
   }
-  updateLocation(timeDifferential,planets,items)
+  updateLocation(timeDifferential,planets,items,ships,players)
   {
     this.loc = this.loc.addVector(this.vel.multiplyScaler(timeDifferential*universeSpeed));
     this.lifespan--;
-    if(this.type == "disintegration")
+    if(this.type == "repulsion")
     {
+      for(let id in players)
+      {
+        let player = players[id];
+        if(Vector.distance(this.loc,player.loc)<this.size+player.size && player.reality == this.reality)
+        {
+          this.lifespan = 0;
+          player.vel = player.vel.addVector(this.vel.normalize(1000000/player.mass()));
+          for(let item of player.inventory)
+          {
+            items.push(new Item(player.loc.x+Math.random()*10-5,player.loc.y+Math.random()*10-5,item,player.reality));
+          }
+          player.inventory = [];
+          player.pickUpTimer = 100;
+        }
+      }
+      for(let ship of ships)
+      {
+        if(Vector.distance(this.loc,ship.loc)<this.size+ship.size && ship.reality == this.reality)
+        {
+          this.lifespan = 0;
+          ship.vel = ship.vel.addVector(this.vel.normalize(1000000/ship.mass()));
+        }
+      }
+    }
+    else if(this.type == "disintegration")
+    {
+      for(let ship of ships)
+      {
+        if(Vector.distance(this.loc,ship.loc)<this.size+ship.size && !("lifespan" in ship))
+        {
+          this.lifespan = 0;
+          ship.isDead = "disintegrate";
+          if(ship.type == "baseRocket")
+          {
+            items.push(new Item(ship.loc.x+Math.random()*10-5,ship.loc.y+Math.random()*10-5,"iron",ship.reality));
+          }
+          if(ship.type == "towRocket")
+          {
+            for (let i = 0; i<4; i++)
+            {
+              items.push(new Item(ship.loc.x+Math.random()*10-5,ship.loc.y+Math.random()*10-5,"iron",ship.reality));
+            }
+          }
+          if(ship.type == "miningShip")
+          {
+            for (let i = 0; i<8; i++)
+            {
+              items.push(new Item(ship.loc.x+Math.random()*10-5,ship.loc.y+Math.random()*10-5,"iron",ship.reality));
+            }
+          }
+          if(ship.type == "jumpShip")
+          {
+            items.push(new Item(ship.loc.x+Math.random()*10-5,ship.loc.y+Math.random()*10-5,"steel",ship.reality));
+            items.push(new Item(ship.loc.x+Math.random()*10-5,ship.loc.y+Math.random()*10-5,"chronos",ship.reality));
+          }
+          if(ship.type == "realityRocket")
+          {
+            for (let i = 0; i<2; i++)
+            {
+              items.push(new Item(ship.loc.x+Math.random()*10-5,ship.loc.y+Math.random()*10-5,"steel",ship.reality));
+              items.push(new Item(ship.loc.x+Math.random()*10-5,ship.loc.y+Math.random()*10-5,"chronos",ship.reality));
+            }
+          }
+          if(ship.type == "capitolShip")
+          {
+            for (let i = 0; i<2; i++)
+            {
+              items.push(new Item(ship.loc.x+Math.random()*10-5,ship.loc.y+Math.random()*10-5,"chronos",ship.reality));
+              items.push(new Item(ship.loc.x+Math.random()*10-5,ship.loc.y+Math.random()*10-5,"omega",ship.reality));
+              items.push(new Item(ship.loc.x+Math.random()*10-5,ship.loc.y+Math.random()*10-5,"steel",ship.reality));
+              items.push(new Item(ship.loc.x+Math.random()*10-5,ship.loc.y+Math.random()*10-5,"steel",ship.reality));
+            }
+          }
+        }
+      }
       for(let planet of planets)
       {
         if(Vector.distance(this.loc,planet.loc)<this.size+planet.size)
@@ -904,7 +979,7 @@ class Ship
           var direction = this.loc.subVector(planet.loc);
           if(this.vel.magnitude() >= 30)
           {
-            this.isDead = true;
+            this.isDead = "explosion";
             this.planetThatMurderedMe = planet;
           }
           this.vel = this.vel.subVector(direction.multiplyScaler(stepOne*stepTwo*bouncyness));
@@ -946,10 +1021,11 @@ class Ship
     }
   }
 
-  updateLocation(timeDifferential,planets,items)
+  updateLocation(timeDifferential,planets,items,ships)
   {
     //Only in same reality
-    planets = planets.filter((x)=>this.reality == x.reality)
+    planets = planets.filter((x)=>this.reality == x.reality);
+    ships = ships.filter((x)=>this.reality == x.reality);
 
     this.loc = this.loc.addVector(this.vel.multiplyScaler(timeDifferential*universeSpeed));
 
@@ -1015,7 +1091,7 @@ class Ship
       this.oldVel = this.vel.copy();
       this.firedBlasts = this.firedBlasts.filter((projectile) =>
       {
-        projectile.updateLocation(timeDifferential,planets,items);
+        projectile.updateLocation(timeDifferential,planets,items,ships,{});
         return projectile.lifespan > 0;
       })
       if(this.leftFinCooldown > 0)
@@ -1157,10 +1233,11 @@ class Car extends Ship
   }
 
   //Kinda an extended function compared to the defualt.  In order to not have to overwrite more functions, I stuck some extra functionality in here.
-  updateLocation(timeDifferential,planets,items)
+  updateLocation(timeDifferential,planets,items,ships,players)
   {
     //Only in same reality
-    planets = planets.filter((x)=>this.reality == x.reality)
+    planets = planets.filter((x)=>this.reality == x.reality);
+    ships = ships.filter((x)=>this.reality == x.reality);
 
     //Cars are slower than space ships.
     this.vel = this.vel.speedLimit(shipSpeedLimit/2);
@@ -1208,7 +1285,7 @@ class Car extends Ship
     {
       this.firedBlasts = this.firedBlasts.filter((projectile) =>
       {
-        projectile.updateLocation(timeDifferential,planets,items);
+        projectile.updateLocation(timeDifferential,planets,items,ships,{});
         return projectile.lifespan > 0;
       })
       if(this.turretCooldown > 0)
@@ -1321,7 +1398,7 @@ class Player
     {
       this.vel = this.vel.subVector(fireDirection.normalize(100000/this.mass()));
       this.cannonCooldown = 50;
-      //Do actual turret stuff.
+      this.shotsFired.push(new Projectile(this.loc.addVector(fireDirection.normalize(this.size*5)),fireDirection.normalize(projectileSpeed*0.9),this.size*3,1000,this.color,this.reality,"repulsion"));
     }
   }
   enterOrExitSpaceship(ships)
@@ -1560,6 +1637,11 @@ class Player
         {
           this.isDead = true;
         }
+        else if(this.inSpaceShip.isDead == "disintegrate")
+        {
+          this.isDead = false;
+          this.inSpaceShip = false;
+        }
         else
         {
           this.isDead = this.inSpaceShip.isDead;
@@ -1755,7 +1837,7 @@ class Player
     this.vel = this.vel.addVector(deltaVector.normalize(controlSpeed*thrust))
   }
 
-  updatePlayer(timeDifferential,planets,ships,items)
+  updatePlayer(timeDifferential,planets,ships,items,players)
   {
     if(this.inSpaceShip)
     {
@@ -1917,6 +1999,11 @@ class Player
     {
       this.cannonCooldown -= 1;
     }
+    this.shotsFired = this.shotsFired.filter((shot) =>
+    {
+      shot.updateLocation(timeDifferential,[],items,ships,players);
+      return shot.lifespan > 0;
+    })
 
     this.dropWhat = false;
     this.tPressed = false;

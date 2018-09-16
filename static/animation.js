@@ -635,6 +635,10 @@ var playerDrawer = function(player,drawOn,localViewer = viewer, localZoomMult = 
     drawOn.arc(playerLoc.x,playerLoc.y, player.size/localZoomMult, 0, 2 * Math.PI);
     drawOn.fill();
     drawOn.stroke();
+    for(let projectile of player.shotsFired)
+    {
+      itemDrawer(projectile,drawOn);
+    }
   }
 }
 
