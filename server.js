@@ -350,7 +350,7 @@ io.on('connection', function(socket) {
           player.controllingPlanet.build(player.loc.x,player.loc.y,player.color,"warehouse");
         }
       }
-      if(["Chaos","Steel","Fuel+","Omega"].includes(data.build))
+      if(["Chaos","Steel","Fuel+","Omega","Fusion"].includes(data.build))
       {
         let inFactory = false;
         let playerAngle = player.controllingPlanet.loc.direction(player.loc).angle();
@@ -413,6 +413,20 @@ io.on('connection', function(socket) {
               index = player.inventory.indexOf("dark");
               player.inventory.splice(index,1);
               player.inventory.push("omega");
+            }
+          }
+          if(data.build == "Fusion")
+          {
+            if(player.inventory.filter((x) => x == "fuel+").length > 1 && player.inventory.filter((x) => x == "omega").length > 1)
+            {
+              for(let i = 0; i<2; i++)
+              {
+                let index = player.inventory.indexOf("fuel+");
+                player.inventory.splice(index,1);
+                index = player.inventory.indexOf("omega");
+                player.inventory.splice(index,1);
+              }
+              player.inventory.push("fusion");
             }
           }
         }

@@ -296,6 +296,11 @@ socket.on('state',function(celestial) {
           playerControl.build = "Omega";
           menuOpen = false;
         }
+        else if(menuLoc == 4 && myPlayer.inventory.filter((x) => x == "omega").length > 1 && myPlayer.inventory.filter((x) => x == "fuel+").length > 1)
+        {
+          playerControl.build = "Fusion";
+          menuOpen = false;
+        }
       }
       refineMenuAnimation(context);
     }

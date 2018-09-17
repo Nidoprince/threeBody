@@ -1317,12 +1317,13 @@ class Player
       this.loc = this.controllingPlanet.loc.addVector((new Vector(this.controllingPlanet.size,0)).rotate(Math.random()*Math.PI*2));
       this.vel = this.controllingPlanet.vel.copy();
       this.inventory.push("iron");
-      this.inventory.push("chronos");
-      this.inventory.push("dark");
+      this.inventory.push("fuel");
+      this.inventory.push("fuel");
+      this.inventory.push("fuel+");
       this.inventory.push("fuel+");
       this.inventory.push("iron");
-      this.inventory.push("steel");
-      this.inventory.push("chronos");
+      this.inventory.push("omega");
+      this.inventory.push("omega");
       //this.inventory.push("chaos");
       //this.inventory.push("omega");
       //this.inventory.push("omega");
@@ -1419,6 +1420,11 @@ class Player
           this.inSpaceShip = ship;
           this.inSpaceShip.setDriver(this.color,this.id);
           this.loc = this.inSpaceShip.driverLocation(this.id);
+          if(this.inventory.includes("fusion"))
+          {
+            this.inSpaceShip.fuel = this.inSpaceShip.fuelMax;
+            break;
+          }
           this.inSpaceShip.fuel += this.inventory.filter(x => x == "fuel").length*3000;
           let extrafuel = 0;
           if(this.inSpaceShip.fuel > this.inSpaceShip.fuelMax)
@@ -2124,7 +2130,7 @@ class Planet
 
 class Asteroid extends Planet
 {
-  constructor(x,y,xV,yV,size,contents = "iron",color = "brown",density = 1,reality = 0)
+  constructor(x,y,xV,yV,size,contents = "iron",color = "brown",density = 3,reality = 0)
   {
     super(x,y,xV,yV,size,color,"rgba(0,0,0,0)",density,reality);
     this.contents = contents;

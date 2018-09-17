@@ -916,6 +916,8 @@ var refineMenuAnimation = function(drawOn)
   drawOn.fillText("4 Fuel",955,190);
   drawOn.fillText("Omega",1325,150);
   drawOn.fillText("Iron Chronos Dark",1300,190);
+  drawOn.fillText("Fusion",200,500);
+  drawOn.fillText("2 Omega 2 Fuel+",180,540);
 }
 
 var buildMenuAnimation =  function(drawOn)
