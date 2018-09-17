@@ -169,6 +169,7 @@ class Projectile extends Particle
         {
           this.lifespan = 0;
           ship.vel = ship.vel.addVector(this.vel.normalize(1000000/ship.mass()));
+          ship.parked = false;
         }
       }
     }

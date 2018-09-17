@@ -240,9 +240,19 @@ socket.on('state',function(celestial) {
         }
         specialDrawer(myPlayer.inSpaceShip, context, 1530,200);
       }
-      else if(myPlayer.air < myPlayer.airMax)
+      else
       {
-        airBar(myPlayer,context);
+        if(myPlayer.air < myPlayer.airMax)
+        {
+          airBar(myPlayer,context);
+        }
+        if(myPlayer.inventory.includes("cannon"))
+        {
+          playerDrawer(myPlayer,context, {x: myPlayer.loc.x - 700,y: myPlayer.loc.y + 300},1);
+          context.strokeStyle = "grey";
+          context.strokeRect(1400,0,200,200);
+          specialDrawer(myPlayer,context,1530,200);
+        }
       }
     }
 

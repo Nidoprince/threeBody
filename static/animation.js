@@ -788,7 +788,23 @@ var scannerDrawer = function(player,asteroids,drawOn,x,y)
 
 var specialDrawer = function(ship,drawOn,x,y)
 {
-  if(["towRocket","realityRocket","miningShip","capitolShip"].includes(ship.type))
+  if("id" in ship)
+  {
+    let player = ship;
+    drawOn.strokeStyle = "grey";
+    drawOn.strokeRect(x,y-1,65,65);
+    drawOn.fillStyle = "grey";
+    drawOn.font = "bold 50px Arial";
+    if(player.cannonCooldown == 0)
+    {
+      drawOn.fillText("F",x+15,y+50);
+    }
+    else
+    {
+      drawOn.fillText("X",x+15,y+50);
+    }
+  }
+  else if(["towRocket","realityRocket","miningShip","capitolShip"].includes(ship.type))
   {
     drawOn.strokeStyle = "grey";
     drawOn.strokeRect(x,y-1,65,65);
