@@ -39,7 +39,7 @@ setInterval(function() {
       for(let factory of myPlayer.controllingPlanet.buildings)
       {
         let difference = Math.abs(factory.angle-playerAngle);
-        if(difference < factory.size/myPlayer.controllingPlanet.size)
+        if(difference < factory.size/myPlayer.controllingPlanet.size && factory.type != "autoCannon")
         {
           menuOpen = factory.type;
           menuLoc = 0;
@@ -301,6 +301,11 @@ socket.on('state',function(celestial) {
           playerControl.build = "Fusion";
           menuOpen = false;
         }
+        else if(menuLoc == 5 && myPlayer.inventory.filter((x) => x == "rock").length > 3)
+        {
+          playerControl.build = "Iron";
+          menuOpen = false;
+        }
       }
       refineMenuAnimation(context);
     }
@@ -407,6 +412,11 @@ socket.on('state',function(celestial) {
         if(menuLoc == 16 && myPlayer.inventory.filter((x) => x == "steel").length > 1)
         {
           playerControl.build = "Warehouse";
+          menuOpen = false;
+        }
+        if(menuLoc == 17 && myPlayer.inventory.filter((x) => x == "steel").length > 1 && myPlayer.inventory.filter((x) => x == "chronos").length > 1 && myPlayer.inventory.filter((x) => x == "rock").length > 1)
+        {
+          playerControl.build = "Auto Cannon";
           menuOpen = false;
         }
       }

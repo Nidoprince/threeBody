@@ -58,7 +58,17 @@ server.listen(process.env.PORT || 5000, function() {
   //Add the dragonballs
   for(let i = 0; i<7; i++)
   {
+    let rand1 = Math.floor(Math.random()*10);
+    for(let j = 0; j<rand1; j++)
+    {
+      items.push(new space.Item(Math.random()*200000-100000,Math.random()*200000-100000,"rock",Math.floor(Math.random()*1.3)));
+    }
     items.push(new space.Item(Math.random()*200000-100000,Math.random()*200000-100000,"dragonball",Math.floor(Math.random()*1.3)));
+  }
+  let fillUp = 77-items.length;
+  for(let j = 0; j<fillUp; j++)
+  {
+    items.push(new space.Item(Math.random()*200000-100000,Math.random()*200000-100000,"rock",Math.floor(Math.random()*1.3)));
   }
 
 });
@@ -350,7 +360,23 @@ io.on('connection', function(socket) {
           player.controllingPlanet.build(player.loc.x,player.loc.y,player.color,"warehouse");
         }
       }
-      if(["Chaos","Steel","Fuel+","Omega","Fusion"].includes(data.build))
+      if(data.build == "Auto Cannon")
+      {
+        if(player.inventory.filter((x) => x == "steel").length > 1 && player.inventory.filter((x) => x == "rock").length > 1 && player.inventory.filter((x) => x == "chronos").length > 1)
+        {
+          for(let i = 0; i<2; i++)
+          {
+            let index = player.inventory.indexOf("steel");
+            player.inventory.splice(index,1);
+            index = player.inventory.indexOf("rock");
+            player.inventory.splice(index,1);
+            index = player.inventory.indexOf("chronos");
+            player.inventory.splice(index,1);
+          }
+          player.controllingPlanet.build(player.loc.x,player.loc.y,player.color,"autoCannon");
+        }
+      }
+      if(["Chaos","Steel","Fuel+","Omega","Fusion","Iron"].includes(data.build))
       {
         let inFactory = false;
         let playerAngle = player.controllingPlanet.loc.direction(player.loc).angle();
@@ -427,6 +453,18 @@ io.on('connection', function(socket) {
                 player.inventory.splice(index,1);
               }
               player.inventory.push("fusion");
+            }
+          }
+          if(data.build == "Iron")
+          {
+            if(player.inventory.filter((x) => x == "rock").length > 3)
+            {
+              for(let i = 0; i<4; i++)
+              {
+                let index = player.inventory.indexOf("rock");
+                player.inventory.splice(index,1);
+              }
+              player.inventory.push("iron");
             }
           }
         }

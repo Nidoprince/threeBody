@@ -476,12 +476,13 @@ var alienDrawer = function(alien,drawOn)
 
 var buildingDrawer = function(building,planet,drawOn)
 {
+  let planetLoc = new Vector(planet.loc.x,planet.loc.y);
+  let dir = (new Vector(0,-1)).rotate(building.angle);
+  let planetTouch = planetLoc.addVector((new Vector(0,-planet.size).rotate(building.angle)));
+  planetTouch = new Vector((planetTouch.x-viewer.x)/zoomMult+800,(planetTouch.y-viewer.y)/zoomMult+400);
+  drawOn.fillStyle = building.color;
   if(building.type == "refinery" || building.type == "warehouse")
   {
-    let planetLoc = new Vector(planet.loc.x,planet.loc.y);
-    let dir = (new Vector(0,-1)).rotate(building.angle);
-    let planetTouch = planetLoc.addVector((new Vector(0,-planet.size).rotate(building.angle)));
-    planetTouch = new Vector((planetTouch.x-viewer.x)/zoomMult+800,(planetTouch.y-viewer.y)/zoomMult+400);
     //Make Points
     let upperLeftCorner = planetTouch.addVector(dir.multiplyScaler(building.size/zoomMult)).addVector(dir.multiplyScaler(building.size/zoomMult).rotate(3*Math.PI/2));
     let upperRightCorner = planetTouch.addVector(dir.multiplyScaler(building.size/zoomMult)).addVector(dir.multiplyScaler(building.size/zoomMult).rotate(Math.PI/2));
@@ -492,7 +493,6 @@ var buildingDrawer = function(building,planet,drawOn)
     let leftBase = planetTouch.addVector(dir.multiplyScaler(building.size/(2*zoomMult))).addVector(dir.multiplyScaler(building.size/(2*zoomMult)).rotate(3*Math.PI/2));
     let rightBase = planetTouch.addVector(dir.multiplyScaler(building.size/(2*zoomMult))).addVector(dir.multiplyScaler(building.size/(2*zoomMult)).rotate(Math.PI/2));
     drawOn.beginPath();
-    drawOn.fillStyle = building.color;
     drawOn.strokeStyle = "grey";
     drawOn.moveTo(lowerLeftCorner.x,lowerLeftCorner.y);
     drawOn.lineTo(upperLeftCorner.x,upperLeftCorner.y);
@@ -508,6 +508,23 @@ var buildingDrawer = function(building,planet,drawOn)
     drawOn.closePath();
     drawOn.fill();
     drawOn.stroke();
+  }
+  else if(building.type == "autoCannon")
+  {
+    drawOn.beginPath();
+    drawOn.arc(planetTouch.x,planetTouch.y,building.size/zoomMult,0,2*Math.PI);
+    drawOn.fill();
+    drawOn.closePath();
+    drawOn.beginPath();
+    drawOn.moveTo(planetTouch.x,planetTouch.y);
+    drawOn.arc(planetTouch.x,planetTouch.y,building.size*1.8/zoomMult,building.cannonAngle+building.angle-Math.PI/10-Math.PI/2,building.cannonAngle+building.angle+Math.PI/10-Math.PI/2);
+    drawOn.lineTo(planetTouch.x,planetTouch.y);
+    drawOn.fill();
+    drawOn.closePath();
+    for(let projectile of building.shots)
+    {
+      itemDrawer(projectile,drawOn);
+    }
   }
 }
 
@@ -918,6 +935,8 @@ var refineMenuAnimation = function(drawOn)
   drawOn.fillText("Iron Chronos Dark",1300,190);
   drawOn.fillText("Fusion",200,500);
   drawOn.fillText("2 Omega 2 Fuel+",180,540);
+  drawOn.fillText("Iron",585,500);
+  drawOn.fillText("4 Rocks",570,540);
 }
 
 var buildMenuAnimation =  function(drawOn)
@@ -983,4 +1002,9 @@ var buildMenuAnimation =  function(drawOn)
   drawOn.fillText("Warehouse",1125,570);
   drawOn.fillText("2 Steel", 1120,590);
   drawOn.fillText("Press E to Use.",1120,610);
+  drawOn.fillText("Auto Turret",1375,570);
+  drawOn.fillText("2 Chronos 2 Steel",1355,590);
+  drawOn.fillText("2 Rocks",1385,610);
+  drawOn.fillText("Knocks away other",1355,630);
+  drawOn.fillText("colors",1385,650);
 }

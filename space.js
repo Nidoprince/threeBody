@@ -1318,12 +1318,12 @@ class Player
       this.vel = this.controllingPlanet.vel.copy();
       this.inventory.push("iron");
       this.inventory.push("fuel");
-      this.inventory.push("fuel");
-      this.inventory.push("fuel+");
-      this.inventory.push("fuel+");
-      this.inventory.push("iron");
-      this.inventory.push("omega");
-      this.inventory.push("omega");
+      this.inventory.push("steel");
+      this.inventory.push("rock");
+      this.inventory.push("rock");
+      this.inventory.push("steel");
+      this.inventory.push("chronos");
+      this.inventory.push("chronos");
       //this.inventory.push("chaos");
       //this.inventory.push("omega");
       //this.inventory.push("omega");
@@ -2036,6 +2036,13 @@ class Building
     {
       this.size = 80;
       this.storage = [];
+    }
+    else if(this.type == "autoCannon")
+    {
+      this.size = 70;
+      this.cannonAngle = 0;
+      this.turretCooldown = 0;
+      this.shots = [];
     }
     this.isDead = false;
   }
