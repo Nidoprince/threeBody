@@ -14,7 +14,7 @@ const controlSpeed = 0.1; //Player acceleration in space.
 const walkSpeed = 3; //Acceleration on a planet
 const maxSpeed = 20; //Max velocity for player not in a ship.
 const friction = 0.2; //How much friction affects things.
-const airResistance = 0.001;  //How much air resistance affects things.
+const airResistance = 0.00001;  //How much air resistance affects things.
 const projectileSpeed = 30;
 
 //Calculates the effect of gravity on a body.
@@ -263,10 +263,6 @@ class Projectile extends Particle
         }
       }
     }
-    else if(this.type == "repulsion")
-    {
-      console.log("do stuff");
-    }
   }
 }
 
@@ -292,6 +288,10 @@ class Explosion
     this.spawnParticles(100);
     this.type = "explosion";
     this.reality = reality;
+  }
+  mass()
+  {
+    return this.size/10;
   }
   spawnParticles(numberOfParticles)
   {
@@ -2043,6 +2043,7 @@ class Building
       this.cannonAngle = 0;
       this.turretCooldown = 0;
       this.shots = [];
+      this.backAndForth = false;
     }
     this.isDead = false;
   }
@@ -2078,7 +2079,7 @@ class Planet
     }
   }
 
-  updateLocation(timeDifferential, planets)
+  updateLocation(timeDifferential, planets, ships, players, items)
   {
     let otherPlanets = planets.filter((x)=>!this.loc.isEqual(x.loc));
 
@@ -2099,7 +2100,87 @@ class Planet
         planet.vel = planet.vel.subVector(movement.multiplyScaler(0.01/planet.mass()));
       }
     }
-    this.buildings = this.buildings.filter((x) => !x.isDead);
+    this.buildings = this.buildings.filter((x) =>
+    {
+      let location = this.loc.addVector((new Vector(0,-this.size).rotate(x.angle)));
+      if(x.type == "autoCannon")
+      {
+        let closestEnemy = ships.reduce((acc,cur) =>
+        {
+          if(!("lifespan" in cur)&& cur.color != x.color && Vector.distance(cur.loc,location) < acc[1] && Math.abs(Vector.angleBetween((new Vector(0,-1)).rotate(x.angle),location.direction(cur.loc))) <= Math.PI/2+0.2)
+          {
+            return [cur,Vector.distance(cur.loc,location)];
+          }
+          else
+          {
+            return acc;
+          }
+        },[false,15000]);
+        if(!closestEnemy[0])
+        {
+          closestEnemy = (Object.values(players)).reduce((acc,cur) =>
+          {
+            if(cur != "dead" && cur.color != x.color && Vector.distance(cur.loc,location) < acc[1] && Math.abs(Vector.angleBetween((new Vector(0,-1)).rotate(x.angle),location.direction(cur.loc))) <= Math.PI/2+0.2)
+            {
+              return [cur,Vector.distance(cur.loc,location)];
+            }
+            else
+            {
+              return acc;
+            }
+          },[false,15000]);
+        }
+        if(closestEnemy[0])
+        {
+          let angleTowardsEnemy = Vector.angleBetween((new Vector(0,-1)).rotate(x.angle),location.direction(closestEnemy[0].loc));
+          if(angleTowardsEnemy > x.cannonAngle + Math.PI/200)
+          {
+            x.cannonAngle += Math.PI/200;
+          }
+          else if(angleTowardsEnemy < x.cannonAngle - Math.PI/200)
+          {
+            x.cannonAngle -= Math.PI/200;
+          }
+          if(x.turretCooldown == 0 && Math.abs(x.cannonAngle-angleTowardsEnemy)<Math.PI/20)
+          {
+            x.turretCooldown = 25;
+            let fireDirection = (new Vector(0,-1)).rotate(x.angle+x.cannonAngle);
+            x.shots.push(new Projectile(location.addVector(fireDirection.normalize(x.size*2)),fireDirection.normalize(projectileSpeed),x.size,500,x.color,this.reality,"repulsion"));
+          }
+        }
+        else
+        {
+          if(x.cannonAngle<-Math.PI/2-0.1)
+          {
+            x.cannonAngle = -Math.PI/2-0.1;
+            x.backAndForth = true;
+          }
+          else if(x.cannonAngle>Math.PI/2+0.1)
+          {
+            x.cannonAngle = Math.PI/2+0.1;
+            x.backAndForth = false;
+          }
+          else if(x.backAndForth)
+          {
+            x.cannonAngle += Math.PI/200;
+          }
+          else
+          {
+            x.cannonAngle -= Math.PI/200;
+          }
+        }
+        if(x.turretCooldown > 0)
+        {
+          x.turretCooldown -= 1;
+        }
+        x.shots = x.shots.filter((shot) =>
+        {
+          shot.updateLocation(timeDifferential,planets,items,ships,players);
+          return shot.lifespan > 0;
+        })
+      }
+      return !x.isDead;
+    });
   }
 
   updateVelocity(planets)

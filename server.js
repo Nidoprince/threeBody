@@ -566,7 +566,7 @@ setInterval(function() {
   }
   for (var id in planets)
   {
-    planets[id].updateLocation(timeDifferential,planetoids);
+    planets[id].updateLocation(timeDifferential,planetoids,ships,players,items);
     //console.log("Net: "+planets[id].vel.magnitude())
   }
   for (var id in asteroids)
@@ -575,7 +575,7 @@ setInterval(function() {
   }
   asteroids = asteroids.filter(asteroid =>
   {
-    asteroid.updateLocation(timeDifferential,planetoids);
+    asteroid.updateLocation(timeDifferential,planetoids,ships,players,items);
     return space.Vector.distance(asteroid.loc,new space.Vector(0,0)) < 500000 && asteroid.size > 20;
   })
   planetoids = planets.concat(asteroids,ships.filter((x)=>x.type == "capitolShip" && x.gravityDrive));
