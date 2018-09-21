@@ -681,6 +681,20 @@ var playerDot = function(player, drawOn)
   drawOn.fill();
 }
 
+var radarDrawer = function(player, drawOn)
+{
+  let playerLoc = Vector.makeVec(player.loc);
+  drawOn.fillStyle = "orange";
+  for(let pointer of player.radarPoints)
+  {
+    let dir = Vector.makeVec(pointer);
+    boidDrawer({
+      loc: playerLoc.addVector(dir.multiplyScaler(player.size*2)),
+      vel: dir.copy()
+    },drawOn,player.size/2);
+  }
+}
+
 var tearDrawer = function(tear, drawOn)
 {
   drawOn.fillStyle = tear.color;

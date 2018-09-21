@@ -1334,7 +1334,7 @@ class Player
       this.vel = new Vector(0,0);
       this.inventory.push("fuel+");
       this.inventory.push("iron");
-      this.inventory.push("suit");
+      this.inventory.push("radar");
     }
     this.actingVel = new Vector(0,0);
     this.leftHeld = false;
@@ -1362,6 +1362,7 @@ class Player
     this.pickUpTimer = 0;
     this.cannonCooldown = 0;
     this.shotsFired = [];
+    this.radarPoints = [];
   }
 
   mass()
@@ -2011,6 +2012,36 @@ class Player
       shot.updateLocation(timeDifferential,[],items,ships,players);
       return shot.lifespan > 0;
     })
+
+    this.radarPoints = [];
+    if(this.inventory.includes("radar"))
+    {
+      for(let id in players)
+      {
+        if(id != this.id && players[id]!="dead" && players[id].inventory.includes("dragonball") && players[id].reality == this.reality)
+        {
+          this.radarPoints.push(this.loc.direction(players[id].loc));
+        }
+      }
+      for(let item of items)
+      {
+        if(item.type == "dragonball" && this.reality == item.reality)
+        {
+          this.radarPoints.push(this.loc.direction(item.loc));
+        }
+      }
+      for(let planet of planets)
+      {
+        for(let building of planet.buildings)
+        {
+          if(building.type == "warehouse" && building.contents.includes("dragonball"))
+          {
+            let buildingLoc = planet.loc.addVector(Vector.unitVector().rotate(building.angle).multiplyScaler(planet.size));
+            this.radarPoints.push(this.loc.direction(buildingLoc));
+          }
+        }
+      }
+    }
 
     this.dropWhat = false;
     this.tPressed = false;

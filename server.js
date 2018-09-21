@@ -657,6 +657,21 @@ setInterval(function() {
     return item.stillCorporeal;
   })
   lastUpdateTime = currentTime;
+
+  for(let color of ["red","green","blue","yellow"])
+  {
+    currentNumbers[color].score = (Object.values(players)).reduce((arr,cur) =>
+    {
+      if(cur.color == color)
+      {
+        return arr+cur.inventory.filter((x) => x == "dragonball").length;
+      }
+      else
+      {
+        return arr;
+      }
+    },0)
+  }
   io.sockets.emit('state', [planets.map(compr.planetCompress),players,ships.map(compr.shipCompress),asteroids.map(compr.asteroidCompress),aliens.map(compr.alienCompress),items.map(compr.itemCompress),tears,currentNumbers]);
   /*if(dog)
   {

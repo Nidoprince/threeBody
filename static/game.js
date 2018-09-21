@@ -254,6 +254,10 @@ socket.on('state',function(celestial) {
           specialDrawer(myPlayer,context,1530,200);
         }
       }
+      if(myPlayer.inventory.includes("radar"))
+      {
+        radarDrawer(myPlayer,context);
+      }
     }
 
     if(myPlayer && menuOpen == "refinery")
