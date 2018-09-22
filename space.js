@@ -30,9 +30,9 @@ const gravityCalculator = function(body,attractor)
 //Little flying flocking bird aliens.
 class Boid
 {
-  constructor(velocityMax, location)
+  constructor(velocityMax, location, packing)
   {
-    this.loc = new Vector(location.x+(Math.random()*4000-2000),location.y+(Math.random()*4000-2000));
+    this.loc = new Vector(location.x+(Math.random()*2*packing-packing),location.y+(Math.random()*2*packing-packing));
     this.velMax = velocityMax;
     this.vel = new Vector(Math.random()*5,Math.random()*5);
   }
@@ -66,21 +66,28 @@ class Boid
     this.vel = this.vel.addVector(centralize).addVector(fitIn).addVector(personalSpace).addVector(attractor);
     this.vel = this.vel.speedLimit(this.velMax);
   }
-  updateLocation(timeDifferential)
+  updateLocation(timeDifferential,planets)
   {
     this.loc = this.loc.addVector(this.vel.multiplyScaler(timeDifferential*universeSpeed));
+    for(let planet of planets)
+    {
+      if(Vector.distance(planet.loc,this.loc) < planet.size*1.2)
+      {
+        this.loc = this.loc.addVector(planet.vel.multiplyScaler(timeDifferential*universeSpeed));
+      }
+    }
   }
 }
 
 //The Class for a whole flock of boids.
 class Flock
 {
-  constructor(number, velocity, x, y, size, color, lifespan, reality = 0)
+  constructor(number, velocity, x, y, size, color, lifespan, reality = 0,packing = 2000)
   {
     this.flock = [];
     for (var i = 0; i < number;i++)
     {
-      this.flock.push(new Boid(velocity, new Vector(x,y)));
+      this.flock.push(new Boid(velocity, new Vector(x,y), packing));
     }
     this.size =  size;
     this.color = color;
@@ -94,11 +101,11 @@ class Flock
       boid.updateVelocity(this.flock,items);
     }
   }
-  updateLocation(timeDifferential)
+  updateLocation(timeDifferential,planets)
   {
     for (var boid of this.flock)
     {
-      boid.updateLocation(timeDifferential);
+      boid.updateLocation(timeDifferential,planets);
     }
     this.lifespan--;
   }
@@ -1326,10 +1333,10 @@ class Player
       this.vel = this.controllingPlanet.vel.copy();
       this.inventory.push("iron");
       this.inventory.push("fuel");
-      this.inventory.push("steel");
-      this.inventory.push("rock");
-      this.inventory.push("rock");
-      this.inventory.push("steel");
+      this.inventory.push("iron");
+      this.inventory.push("fuel");
+      this.inventory.push("dark");
+      this.inventory.push("fuel");
       this.inventory.push("chronos");
       this.inventory.push("chronos");
       //this.inventory.push("chaos");

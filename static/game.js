@@ -310,6 +310,11 @@ socket.on('state',function(celestial) {
           playerControl.build = "Iron";
           menuOpen = false;
         }
+        else if(menuLoc == 7 && myPlayer.inventory.includes("dark") && myPlayer.inventory.includes("fuel"))
+        {
+          playerControl.build = "Life";
+          menuOpen = false;
+        }
       }
       refineMenuAnimation(context);
     }

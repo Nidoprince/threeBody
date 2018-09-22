@@ -376,7 +376,7 @@ io.on('connection', function(socket) {
           player.controllingPlanet.build(player.loc.x,player.loc.y,player.color,"autoCannon");
         }
       }
-      if(["Chaos","Steel","Fuel+","Omega","Fusion","Iron"].includes(data.build))
+      if(["Chaos","Steel","Fuel+","Omega","Fusion","Iron","Life"].includes(data.build))
       {
         let inFactory = false;
         let playerAngle = player.controllingPlanet.loc.direction(player.loc).angle();
@@ -392,7 +392,7 @@ io.on('connection', function(socket) {
         {
           if(data.build == "Steel")
           {
-            if(player.inventory.filter((x) => x == "iron").length > 0 && player.inventory.filter((x) => x == "fuel").length > 0 && player.controllingPlanet)
+            if(player.inventory.filter((x) => x == "iron").length > 0 && player.inventory.filter((x) => x == "fuel").length > 0)
             {
               for(let i = 0; i<1; i++)
               {
@@ -465,6 +465,20 @@ io.on('connection', function(socket) {
                 player.inventory.splice(index,1);
               }
               player.inventory.push("iron");
+            }
+          }
+          if(data.build == "Life")
+          {
+            if(player.inventory.filter((x) => x == "dark").length > 0 && player.inventory.filter((x) => x == "fuel").length > 0 && player.controllingPlanet)
+            {
+              for(let i = 0; i<1; i++)
+              {
+                let index = player.inventory.indexOf("dark");
+                player.inventory.splice(index,1);
+                index = player.inventory.indexOf("fuel");
+                player.inventory.splice(index,1);
+              }
+              aliens.push(new space.Flock(10+Math.floor(Math.random()*30),2,player.loc.x,player.loc.y,6,"grey",5000,player.reality,300));
             }
           }
         }
@@ -585,7 +599,7 @@ setInterval(function() {
   }
   aliens = aliens.filter(alien =>
   {
-    alien.updateLocation(timeDifferential);
+    alien.updateLocation(timeDifferential,planets);
     return alien.lifespan > 0;
   })
   tears = tears.filter(tear =>

@@ -951,6 +951,10 @@ var refineMenuAnimation = function(drawOn)
   drawOn.fillText("2 Omega 2 Fuel+",180,540);
   drawOn.fillText("Iron",585,500);
   drawOn.fillText("4 Rocks",570,540);
+
+
+  drawOn.fillText("Life",1325,500);
+  drawOn.fillText("1 Dark 1 Fuel",1305,540);
 }
 
 var buildMenuAnimation =  function(drawOn)
