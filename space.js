@@ -2315,6 +2315,10 @@ class Wormhole
         thing.reality = this.worm1reality;
       }
     }
+    if(Math.random()*1000 < 1)
+    {
+      wormhole.size = Math.floor((wormhole.size-1)*0.7);
+    }
   }
 }
 

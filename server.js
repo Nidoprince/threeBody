@@ -591,15 +591,8 @@ setInterval(function() {
   tears = tears.filter(tear =>
   {
     tear.warpStuff(ships,items,players);
-    if(Math.random()*4000 > 1)
-    {
-      return true;
-    }
-    else
-    {
-      return false;
-    }
-  })
+    return tear.size > 0;
+  });
   for (var id in ships)
   {
     ships[id].updateVelocity(planetoids);
