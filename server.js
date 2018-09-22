@@ -581,7 +581,7 @@ setInterval(function() {
   planetoids = planets.concat(asteroids,ships.filter((x)=>x.type == "capitolShip" && x.gravityDrive));
   for (var id in aliens)
   {
-    aliens[id].updateVelocity();
+    aliens[id].updateVelocity(items);
   }
   aliens = aliens.filter(alien =>
   {

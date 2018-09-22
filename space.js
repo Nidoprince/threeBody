@@ -36,7 +36,7 @@ class Boid
     this.velMax = velocityMax;
     this.vel = new Vector(Math.random()*5,Math.random()*5);
   }
-  updateVelocity(flock)
+  updateVelocity(flock,items)
   {
     let centralize = new Vector(0,0);
     let fitIn = new Vector(0,0);
@@ -53,9 +53,17 @@ class Boid
         }
       }
     }
+    let attractor = new Vector(0,0);
+    for(let item of items)
+    {
+      if(Vector.distance(item.loc, this.loc) < 10000 && item.type == "dragonball")
+      {
+        attractor = attractor.addVector(this.loc.direction(item.loc).multiplyScaler(this.velMax/40));
+      }
+    }
     centralize = this.loc.fromTill(centralize.multiplyScaler(1/(flock.length-1))).normalize(this.vel.magnitude()*0.05);
     fitIn = fitIn.multiplyScaler(1/(10*(flock.length-1)));
-    this.vel = this.vel.addVector(centralize).addVector(fitIn).addVector(personalSpace);
+    this.vel = this.vel.addVector(centralize).addVector(fitIn).addVector(personalSpace).addVector(attractor);
     this.vel = this.vel.speedLimit(this.velMax);
   }
   updateLocation(timeDifferential)
@@ -79,11 +87,11 @@ class Flock
     this.lifespan = lifespan;
     this.reality = reality;
   }
-  updateVelocity()
+  updateVelocity(items)
   {
     for (var boid of this.flock)
     {
-      boid.updateVelocity(this.flock);
+      boid.updateVelocity(this.flock,items);
     }
   }
   updateLocation(timeDifferential)
@@ -1335,6 +1343,7 @@ class Player
       this.inventory.push("fuel+");
       this.inventory.push("iron");
       this.inventory.push("radar");
+      this.inventory.push("dragonball")
     }
     this.actingVel = new Vector(0,0);
     this.leftHeld = false;
@@ -2317,7 +2326,7 @@ class Wormhole
     }
     if(Math.random()*1000 < 1)
     {
-      wormhole.size = Math.floor((wormhole.size-1)*0.7);
+      this.size = Math.floor((this.size-1)*0.7);
     }
   }
 }
