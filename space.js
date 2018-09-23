@@ -1335,8 +1335,8 @@ class Player
       this.inventory.push("fuel");
       this.inventory.push("iron");
       this.inventory.push("fuel");
-      this.inventory.push("dark");
-      this.inventory.push("fuel");
+      this.inventory.push("chronos");
+      this.inventory.push("chronos");
       this.inventory.push("chronos");
       this.inventory.push("chronos");
       //this.inventory.push("chaos");
@@ -2291,7 +2291,7 @@ class Asteroid extends Planet
 
 class Wormhole
 {
-  constructor(x1,y1,z1,x2,y2,z2,color,size)
+  constructor(x1,y1,z1,x2,y2,z2,color,size,vel1=new Vector(0,0),vel2 = new Vector(0,0))
   {
     this.worm1 = new Vector(x1,y1);
     this.worm1reality = z1;
@@ -2299,8 +2299,10 @@ class Wormhole
     this.worm2reality = z2;
     this.color = color;
     this.size = size;
+    this.vel1 = vel1;
+    this.vel2 = vel2;
   }
-  warpStuff(ships,items,players)
+  warpStuff(ships,items,players,timeDifferential)
   {
     let stuff = ships.concat(items,Object.values(players));
     stuff = stuff.filter((x) => x!="dead");
@@ -2319,7 +2321,7 @@ class Wormhole
         }
         thing.reality = this.worm2reality;
       }
-      else if(Vector.distance(thing.loc,this.worm2)<this.size+thing.size/2 && angleTowards1 < Math.PI/2 && thing.reality == this.worm2reality)
+      else if(Vector.distance(thing.loc,this.worm2)<this.size+thing.size/2 && angleTowards2 < Math.PI/2 && thing.reality == this.worm2reality)
       {
         let randDirection = Math.random()*Math.PI*2;
         thing.loc = this.worm1.addVector(Vector.unitVector().rotate(randDirection).multiplyScaler(this.size+1));
@@ -2335,6 +2337,8 @@ class Wormhole
     {
       this.size = Math.floor((this.size-1)*0.7);
     }
+    this.worm1 = this.worm1.addVector(this.vel1.multiplyScaler(universeSpeed*timeDifferential));
+    this.worm2 = this.worm2.addVector(this.vel2.multiplyScaler(universeSpeed*timeDifferential));
   }
 }
 

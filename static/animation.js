@@ -591,7 +591,14 @@ var fuelBar = function(player,drawOn)
 var airBar = function(player,drawOn)
 {
   drawOn.strokeStyle = "grey";
-  drawOn.fillStyle = "white";
+  if(player.reality == 0)
+  {
+    drawOn.fillStyle = "white";
+  }
+  else
+  {
+    drawOn.fillStyle = "lightblue";
+  }
   drawOn.strokeRect(29,29,32,502);
   drawOn.fillRect(30,30+500-500*(player.air/player.airMax),30,500*player.air/player.airMax);
 }
@@ -600,9 +607,14 @@ var playerDrawer = function(player,drawOn,localViewer = viewer, localZoomMult = 
 {
   if(!player.inSpaceShip && player != "dead")
   {
+    let adjustmentIndex = 0;
+    if(player.reality != 0)
+    {
+      adjustmentIndex = 3;
+    }
     let playerLoc = new Vector((player.loc.x-localViewer.x)/localZoomMult+800,(player.loc.y-localViewer.y)/localZoomMult+400);
-    let velDirect = player.velocityComponents[8][1];
-    let earthMove = (new Vector(player.velocityComponents[5][1].x,player.velocityComponents[5][1].y)).addVector(new Vector(player.velocityComponents[4][1].x,player.velocityComponents[4][1].y));
+    let velDirect = player.velocityComponents[8-adjustmentIndex][1];
+    let earthMove = (new Vector(player.velocityComponents[5-adjustmentIndex][1].x,player.velocityComponents[5-adjustmentIndex][1].y)).addVector(new Vector(player.velocityComponents[4-adjustmentIndex][1].x,player.velocityComponents[4-adjustmentIndex][1].y));
     velDirect = (new Vector(velDirect.x,velDirect.y));
     if(player.inventory.includes("jetpack") && velDirect.magnitude() > 0)
     {
@@ -951,8 +963,8 @@ var refineMenuAnimation = function(drawOn)
   drawOn.fillText("2 Omega 2 Fuel+",180,540);
   drawOn.fillText("Iron",585,500);
   drawOn.fillText("4 Rocks",570,540);
-
-
+  drawOn.fillText("Wormhole",955,500);
+  drawOn.fillText("6 Chronos",955,540);
   drawOn.fillText("Life",1325,500);
   drawOn.fillText("1 Dark 1 Fuel",1305,540);
 }

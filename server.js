@@ -86,10 +86,13 @@ io.on('connection', function(socket) {
     if(socket.id in players)
     {
       let player = players[socket.id];
-      currentNumbers[player.color].number-=1;
-      for(let item of player.inventory.filter((x) => x == "dragonball"))
+      if(player!="dead")
       {
-        items.push(new space.Item(player.loc.x+Math.random()*10-5,player.loc.y+Math.random()*10-5,item,player.reality));
+        currentNumbers[player.color].number-=1;
+        for(let item of player.inventory.filter((x) => x == "dragonball"))
+        {
+          items.push(new space.Item(player.loc.x+Math.random()*10-5,player.loc.y+Math.random()*10-5,item,player.reality));
+        }
       }
       delete players[socket.id];
     }
@@ -376,7 +379,7 @@ io.on('connection', function(socket) {
           player.controllingPlanet.build(player.loc.x,player.loc.y,player.color,"autoCannon");
         }
       }
-      if(["Chaos","Steel","Fuel+","Omega","Fusion","Iron","Life"].includes(data.build))
+      if(["Chaos","Steel","Fuel+","Omega","Fusion","Iron","Wormhole","Life"].includes(data.build))
       {
         let inFactory = false;
         let playerAngle = player.controllingPlanet.loc.direction(player.loc).angle();
@@ -467,6 +470,26 @@ io.on('connection', function(socket) {
               player.inventory.push("iron");
             }
           }
+          if(data.build == "Wormhole")
+          {
+            if(player.inventory.filter((x) => x == "chronos").length > 5)
+            {
+              for(let i = 0; i<6; i++)
+              {
+                let index = player.inventory.indexOf("chronos");
+                player.inventory.splice(index,1);
+              }
+              let buildNumber = player.controllingPlanet.buildings.length;
+              let invenCount = 0;
+              if(player.inventory.length > 0)
+              {
+                invenCount += player.inventory[0].length;
+              }
+              let warpDirection = player.loc.addVector((space.Vector.unitVector().rotate(buildNumber*Math.PI/4)).multiplyScaler(invenCount*2000));
+              let invenNumber = player.inventory.length;
+              tears.push(new space.Wormhole(player.loc.x,player.loc.y,player.reality,warpDirection.x,warpDirection.y,(player.reality+(invenNumber+1)%2)%2,'rgba(100,100,100,0.3)',100+50*invenCount,player.controllingPlanet.vel.copy(),player.controllingPlanet.vel.copy()));
+            }
+          }
           if(data.build == "Life")
           {
             if(player.inventory.filter((x) => x == "dark").length > 0 && player.inventory.filter((x) => x == "fuel").length > 0 && player.controllingPlanet)
@@ -499,7 +522,7 @@ setInterval(function() {
     let y1 = Math.random()*200000-100000;
     let x2 = Math.random()*200000-100000;
     let y2 = Math.random()*200000-100000;
-    let color = ['rgba(255,0,0,0.2)','rgba(0,255,0,0.2)','rgba(0,0,255,0.2)','rgba(0,255,255,0.2)','rgba(255,255,0,0.2)','rgba(255,0,255,0.2)'][Math.floor(Math.random()*6)];
+    let color = ['rgba(255,0,0,0.3)','rgba(0,255,0,0.3)','rgba(0,0,255,0.3)','rgba(0,255,255,0.3)','rgba(255,255,0,0.3)','rgba(255,0,255,0.3)'][Math.floor(Math.random()*6)];
     let randoReality = Math.random()*1000;
     let z1;
     let z2;
@@ -604,7 +627,7 @@ setInterval(function() {
   })
   tears = tears.filter(tear =>
   {
-    tear.warpStuff(ships,items,players);
+    tear.warpStuff(ships,items,players,timeDifferential);
     return tear.size > 0;
   });
   for (var id in ships)
