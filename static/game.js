@@ -82,6 +82,47 @@ canvas.width = 1600;
 canvas.height = 800;
 
 var context = canvas.getContext('2d');
+socket.on("normalizeForWin",function()
+{
+  reality = 0;
+  zoomRatio = 1.04;
+  zoomMult = Math.pow(zoomRatio,viewer.zoom);
+  colorSelected = false;
+  cursorMove = 0;
+  cursorLoc = 0;
+  menuOpen = false;
+  menuLoc = 0;
+  openBuilding = false;
+  trigger.reset();
+  viewer.space = false;
+  viewer.enter = false;
+});
+socket.on('winState',function(animations) {
+  context.clearRect(0,0,1600,800);
+  let players = animations[0];
+  let dragonballs = animations[1];
+  let shenronBody = animations[2];
+  let shenronEnds = animations[3];
+  let text = animations[4];
+  let countdown = animations[5];
+  for (var id in players)
+  {
+    if(id == socket.id)
+    {
+      myPlayer = players[id];
+    }
+  }
+  starForger(context);
+  if(countdown == 200 && myPlayer.inventory.filter((x) => x == "dragonball").length == 7)
+  {
+    let wish = window.prompt("What is your wish?","???");
+    wish = wish.replace(/[^0-9a-z .!',?-]/gi, '');
+    socket.emit("wish",wish);
+  }
+  trigger.reset();
+  viewer.space = false;
+  viewer.enter = false;
+});
 socket.on('state',function(celestial) {
   context.clearRect(0,0,1600,800);
   if(reality == 1)

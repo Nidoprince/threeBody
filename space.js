@@ -1347,10 +1347,12 @@ class Player
     {
       this.loc = new Vector(x,y);
       this.vel = new Vector(0,0);
-      this.inventory.push("fuel+");
-      this.inventory.push("iron");
-      this.inventory.push("radar");
-      this.inventory.push("dragonball")
+      this.inventory.push("dragonball");
+      this.inventory.push("dragonball");
+      this.inventory.push("dragonball");
+      this.inventory.push("dragonball");
+      this.inventory.push("dragonball");
+      this.inventory.push("dragonball");
     }
     this.actingVel = new Vector(0,0);
     this.leftHeld = false;

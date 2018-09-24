@@ -19,6 +19,13 @@ var aliens = [];
 var items = [];
 var tears = [];
 
+var winning = false;
+var shenronBody = [];
+var shenronEnds = [];
+var text = [];
+var counter = 0;
+var wishRecieved = false;
+
 var currentNumbers =
 {
   red: {number:0,score:0},
@@ -37,6 +44,33 @@ app.get('/', function(req, res) {
 //Starts the server.
 server.listen(process.env.PORT || 5000, function() {
   console.log('Starting server on port 5000')
+  resetUniverse();
+});
+
+var resetUniverse = function()
+{
+  players = {};
+  planets = [];
+  ships = [];
+  asteroids = [];
+  aliens = [];
+  items = [];
+  tears = [];
+
+  winning = false;
+  shenronBody = [];
+  shenronEnds = [];
+  text = [];
+  counter = 0;
+  wishRecieved = false;
+
+  currentNumbers =
+  {
+    red: {number:0,score:0},
+    blue: {number:0,score:0},
+    yellow: {number:0,score:0},
+    green: {number:0,score:0}
+  }
   planets.push(new space.Planet(0,25000,10,0,4031,'red','rgba(255,0,0,0.1)',2));
   planets.push(new space.Planet(-43300/2,-25000/2,-5,8.66,4031,'blue','rgba(0,0,255,0.1)',2));
   planets.push(new space.Planet(43300/2,-25000/2,-5,-8.66,4031,'yellow','rgba(255,255,0,0.1)',2));
@@ -54,6 +88,7 @@ server.listen(process.env.PORT || 5000, function() {
   //asteroids.push(new space.Asteroid(800,800,0,0.5,200,"chronos","pink"));
   aliens.push(new space.Flock(50,3,100,100,5,"pink",3000));
   //tears.push(new space.Wormhole(200,200,0,500,0,2,'rgba(0,255,255,0.2)',40));
+  items.push(new space.Item(-200,-200,"dragonball",0));
 
   //Add the dragonballs
   for(let i = 0; i<7; i++)
@@ -70,8 +105,7 @@ server.listen(process.env.PORT || 5000, function() {
   {
     items.push(new space.Item(Math.random()*200000-100000,Math.random()*200000-100000,"rock",Math.floor(Math.random()*1.3)));
   }
-
-});
+}
 
 var io = socketIO(server);
 
@@ -95,6 +129,15 @@ io.on('connection', function(socket) {
         }
       }
       delete players[socket.id];
+    }
+  });
+  socket.on("wish", function(wish)
+  {
+    if(socket.id in players && players[socket.id].inventory.filter((x) => x == "dragonball").length == 7)
+    {
+      wish = wish.replace(/[^0-9a-z .!',?-]/gi, '');
+      console.log(wish);
+      wishRecieved = true;
     }
   });
   socket.on('dead', function() {
@@ -514,200 +557,224 @@ setInterval(function() {
   var currentTime = (new Date()).getTime();
   var timeDifferential = (currentTime - lastUpdateTime)/20;
 
-  //Generate Stuff
-  if(Math.random()*3000 < (5-tears.length)/5)
+  if(!winning)
   {
-    let size = (Math.random()*Math.random()*Math.random()*Math.random()*4000+100);
-    let x1 = Math.random()*200000-100000;
-    let y1 = Math.random()*200000-100000;
-    let x2 = Math.random()*200000-100000;
-    let y2 = Math.random()*200000-100000;
-    let color = ['rgba(255,0,0,0.3)','rgba(0,255,0,0.3)','rgba(0,0,255,0.3)','rgba(0,255,255,0.3)','rgba(255,255,0,0.3)','rgba(255,0,255,0.3)'][Math.floor(Math.random()*6)];
-    let randoReality = Math.random()*1000;
-    let z1;
-    let z2;
-    if(randoReality < 300)
+    //Generate Stuff
+    if(Math.random()*3000 < (5-tears.length)/5)
     {
-      z1 = 0;
-      z2 = 0;
-    }
-    else if(randoReality < 900)
-    {
-      z1 = 1;
-      z2 = 1;
-    }
-    else if(randoReality < 990)
-    {
-      z1 = 0;
-      z2 = 1;
-    }
-    else if(randoReality < 999)
-    {
-      z1 = 1;
-      z2 = 2;
-    }
-    else
-    {
-      z1 = 0;
-      z2 = 2;
-    }
-    tears.push(new space.Wormhole(x1,y1,z1,x2,y2,z2,color,size));
-  }
-  if(Math.random()*1000 < (50-asteroids.length)/50)
-  {
-    let size = (Math.random()+Math.random()+Math.random()+Math.random())*40+20;
-    let x = Math.random()*200000-100000;
-    let y = Math.random()*200000-100000;
-    let xV = (Math.random()+Math.random())*5-5;
-    let yV = (Math.random()+Math.random())*5-5;
-    let contents;
-    let color;
-    let reality;
-    if(Math.random()*100 < 5)
-    {
-      contents = "chronos";
-      color = "pink";
-    }
-    else if(Math.random()*100 < 10)
-    {
-      contents = "dark";
-      color = "black";
-    }
-    else
-    {
-      contents = "iron";
-      color = "brown";
-    }
-    if(Math.random()*100 < 50)
-    {
-      reality = 1;
-    }
-    else
-    {
-      reality = 0;
-    }
-    asteroids.push(new space.Asteroid(x,y,xV,yV,size,contents,color,1,reality));
-  }
-  if(Math.random()*3000 < 1)
-  {
-    aliens.push(new space.Flock(10+Math.random()*70,5,Math.random()*20000-10000,Math.random()*20000-10000,5,["red","green","blue","pink","grey","purple","yellow","white","orange","darkgrey"][Math.floor(Math.random()*10)],1000+Math.random()*9000));
-  }
-
-  let planetoids = planets.concat(asteroids,ships.filter((x)=>x.type == "capitolShip" && x.gravityDrive));
-
-  //Update Stuff
-  for (var id in planets)
-  {
-    planets[id].updateVelocity(planets);
-    planets[id].spawnFuel();
-  }
-  for (var id in planets)
-  {
-    planets[id].updateLocation(timeDifferential,planetoids,ships,players,items);
-    //console.log("Net: "+planets[id].vel.magnitude())
-  }
-  for (var id in asteroids)
-  {
-    asteroids[id].updateVelocity(planetoids);
-  }
-  asteroids = asteroids.filter(asteroid =>
-  {
-    asteroid.updateLocation(timeDifferential,planetoids,ships,players,items);
-    return space.Vector.distance(asteroid.loc,new space.Vector(0,0)) < 500000 && asteroid.size > 20;
-  })
-  planetoids = planets.concat(asteroids,ships.filter((x)=>x.type == "capitolShip" && x.gravityDrive));
-  for (var id in aliens)
-  {
-    aliens[id].updateVelocity(items);
-  }
-  aliens = aliens.filter(alien =>
-  {
-    alien.updateLocation(timeDifferential,planets);
-    return alien.lifespan > 0;
-  })
-  tears = tears.filter(tear =>
-  {
-    tear.warpStuff(ships,items,players,timeDifferential);
-    return tear.size > 0;
-  });
-  for (var id in ships)
-  {
-    ships[id].updateVelocity(planetoids);
-    if("isDead" in ships[id] && ships[id].isDead == "explosion")
-    {
-      ships[id] = new space.Explosion(ships[id].loc.x,ships[id].loc.y,ships[id].size/2,500,ships[id].planetThatMurderedMe,ships[id].reality);
-    }
-  }
-  ships = ships.filter(ship =>
-  {
-    ship.updateLocation(timeDifferential,planetoids,items,ships);
-    if("isDead" in ship)
-    {
-      return !ship.isDead;
-    }
-    else
-    {
-      return ship.lifespan > 0;
-    }
-  })
-  for (var id in players)
-  {
-    if(players[id]!="dead")
-    {
-      players[id].updateVelocity(planetoids);
-    }
-  }
-  for (var id in players)
-  {
-    if(players[id]!="dead")
-    {
-      players[id].updatePlayer(timeDifferential,planetoids,ships,items,players);
-    }
-  }
-  for (var id in players)
-  {
-    if(players[id].isDead)
-    {
-      currentNumbers[players[id].color].number-=1;
-      let player = players[id];
-      for(let item of player.inventory.filter((x) => x == "dragonball"))
+      let size = (Math.random()*Math.random()*Math.random()*Math.random()*4000+100);
+      let x1 = Math.random()*200000-100000;
+      let y1 = Math.random()*200000-100000;
+      let x2 = Math.random()*200000-100000;
+      let y2 = Math.random()*200000-100000;
+      let color = ['rgba(255,0,0,0.3)','rgba(0,255,0,0.3)','rgba(0,0,255,0.3)','rgba(0,255,255,0.3)','rgba(255,255,0,0.3)','rgba(255,0,255,0.3)'][Math.floor(Math.random()*6)];
+      let randoReality = Math.random()*1000;
+      let z1;
+      let z2;
+      if(randoReality < 300)
       {
-        items.push(new space.Item(player.loc.x+Math.random()*10-5,player.loc.y+Math.random()*10-5,item,player.reality));
+        z1 = 0;
+        z2 = 0;
       }
-      players[id] = "dead";
-    }
-  }
-  for (var id in items)
-  {
-    items[id].updateVelocity(planetoids);
-  }
-  items = items.filter(item =>
-  {
-    item.updateLocation(timeDifferential,planetoids);
-    return item.stillCorporeal;
-  })
-  lastUpdateTime = currentTime;
-
-  for(let color of ["red","green","blue","yellow"])
-  {
-    currentNumbers[color].score = (Object.values(players)).reduce((arr,cur) =>
-    {
-      if(cur.color == color)
+      else if(randoReality < 900)
       {
-        return arr+cur.inventory.filter((x) => x == "dragonball").length;
+        z1 = 1;
+        z2 = 1;
+      }
+      else if(randoReality < 990)
+      {
+        z1 = 0;
+        z2 = 1;
+      }
+      else if(randoReality < 999)
+      {
+        z1 = 1;
+        z2 = 2;
       }
       else
       {
-        return arr;
+        z1 = 0;
+        z2 = 2;
       }
-    },0)
+      tears.push(new space.Wormhole(x1,y1,z1,x2,y2,z2,color,size));
+    }
+    if(Math.random()*1000 < (50-asteroids.length)/50)
+    {
+      let size = (Math.random()+Math.random()+Math.random()+Math.random())*40+20;
+      let x = Math.random()*200000-100000;
+      let y = Math.random()*200000-100000;
+      let xV = (Math.random()+Math.random())*5-5;
+      let yV = (Math.random()+Math.random())*5-5;
+      let contents;
+      let color;
+      let reality;
+      if(Math.random()*100 < 5)
+      {
+        contents = "chronos";
+        color = "pink";
+      }
+      else if(Math.random()*100 < 10)
+      {
+        contents = "dark";
+        color = "black";
+      }
+      else
+      {
+        contents = "iron";
+        color = "brown";
+      }
+      if(Math.random()*100 < 50)
+      {
+        reality = 1;
+      }
+      else
+      {
+        reality = 0;
+      }
+      asteroids.push(new space.Asteroid(x,y,xV,yV,size,contents,color,1,reality));
+    }
+    if(Math.random()*3000 < 1)
+    {
+      aliens.push(new space.Flock(10+Math.random()*70,5,Math.random()*20000-10000,Math.random()*20000-10000,5,["red","green","blue","pink","grey","purple","yellow","white","orange","darkgrey"][Math.floor(Math.random()*10)],1000+Math.random()*9000));
+    }
+
+    let planetoids = planets.concat(asteroids,ships.filter((x)=>x.type == "capitolShip" && x.gravityDrive));
+
+    //Update Stuff
+    for (var id in planets)
+    {
+      planets[id].updateVelocity(planets);
+      planets[id].spawnFuel();
+    }
+    for (var id in planets)
+    {
+      planets[id].updateLocation(timeDifferential,planetoids,ships,players,items);
+      //console.log("Net: "+planets[id].vel.magnitude())
+    }
+    for (var id in asteroids)
+    {
+      asteroids[id].updateVelocity(planetoids);
+    }
+    asteroids = asteroids.filter(asteroid =>
+    {
+      asteroid.updateLocation(timeDifferential,planetoids,ships,players,items);
+      return space.Vector.distance(asteroid.loc,new space.Vector(0,0)) < 500000 && asteroid.size > 20;
+    })
+    planetoids = planets.concat(asteroids,ships.filter((x)=>x.type == "capitolShip" && x.gravityDrive));
+    for (var id in aliens)
+    {
+      aliens[id].updateVelocity(items);
+    }
+    aliens = aliens.filter(alien =>
+    {
+      alien.updateLocation(timeDifferential,planets);
+      return alien.lifespan > 0;
+    })
+    tears = tears.filter(tear =>
+    {
+      tear.warpStuff(ships,items,players,timeDifferential);
+      return tear.size > 0;
+    });
+    for (var id in ships)
+    {
+      ships[id].updateVelocity(planetoids);
+      if("isDead" in ships[id] && ships[id].isDead == "explosion")
+      {
+        ships[id] = new space.Explosion(ships[id].loc.x,ships[id].loc.y,ships[id].size/2,500,ships[id].planetThatMurderedMe,ships[id].reality);
+      }
+    }
+    ships = ships.filter(ship =>
+    {
+      ship.updateLocation(timeDifferential,planetoids,items,ships);
+      if("isDead" in ship)
+      {
+        return !ship.isDead;
+      }
+      else
+      {
+        return ship.lifespan > 0;
+      }
+    })
+    for (var id in players)
+    {
+      if(players[id]!="dead")
+      {
+        players[id].updateVelocity(planetoids);
+      }
+    }
+    for (var id in players)
+    {
+      if(players[id]!="dead")
+      {
+        players[id].updatePlayer(timeDifferential,planetoids,ships,items,players);
+      }
+    }
+    for (var id in players)
+    {
+      if(players[id].isDead)
+      {
+        currentNumbers[players[id].color].number-=1;
+        let player = players[id];
+        for(let item of player.inventory.filter((x) => x == "dragonball"))
+        {
+          items.push(new space.Item(player.loc.x+Math.random()*10-5,player.loc.y+Math.random()*10-5,item,player.reality));
+        }
+        players[id] = "dead";
+      }
+    }
+    for (var id in items)
+    {
+      items[id].updateVelocity(planetoids);
+    }
+    items = items.filter(item =>
+    {
+      item.updateLocation(timeDifferential,planetoids);
+      return item.stillCorporeal;
+    })
+    lastUpdateTime = currentTime;
+
+    for(let color of ["red","green","blue","yellow"])
+    {
+      currentNumbers[color].score = (Object.values(players)).reduce((arr,cur) =>
+      {
+        if(cur.color == color)
+        {
+          return arr+cur.inventory.filter((x) => x == "dragonball").length;
+        }
+        else
+        {
+          return arr;
+        }
+      },0)
+    }
+
+    winning = (Object.values(players)).filter((x) => x.inventory.filter((y) => y == "dragonball").length == 7).length > 0;
+    if(!winning)
+    {
+      io.sockets.emit('state', [planets.map(compr.planetCompress),players,ships.map(compr.shipCompress),asteroids.map(compr.asteroidCompress),aliens.map(compr.alienCompress),items.map(compr.itemCompress),tears,currentNumbers]);
+    }
+    else
+    {
+      io.sockets.emit("normalizeForWin");
+      items = [];
+      shenronBody = [];
+      shenronEnds = [];
+      text = [];
+      counter = 0;
+    }
   }
-  io.sockets.emit('state', [planets.map(compr.planetCompress),players,ships.map(compr.shipCompress),asteroids.map(compr.asteroidCompress),aliens.map(compr.alienCompress),items.map(compr.itemCompress),tears,currentNumbers]);
-  /*if(dog)
+  else
   {
-    console.log(JSON.stringify([planets,players,ships,asteroids,aliens]).length);
-    console.log(JSON.stringify([planets.map(compr.planetCompress),players,ships.map(compr.shipCompress),asteroids.map(compr.planetCompress),aliens.map(compr.alienCompress)]).length)
-    dog = false;
-  }*/
+    counter += 1;
+    if(wishRecieved && counter >= 500)
+    {
+      resetUniverse();
+    }
+    else
+    {
+      //(players,dragonballs,shenronBody,shenronEnds,text,countdown)
+      io.sockets.emit("winState",[players,items.map(compr.itemCompress),shenronBody,shenronEnds,text,counter]);
+    }
+  }
 }, 1000/50);
 //var dog = true;
