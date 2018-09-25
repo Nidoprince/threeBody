@@ -4,8 +4,10 @@ var http = require('http');
 var path = require('path');
 var socketIO = require('socket.io');
 
+
 var space = require("./space.js");
 var compr = require("./spaceCompression.js");
+var dragon = require("./dragon.js");
 
 var app = express();
 var server = http.Server(app);
@@ -74,12 +76,12 @@ var resetUniverse = function()
   planets.push(new space.Planet(0,25000,10,0,4031,'red','rgba(255,0,0,0.1)',2));
   planets.push(new space.Planet(-43300/2,-25000/2,-5,8.66,4031,'blue','rgba(0,0,255,0.1)',2));
   planets.push(new space.Planet(43300/2,-25000/2,-5,-8.66,4031,'yellow','rgba(255,255,0,0.1)',2));
-  ships.push(new space.Ship(100,100,"green",planets));
+  //ships.push(new space.Ship(100,100,"green",planets));
   ships.push(new space.Ship(1000,25000,"red",planets));
   //ships.push(new space.Car(500,25050,"red",planets));
   ships.push(new space.Ship(-43300/2,-25500/2,"blue",planets));
   ships.push(new space.Ship(43300/2,-25500/2,"yellow",planets));
-  ships.push(new space.Ship(600,400,'green',planets,"capitolShip"));
+  //ships.push(new space.Ship(600,400,'green',planets,"capitolShip"));
   //ships.push(new space.Ship(200,400,'green',planets,"miningShip"));
   //ships.push(new space.Ship(400,200,'green',planets,"towRocket"));
   asteroids.push(new space.Asteroid(10000,0,0,4,100));
@@ -88,7 +90,7 @@ var resetUniverse = function()
   //asteroids.push(new space.Asteroid(800,800,0,0.5,200,"chronos","pink"));
   aliens.push(new space.Flock(50,3,100,100,5,"pink",3000));
   //tears.push(new space.Wormhole(200,200,0,500,0,2,'rgba(0,255,255,0.2)',40));
-  items.push(new space.Item(-200,-200,"dragonball",0));
+  items.push(new space.Item(110,110,"dragonball",0));
 
   //Add the dragonballs
   for(let i = 0; i<7; i++)
@@ -761,17 +763,25 @@ setInterval(function() {
       shenronEnds = [];
       text = [];
       counter = 0;
+      for(let i = 0; i< 80; i++)
+      {
+        shenronBody.push(new dragon.DragonBody("green","gold",20,5*i));
+      }
     }
   }
   else
   {
     counter += 1;
-    if(wishRecieved && counter >= 500)
+    if((wishRecieved && counter >= 500) || counter >= 20000)
     {
       resetUniverse();
     }
     else
     {
+      for(let segment of shenronBody)
+      {
+        segment.updateLocation(counter);
+      }
       //(players,dragonballs,shenronBody,shenronEnds,text,countdown)
       io.sockets.emit("winState",[players,items.map(compr.itemCompress),shenronBody,shenronEnds,text,counter]);
     }

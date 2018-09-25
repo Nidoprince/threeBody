@@ -113,6 +113,11 @@ socket.on('winState',function(animations) {
     }
   }
   starForger(context);
+  shenronBody.sort((a,b) => a.time - b.time);
+  for(let segment of shenronBody)
+  {
+    shenronDrawer(segment,context);
+  }
   if(countdown == 200 && myPlayer.inventory.filter((x) => x == "dragonball").length == 7)
   {
     let wish = window.prompt("What is your wish?","???");

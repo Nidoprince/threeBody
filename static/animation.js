@@ -580,6 +580,16 @@ var itemDrawer = function(item,drawOn)
   }
 }
 
+var shenronDrawer = function(segment,drawOn)
+{
+  drawOn.fillStyle = segment.scaleColor;
+  drawOn.strokeStyle = "grey";
+  drawOn.beginPath();
+  drawOn.arc(segment.loc.x,segment.loc.y,segment.size,0,2*Math.PI);
+  drawOn.fill();
+  drawOn.stroke();
+}
+
 var fuelBar = function(player,drawOn)
 {
   drawOn.strokeStyle = "grey";
