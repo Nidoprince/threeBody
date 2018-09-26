@@ -629,22 +629,44 @@ var faceDrawer = function(face,drawOn,thundercrash)
     drawOn.strokeStyle = "darkgreen";
   }
   drawOn.beginPath();
-  drawOn.arc(face.loc.x,face.loc.y,face.size,0,2*Math.PI);
+  drawOn.arc(face.loc.x,face.loc.y,face.size*0.75,0,2*Math.PI);
   drawOn.fill();
-  drawOn.stroke();
+  //drawOn.stroke();
+  drawOn.beginPath();
+  drawOn.moveTo(face.loc.x-face.size/2,face.loc.y+face.size/2);
+  drawOn.bezierCurveTo(face.loc.x-face.size/2,face.loc.y+face.size*1.5,face.loc.x+face.size/2,face.loc.y+face.size*1.5,face.loc.x+face.size/2,face.loc.y+face.size/2);
+  drawOn.closePath();
+  drawOn.fill();
+  //drawOn.stroke();
   drawOn.strokeStyle = whiskerColor;
   drawOn.beginPath();
-  drawOn.moveTo(face.loc.x+face.size,face.loc.y);
+  drawOn.moveTo(face.loc.x+face.size/2,face.loc.y+face.size/2);
   for(let i = 0; i<100; i++)
   {
-    drawOn.lineTo(face.loc.x+face.size+3*i,face.loc.y+Math.log(1+i/10)*10*Math.sin((face.whisker+i)*4*Math.PI/100));
+    drawOn.lineTo(face.loc.x+face.size/2+3*i,face.loc.y+face.size/2+Math.log(1+i/10)*10*Math.sin((face.whisker+i)*4*Math.PI/100));
   }
-  drawOn.moveTo(face.loc.x-face.size,face.loc.y);
+  drawOn.moveTo(face.loc.x-face.size/2,face.loc.y+face.size/2);
   for(let i = 0; i<100; i++)
   {
-    drawOn.lineTo(face.loc.x-face.size-3*i,face.loc.y+Math.log(1+i/10)*10*Math.sin((face.whisker+i)*4*Math.PI/100));
+    drawOn.lineTo(face.loc.x-face.size/2-3*i,face.loc.y+face.size/2+Math.log(1+i/10)*10*Math.sin((face.whisker+i)*4*Math.PI/100));
   }
   drawOn.stroke();
+  drawOn.fillStyle = eyeColor;
+  drawOn.beginPath();
+  let eyeStartHeight = face.loc.y-face.size/20;
+  let eyeEndHeight = face.loc.y-face.size*0.3;
+  let eyeStartWidth = face.loc.x+face.size/10;
+  let eyeEndWidth = face.loc.x+face.size*0.5;
+  drawOn.moveTo(eyeStartWidth,eyeStartHeight);
+  drawOn.quadraticCurveTo(eyeEndWidth,eyeStartHeight,eyeEndWidth,eyeEndHeight);
+  drawOn.quadraticCurveTo(eyeStartWidth,eyeEndHeight,eyeStartWidth,eyeStartHeight);
+  drawOn.fill();
+  eyeStartWidth = face.loc.x-face.size/10;
+  eyeEndWidth = face.loc.x-face.size*0.5;
+  drawOn.moveTo(eyeStartWidth,eyeStartHeight);
+  drawOn.quadraticCurveTo(eyeEndWidth,eyeStartHeight,eyeEndWidth,eyeEndHeight);
+  drawOn.quadraticCurveTo(eyeStartWidth,eyeEndHeight,eyeStartWidth,eyeStartHeight);
+  drawOn.fill();
 }
 
 var fuelBar = function(player,drawOn)
