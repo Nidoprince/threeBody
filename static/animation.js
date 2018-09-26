@@ -613,6 +613,40 @@ var shenronDrawer = function(segment,drawOn,thundercrash)
   drawOn.stroke();
 }
 
+var faceDrawer = function(face,drawOn,thundercrash)
+{
+  let whiskerColor = "gold";
+  let eyeColor = "red";
+  if(thundercrash)
+  {
+    drawOn.fillStyle = "black";
+    drawOn.strokeStyle = "black";
+    whiskerColor = "black";
+  }
+  else
+  {
+    drawOn.fillStyle = "green";
+    drawOn.strokeStyle = "darkgreen";
+  }
+  drawOn.beginPath();
+  drawOn.arc(face.loc.x,face.loc.y,face.size,0,2*Math.PI);
+  drawOn.fill();
+  drawOn.stroke();
+  drawOn.strokeStyle = whiskerColor;
+  drawOn.beginPath();
+  drawOn.moveTo(face.loc.x+face.size,face.loc.y);
+  for(let i = 0; i<100; i++)
+  {
+    drawOn.lineTo(face.loc.x+face.size+3*i,face.loc.y+Math.log(1+i/10)*10*Math.sin((face.whisker+i)*4*Math.PI/100));
+  }
+  drawOn.moveTo(face.loc.x-face.size,face.loc.y);
+  for(let i = 0; i<100; i++)
+  {
+    drawOn.lineTo(face.loc.x-face.size-3*i,face.loc.y+Math.log(1+i/10)*10*Math.sin((face.whisker+i)*4*Math.PI/100));
+  }
+  drawOn.stroke();
+}
+
 var fuelBar = function(player,drawOn)
 {
   drawOn.strokeStyle = "grey";

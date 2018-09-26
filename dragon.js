@@ -35,6 +35,32 @@ class Dragonball
     this.loc = this.findWhere(time);
   }
 }
+
+class DragonHead
+{
+  constructor(x,y,size,type="head")
+  {
+    this.loc = new Vector(x,y);
+    this.type = type;
+    this.size = size;
+    this.baseLoc = this.loc.copy();
+    this.whisker = 0;
+  }
+
+  updateLocation()
+  {
+    if(Math.random()>10/(1+Vector.distance(this.loc,this.baseLoc)))
+    {
+      this.loc = this.loc.addVector(this.loc.direction(this.baseLoc));
+    }
+    else
+    {
+      this.loc = this.loc.addVector(new Vector(Math.random()*2-1,Math.random()*2-1));
+    }
+    this.whisker = this.whisker+1;
+  }
+}
+
 class DragonBody
 {
   constructor(colorScale, colorBelly, size, baseOffset)
@@ -123,5 +149,6 @@ class DragonBody
   }
 }
 
+module.exports.DragonHead = DragonHead;
 module.exports.DragonBody = DragonBody;
 module.exports.Dragonball = Dragonball;

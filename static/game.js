@@ -132,6 +132,10 @@ socket.on('winState',function(animations) {
   {
     shenronDrawer(segment,context,thundercrash);
   }
+  for(let head of shenronEnds)
+  {
+    faceDrawer(head,context,thundercrash);
+  }
   if(countdown == 1000 && myPlayer.inventory.filter((x) => x == "dragonball").length == 7)
   {
     let wish = window.prompt("What is your wish?","???");
