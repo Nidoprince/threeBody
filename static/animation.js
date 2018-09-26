@@ -580,6 +580,14 @@ var itemDrawer = function(item,drawOn)
   }
 }
 
+var dragonballDrawer = function(dragonball,drawOn)
+{
+  drawOn.fillStyle = dragonball.color;
+  drawOn.beginPath();
+  drawOn.arc(dragonball.loc.x,dragonball.loc.y, dragonball.size, 0, 2 * Math.PI);
+  drawOn.fill();
+}
+
 var shenronDrawer = function(segment,drawOn)
 {
   drawOn.fillStyle = segment.scaleColor;

@@ -1,6 +1,40 @@
 var space = require("./space.js");
 var Vector = space.Vector;
 
+class Dragonball
+{
+  constructor(color,size,baseOffset)
+  {
+    this.loc = new Vector(0,0);
+    this.direction = new Vector(0,-1);
+    this.color = color;
+    this.baseOffset = baseOffset;
+    this.size = size;
+  }
+  findWhere(t)
+  {
+    t = t+this.baseOffset;
+    let x;
+    let y;
+    if(t>700)
+    {
+      x = 750+15*Math.cos(-this.baseOffset*Math.PI/35);
+      y = 700+15*Math.sin(-this.baseOffset*Math.PI/35);
+    }
+    else
+    {
+      let d = 30+300*Math.sin(t*Math.PI/700);
+      let h = t*300/700;
+      x = 750+d*Math.cos(t/20);
+      y = 400+h+d*Math.sin(t/20);
+    }
+    return new Vector(x,y);
+  }
+  updateLocation(time)
+  {
+    this.loc = this.findWhere(time);
+  }
+}
 class DragonBody
 {
   constructor(colorScale, colorBelly, size, baseOffset)
@@ -21,9 +55,9 @@ class DragonBody
     t = t+this.baseOffset;
     let x;
     let y;
-    if(t>400)
+    if(t>1120)
     {
-      t = t%400;
+      t = t%1120;
     }
     if(t>=0 && t<= 150)
     {
@@ -42,6 +76,30 @@ class DragonBody
       x = 343+100*Math.cos(tR);
       y = 447-100*Math.sin(tR);
     }
+    else if(t>400 && t <=700)
+    {
+      let tR = t-400;
+      x = 343+3*tR;
+      y = 400+150*Math.cos(tR/300*Math.PI);
+    }
+    else if(t>700 && t <= 800)
+    {
+      let tR = Math.PI/2-(t-700)*Math.PI/100;
+      x = 1245+100*Math.cos(tR);
+      y = 350-100*Math.sin(tR);
+    }
+    else if(t>800 && t <= 990)
+    {
+      let tR = t-800;
+      x = 1245-3.5*tR;
+      y = 452-(Math.pow(2,tR/27));
+    }
+    else if(t>990 && t <= 1120)
+    {
+      let tR = Math.PI*1.3-(t-990)*Math.PI*1.3/130;
+      x = 650+120*Math.cos(tR);
+      y = 220-120*Math.sin(tR);
+    }
     return new Vector(x,y);
   }
 
@@ -49,16 +107,21 @@ class DragonBody
   {
     this.loc = this.findWhere(time);
     this.direction = this.loc.direction(this.findWhere(time+3));
-    this.time = (time+this.baseOffset)%400;
+    this.time = (time+this.baseOffset)%1120;
     if(this.time < 50)
     {
       this.size = 5+(this.maxSize-5)*(this.time/50);
     }
-    else
+    else if(this.time < 800)
     {
       this.size = this.maxSize;
+    }
+    else
+    {
+      this.size = this.maxSize+this.maxSize*0.1*(this.time-800)/200;
     }
   }
 }
 
 module.exports.DragonBody = DragonBody;
+module.exports.Dragonball = Dragonball;

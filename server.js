@@ -763,9 +763,13 @@ setInterval(function() {
       shenronEnds = [];
       text = [];
       counter = 0;
-      for(let i = 0; i< 80; i++)
+      for(let i = 0; i< 224; i++)
       {
         shenronBody.push(new dragon.DragonBody("green","gold",20,5*i));
+      }
+      for(let i = 0; i<7; i++)
+      {
+        items.push(new dragon.Dragonball("gold",10,10*i))
       }
     }
   }
@@ -782,8 +786,20 @@ setInterval(function() {
       {
         segment.updateLocation(counter);
       }
+      for(let item of items)
+      {
+        item.updateLocation(counter);
+      }
+      if(counter > 700)
+      {
+        shenronPass = shenronBody;
+      }
+      else
+      {
+        shenronPass = [];
+      }
       //(players,dragonballs,shenronBody,shenronEnds,text,countdown)
-      io.sockets.emit("winState",[players,items.map(compr.itemCompress),shenronBody,shenronEnds,text,counter]);
+      io.sockets.emit("winState",[players,items.map(compr.itemCompress),shenronPass,shenronEnds,text,counter]);
     }
   }
 }, 1000/50);
