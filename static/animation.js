@@ -580,18 +580,33 @@ var itemDrawer = function(item,drawOn)
   }
 }
 
-var dragonballDrawer = function(dragonball,drawOn)
+var dragonballDrawer = function(dragonball,drawOn,thundercrash)
 {
-  drawOn.fillStyle = dragonball.color;
+  if(thundercrash)
+  {
+    drawOn.fillStyle = "black";
+  }
+  else
+  {
+    drawOn.fillStyle = dragonball.color;
+  }
   drawOn.beginPath();
   drawOn.arc(dragonball.loc.x,dragonball.loc.y, dragonball.size, 0, 2 * Math.PI);
   drawOn.fill();
 }
 
-var shenronDrawer = function(segment,drawOn)
+var shenronDrawer = function(segment,drawOn,thundercrash)
 {
-  drawOn.fillStyle = segment.scaleColor;
-  drawOn.strokeStyle = "grey";
+  if(thundercrash)
+  {
+    drawOn.fillStyle = "black";
+    drawOn.strokeStyle = "black";
+  }
+  else
+  {
+    drawOn.fillStyle = segment.scaleColor;
+    drawOn.strokeStyle = "grey";
+  }
   drawOn.beginPath();
   drawOn.arc(segment.loc.x,segment.loc.y,segment.size,0,2*Math.PI);
   drawOn.fill();

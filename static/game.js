@@ -113,14 +113,24 @@ socket.on('winState',function(animations) {
     }
   }
   starForger(context);
+  let thundercrash = false;
+  if(countdown >= 700 && countdown <= 720)
+  {
+    thundercrash = true;
+  }
+  if(thundercrash)
+  {
+    context.fillStyle = "white";
+    context.fillRect(0,0,1600,800);
+  }
   shenronBody.sort((a,b) => a.time - b.time);
   for(let dragonball of dragonballs)
   {
-    dragonballDrawer(dragonball,context);
+    dragonballDrawer(dragonball,context,thundercrash);
   }
   for(let segment of shenronBody)
   {
-    shenronDrawer(segment,context);
+    shenronDrawer(segment,context,thundercrash);
   }
   if(countdown == 1000 && myPlayer.inventory.filter((x) => x == "dragonball").length == 7)
   {
