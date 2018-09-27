@@ -27,6 +27,7 @@ var shenronEnds = [];
 var text = [];
 var counter = 0;
 var wishRecieved = false;
+var endTimes = 10000;
 
 var currentNumbers =
 {
@@ -139,7 +140,8 @@ io.on('connection', function(socket) {
     {
       wish = wish.replace(/[^0-9a-z .!',?-]/gi, '');
       console.log(wish);
-      wishRecieved = true;
+      wishRecieved = wish;
+      endTimes = counter + 1000;
     }
   });
   socket.on('dead', function() {
@@ -761,8 +763,9 @@ setInterval(function() {
       items = [];
       shenronBody = [];
       shenronEnds = [];
-      text = [];
+      text = false;
       counter = 600;
+      endTimes = 10000;
       for(let i = 0; i< 224; i++)
       {
         shenronBody.push(new dragon.DragonBody("green","gold",20,5*i));
@@ -771,18 +774,50 @@ setInterval(function() {
       {
         items.push(new dragon.Dragonball("gold",10,10*i))
       }
-      shenronEnds.push(new dragon.DragonHead(770,220,60));
+      shenronEnds.push(new dragon.DragonHead(770,220,70));
     }
   }
   else
   {
     counter += 1;
-    if((wishRecieved && counter >= 500) || counter >= 20000)
+    if(counter >= endTimes)
     {
       resetUniverse();
     }
     else
     {
+      if(wishRecieved)
+      {
+        text = "The wish '"+wishRecieved+"' has been granted.";
+      }
+      else if(counter>800 && counter<2000)
+      {
+        text = "You have summoned me!  What is your wish?";
+      }
+      else if(counter>2800 && counter<3500)
+      {
+        text = "I grow tired of waiting.  Tell me your wish.";
+      }
+      else if(counter>3800 && counter<4500)
+      {
+        text = "Have you no wish?  Why then did you wake me mortal?";
+      }
+      else if(counter > 5800 && counter < 7200)
+      {
+        text = "Do you have words?  Is my majesty too much for you?";
+      }
+      else if(counter > 7800 && counter < 9000)
+      {
+        text = "Last chance mortal.";
+      }
+      else if(counter > 9500)
+      {
+        text = "I'm going back to sleep.";
+      }
+      else
+      {
+        text = false;
+      }
       for(let segment of shenronBody)
       {
         segment.updateLocation(counter);

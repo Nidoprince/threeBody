@@ -19,6 +19,7 @@ var menuOpen = false;
 var menuLoc = 0;
 
 var openBuilding = false;
+var wishMade = false;
 
 var socket = io();
 socket.on('message', function(data) {
@@ -136,17 +137,23 @@ socket.on('winState',function(animations) {
   {
     faceDrawer(head,context,thundercrash);
   }
-  if(countdown == 1000 && myPlayer.inventory.filter((x) => x == "dragonball").length == 7)
+  if(text)
+  {
+    textDrawer(text,context,thundercrash);
+  }
+  if([1000,3000,4000,6000,8000].includes(countdown) && !wishMade && myPlayer.inventory.filter((x) => x == "dragonball").length == 7)
   {
     let wish = window.prompt("What is your wish?","???");
     wish = wish.replace(/[^0-9a-z .!',?-]/gi, '');
     socket.emit("wish",wish);
+    wishMade = true;
   }
   trigger.reset();
   viewer.space = false;
   viewer.enter = false;
 });
 socket.on('state',function(celestial) {
+  wishMade = false;
   context.clearRect(0,0,1600,800);
   if(reality == 1)
   {

@@ -617,44 +617,172 @@ var faceDrawer = function(face,drawOn,thundercrash)
 {
   let whiskerColor = "gold";
   let eyeColor = "red";
+  let baseColor = "green";
+  let baseOutline = "darkgreen";
+  let secondaryColor = "tan";
+  let tongueColor = "red";
+  let hornColor = "brown";
+  let teethColor = "white";
   if(thundercrash)
   {
     drawOn.fillStyle = "black";
     drawOn.strokeStyle = "black";
     whiskerColor = "black";
+    secondaryColor = "black";
+    baseColor = "black";
+    tongueColor = "black";
+    hornColor = "black";
+    teethColor = "black";
+    baseOutline = "black";
   }
   else
   {
-    drawOn.fillStyle = "green";
-    drawOn.strokeStyle = "darkgreen";
+    drawOn.fillStyle = secondaryColor;
+    drawOn.strokeStyle = baseOutline;
   }
+
+  //Hair
+  drawOn.fillStyle = baseColor;
+  drawOn.strokeStyle = baseOutline;
+  for(let w = 5; w<25; w++)
+  {
+    drawOn.beginPath();
+    drawOn.moveTo(face.loc.x+face.size/3,face.loc.y-face.size/3+face.size/1.5*w/20);
+    drawOn.bezierCurveTo(face.loc.x+face.size/3+(face.whisker+3*w)%(face.size/2),face.loc.y-face.size/2+face.size/1.5*w/20,face.loc.x+face.size-(face.whisker+3*w)%(face.size/2),face.loc.y-face.size/4+face.size/1.5*w/20,face.loc.x+face.size*0.8*(1+((111*w)%33)/90),face.loc.y-face.size/3+face.size/1.5*w/20)
+    drawOn.bezierCurveTo(face.loc.x+face.size-(face.whisker+3*w)%(face.size/2),face.loc.y-face.size/4+face.size/1.5*w/20,face.loc.x+face.size/3+(face.whisker+3*w)%(face.size/2),face.loc.y-face.size/2+face.size/1.5*w/20,face.loc.x+face.size/3,face.loc.y-face.size/3+face.size/1.5*w/20+face.size/5);
+    drawOn.closePath();
+    drawOn.fill();
+    drawOn.stroke();
+  }
+  for(let w = 5; w<25; w++)
+  {
+    drawOn.beginPath();
+    drawOn.moveTo(face.loc.x-face.size/3,face.loc.y-face.size/3+face.size/1.5*w/20);
+    drawOn.bezierCurveTo(face.loc.x-face.size/3-(face.whisker+3*w)%(face.size/2),face.loc.y-face.size/2+face.size/1.5*w/20,face.loc.x-face.size+(face.whisker+3*w)%(face.size/2),face.loc.y-face.size/4+face.size/1.5*w/20,face.loc.x-face.size*0.8*(1+((113*w)%33)/90),face.loc.y-face.size/3+face.size/1.5*w/20)
+    drawOn.bezierCurveTo(face.loc.x-face.size+(face.whisker+3*w)%(face.size/2),face.loc.y-face.size/4+face.size/1.5*w/20,face.loc.x-face.size/3-(face.whisker+3*w)%(face.size/2),face.loc.y-face.size/2+face.size/1.5*w/20,face.loc.x-face.size/3,face.loc.y-face.size/3+face.size/1.5*w/20+face.size/5);
+    drawOn.closePath();
+    drawOn.fill();
+    drawOn.stroke();
+  }
+
+  //Lower Face Shape
   drawOn.beginPath();
-  drawOn.arc(face.loc.x,face.loc.y,face.size*0.75,0,2*Math.PI);
-  drawOn.fill();
-  //drawOn.stroke();
-  drawOn.beginPath();
-  drawOn.moveTo(face.loc.x-face.size/2,face.loc.y+face.size/2);
-  drawOn.bezierCurveTo(face.loc.x-face.size/2,face.loc.y+face.size*1.5,face.loc.x+face.size/2,face.loc.y+face.size*1.5,face.loc.x+face.size/2,face.loc.y+face.size/2);
+  drawOn.moveTo(face.loc.x-face.size/2.2,face.loc.y+face.size/3);
+  drawOn.bezierCurveTo(face.loc.x-face.size/2.2,face.loc.y+face.size*1.6,face.loc.x+face.size/2.2,face.loc.y+face.size*1.6,face.loc.x+face.size/2.2,face.loc.y+face.size/3);
   drawOn.closePath();
   drawOn.fill();
-  //drawOn.stroke();
+  drawOn.fillStyle = tongueColor;
+  drawOn.beginPath();
+  drawOn.moveTo(face.loc.x-face.size/2.5,face.loc.y+face.size/2);
+  drawOn.bezierCurveTo(face.loc.x-face.size/2.5,face.loc.y+face.size*1.4,face.loc.x+face.size/2.5,face.loc.y+face.size*1.4,face.loc.x+face.size/2.5,face.loc.y+face.size/2);
+  drawOn.closePath();
+  drawOn.fill();
+
+  //Teeth
+  drawOn.fillStyle = teethColor;
+  drawOn.beginPath();
+  drawOn.moveTo(face.loc.x-face.size/2.5,face.loc.y+face.size/2);
+  for(let t = 1; t<8; t++)
+  {
+    let x = face.loc.x-face.size/2.5+(face.size/1.25)*t/8;
+    let y = face.loc.y+face.size/2-((t-4)*(t-4));
+    drawOn.lineTo(x-face.size/20,y)
+    drawOn.lineTo(x,y+face.size/1.5);
+    drawOn.lineTo(x+face.size/20,y);
+    console.log(x)
+    console.log(y)
+  }
+  drawOn.closePath();
+  drawOn.fill();
+
+  //Upper Face Shaoe
+  drawOn.fillStyle = baseColor;
+  drawOn.beginPath();
+  drawOn.arc(face.loc.x,face.loc.y,face.size*0.6,0,2*Math.PI);
+  drawOn.fill();
+  drawOn.beginPath();
+  drawOn.moveTo(face.loc.x-face.size/2.5,face.loc.y+face.size/3);
+  drawOn.bezierCurveTo(face.loc.x-face.size/2.5,face.loc.y+face.size*1.3,face.loc.x+face.size/2.5,face.loc.y+face.size*1.3,face.loc.x+face.size/2.5,face.loc.y+face.size/3);
+  drawOn.closePath();
+  drawOn.fill();
+
+  //Horns
+  drawOn.beginPath();
+  drawOn.moveTo(face.loc.x+face.size/2,face.loc.y-face.size/3);
+  drawOn.lineTo(face.loc.x+face.size*0.6,face.loc.y-face.size*0.7);
+  drawOn.lineTo(face.loc.x+face.size*0.4,face.loc.y-face.size*0.75);
+  drawOn.lineTo(face.loc.x+face.size*0.3,face.loc.y-face.size/2.2);
+  drawOn.closePath();
+  drawOn.fill();
+  drawOn.beginPath();
+  drawOn.moveTo(face.loc.x-face.size/2,face.loc.y-face.size/3);
+  drawOn.lineTo(face.loc.x-face.size*0.6,face.loc.y-face.size*0.7);
+  drawOn.lineTo(face.loc.x-face.size*0.4,face.loc.y-face.size*0.75);
+  drawOn.lineTo(face.loc.x-face.size*0.3,face.loc.y-face.size/2.2);
+  drawOn.closePath();
+  drawOn.fill();
+  drawOn.fillStyle = hornColor;
+  drawOn.beginPath();
+  drawOn.moveTo(face.loc.x-face.size*0.6,face.loc.y-face.size*0.7);
+  drawOn.lineTo(face.loc.x-face.size*0.7,face.loc.y-face.size*1.1);
+  drawOn.lineTo(face.loc.x-face.size*1.1,face.loc.y-face.size*1.2);
+  drawOn.lineTo(face.loc.x-face.size*1.1,face.loc.y-face.size*1.35);
+  drawOn.lineTo(face.loc.x-face.size*0.75,face.loc.y-face.size*1.2);
+  drawOn.lineTo(face.loc.x-face.size*1,face.loc.y-face.size*1.8);
+  drawOn.lineTo(face.loc.x-face.size*0.8,face.loc.y-face.size*1.8);
+  drawOn.lineTo(face.loc.x-face.size*0.65,face.loc.y-face.size*1.35);
+  drawOn.lineTo(face.loc.x-face.size*0.35,face.loc.y-face.size*1.6);
+  drawOn.lineTo(face.loc.x-face.size*0.3,face.loc.y-face.size*1.4);
+  drawOn.lineTo(face.loc.x-face.size*0.59,face.loc.y-face.size*1.21);
+  drawOn.lineTo(face.loc.x-face.size*0.4,face.loc.y-face.size*0.75);
+  drawOn.closePath();
+  drawOn.fill();
+  drawOn.beginPath();
+  drawOn.moveTo(face.loc.x+face.size*0.6,face.loc.y-face.size*0.7);
+  drawOn.lineTo(face.loc.x+face.size*0.7,face.loc.y-face.size*1.1);
+  drawOn.lineTo(face.loc.x+face.size*1.1,face.loc.y-face.size*1.2);
+  drawOn.lineTo(face.loc.x+face.size*1.1,face.loc.y-face.size*1.35);
+  drawOn.lineTo(face.loc.x+face.size*0.75,face.loc.y-face.size*1.2);
+  drawOn.lineTo(face.loc.x+face.size*1,face.loc.y-face.size*1.8);
+  drawOn.lineTo(face.loc.x+face.size*0.8,face.loc.y-face.size*1.8);
+  drawOn.lineTo(face.loc.x+face.size*0.55,face.loc.y-face.size*1.2);
+  drawOn.lineTo(face.loc.x+face.size*0.35,face.loc.y-face.size*1.5);
+  drawOn.lineTo(face.loc.x+face.size*0.25,face.loc.y-face.size*1.3);
+  drawOn.lineTo(face.loc.x+face.size*0.5,face.loc.y-face.size*1.05);
+  drawOn.lineTo(face.loc.x+face.size*0.4,face.loc.y-face.size*0.75);
+  drawOn.closePath();
+  drawOn.fill();
+
+  //Nose
+  drawOn.beginPath();
+  drawOn.moveTo(face.loc.x-face.size/8,face.loc.y+face.size*0.8);
+  drawOn.lineTo(face.loc.x-face.size/6,face.loc.y+face.size*0.7);
+  drawOn.stroke();
+  drawOn.beginPath();
+  drawOn.moveTo(face.loc.x+face.size/8,face.loc.y+face.size*0.8);
+  drawOn.lineTo(face.loc.x+face.size/6,face.loc.y+face.size*0.7);
+  drawOn.stroke();
+
+  //Whiskers
   drawOn.strokeStyle = whiskerColor;
   drawOn.beginPath();
-  drawOn.moveTo(face.loc.x+face.size/2,face.loc.y+face.size/2);
+  drawOn.moveTo(face.loc.x+face.size/2.5,face.loc.y+face.size/2);
   for(let i = 0; i<100; i++)
   {
-    drawOn.lineTo(face.loc.x+face.size/2+3*i,face.loc.y+face.size/2+Math.log(1+i/10)*10*Math.sin((face.whisker+i)*4*Math.PI/100));
+    drawOn.lineTo(face.loc.x+face.size/2.5+3*i,face.loc.y+face.size/2+Math.log(1+i/10)*10*Math.sin((face.whisker+i)*4*Math.PI/100));
   }
-  drawOn.moveTo(face.loc.x-face.size/2,face.loc.y+face.size/2);
+  drawOn.moveTo(face.loc.x-face.size/2.5,face.loc.y+face.size/2);
   for(let i = 0; i<100; i++)
   {
-    drawOn.lineTo(face.loc.x-face.size/2-3*i,face.loc.y+face.size/2+Math.log(1+i/10)*10*Math.sin((face.whisker+i)*4*Math.PI/100));
+    drawOn.lineTo(face.loc.x-face.size/2.5-3*i,face.loc.y+face.size/2+Math.log(1+i/10)*10*Math.sin((face.whisker+i)*4*Math.PI/100));
   }
   drawOn.stroke();
+
+  //Eyes
   drawOn.fillStyle = eyeColor;
   drawOn.beginPath();
-  let eyeStartHeight = face.loc.y-face.size/20;
-  let eyeEndHeight = face.loc.y-face.size*0.3;
+  let eyeStartHeight = face.loc.y+face.size/20;
+  let eyeEndHeight = face.loc.y-face.size*0.2;
   let eyeStartWidth = face.loc.x+face.size/10;
   let eyeEndWidth = face.loc.x+face.size*0.5;
   drawOn.moveTo(eyeStartWidth,eyeStartHeight);
@@ -667,6 +795,20 @@ var faceDrawer = function(face,drawOn,thundercrash)
   drawOn.quadraticCurveTo(eyeEndWidth,eyeStartHeight,eyeEndWidth,eyeEndHeight);
   drawOn.quadraticCurveTo(eyeStartWidth,eyeEndHeight,eyeStartWidth,eyeStartHeight);
   drawOn.fill();
+}
+
+var textDrawer = function(text,drawOn,thundercrash)
+{
+  if(thundercrash)
+  {
+    drawOn.fillStyle = "black";
+  }
+  else
+  {
+    drawOn.fillStyle = "green";
+  }
+  drawOn.font = "bold 30px Arial";
+  drawOn.fillText(text,800-(18)*text.length/2,770);
 }
 
 var fuelBar = function(player,drawOn)

@@ -18,8 +18,8 @@ class Dragonball
     let y;
     if(t>700)
     {
-      x = 750+15*Math.cos(-this.baseOffset*Math.PI/35);
-      y = 700+15*Math.sin(-this.baseOffset*Math.PI/35);
+      x = 753+15*Math.cos(-this.baseOffset*Math.PI/35);
+      y = 702+15*Math.sin(-this.baseOffset*Math.PI/35);
     }
     else
     {
@@ -55,7 +55,7 @@ class DragonHead
     }
     else
     {
-      this.loc = this.loc.addVector(new Vector(Math.random()*2-1,Math.random()*2-1));
+      this.loc = this.loc.addVector(new Vector(Math.random()*1-0.5,Math.random()*1-0.5));
     }
     this.whisker = this.whisker+1;
   }
@@ -144,7 +144,7 @@ class DragonBody
     }
     else
     {
-      this.size = this.maxSize+this.maxSize*0.1*(this.time-800)/200;
+      this.size = this.maxSize+this.maxSize*0.25*(this.time-800)/200;
     }
   }
 }
