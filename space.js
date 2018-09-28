@@ -1339,7 +1339,6 @@ class Player
       this.loc = new Vector(x,y);
       this.vel = new Vector(0,0);
       this.inventory.push("fuel+");
-      this.inventory.push("fuel+");
     }
     this.actingVel = new Vector(0,0);
     this.leftHeld = false;
@@ -1681,13 +1680,14 @@ class Player
     {
       this.controllingPlanet = closestPlanet;
     }
-    else if(this.parked)
+    else if(closestPlanet && this.parked)
     {
       this.controllingPlanet = this.parked;
     }
     else
     {
       this.controllingPlanet = false;
+      this.parked = false;
     }
 
     this.velocityComponents = new Map();
@@ -1704,6 +1704,7 @@ class Player
   updateVelocitySelf(planets)
   {
     this.velocityComponents.set("Base  ", this.vel.copy());
+    let velocityBeforeInput = this.vel.copy();
 
 
     for(var id in planets)
@@ -1735,7 +1736,10 @@ class Player
     {
       this.updateVelocitySpace(planets)
     }
-    this.vel = this.vel.speedLimit(maxSpeed);
+    if(this.vel.magnitude() > maxSpeed && this.vel.magnitude() > velocityBeforeInput.magnitude())
+    {
+      this.vel = this.vel.speedLimit(velocityBeforeInput.magnitude());
+    }
   }
   updateVelocityAtmosphere(planets)
   {
@@ -2288,6 +2292,10 @@ class Asteroid extends Planet
     else if(this.contents == "dark")
     {
       this.mineTime = 2000;
+    }
+    else if(this.contents == "fuel")
+    {
+      this.mineTime = 800;
     }
     else
     {

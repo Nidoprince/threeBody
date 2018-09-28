@@ -623,6 +623,11 @@ setInterval(function() {
         contents = "dark";
         color = "black";
       }
+      else if(Math.random()*100 < 30)
+      {
+        contents = "fuel";
+        color = "grey";
+      }
       else
       {
         contents = "iron";

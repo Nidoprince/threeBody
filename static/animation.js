@@ -1025,6 +1025,10 @@ var scannerDrawer = function(player,asteroids,drawOn,x,y)
   {
     symbol = "D";
   }
+  else if(viewer.item.lookingFor == "fuel")
+  {
+    symbol = "F";
+  }
 
   drawOn.fillText(symbol,x+15,y+50);
   asteroids = asteroids.filter((x) => x.reality == myPlayer.reality && x.contents == viewer.item.lookingFor);

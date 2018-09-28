@@ -130,6 +130,10 @@ var viewer = {
       }
       else if(this.lookingFor == "dark")
       {
+        this.lookingFor = "fuel";
+      }
+      else if(this.lookingFor == "fuel")
+      {
         this.lookingFor = "iron";
       }
     }

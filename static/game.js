@@ -40,7 +40,7 @@ setInterval(function() {
       for(let factory of myPlayer.controllingPlanet.buildings)
       {
         let difference = Math.abs(factory.angle-playerAngle);
-        if(difference < factory.size/myPlayer.controllingPlanet.size && factory.type != "autoCannon")
+        if(difference < factory.size/myPlayer.controllingPlanet.size && factory.type != "autoCannon" && myPlayer.color == factory.color)
         {
           menuOpen = factory.type;
           menuLoc = 0;
