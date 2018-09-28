@@ -324,6 +324,7 @@ socket.on('state',function(celestial) {
           context.strokeRect(1400,0,200,200);
           specialDrawer(myPlayer,context,1530,200);
         }
+        parkDrawer(myPlayer.parked,context,1400,200);
       }
       if(myPlayer.inventory.includes("radar"))
       {

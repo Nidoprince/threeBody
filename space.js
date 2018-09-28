@@ -1371,6 +1371,7 @@ class Player
     this.cannonCooldown = 0;
     this.shotsFired = [];
     this.radarPoints = [];
+    this.parked = false;
   }
 
   mass()
@@ -1421,6 +1422,7 @@ class Player
     }
     else
     {
+      this.parked = false;
       for (var id in ships)
       {
         var ship = ships[id];
@@ -1556,6 +1558,7 @@ class Player
     if(this.inSpaceShip.parked)
     {
       this.inSpaceShip.parked = false;
+      this.inSpaceShip.vel = new Vector(0,0);
     }
     else
     {
@@ -1677,9 +1680,13 @@ class Player
       }
     }
 
-    if(closestPlanet && Vector.distance(closestPlanet.loc,this.loc) < closestPlanet.size*1.2+this.size+100)
+    if(closestPlanet && Vector.distance(closestPlanet.loc,this.loc) < closestPlanet.size*1.2+this.size+100 && !this.parked)
     {
       this.controllingPlanet = closestPlanet;
+    }
+    else if(this.parked)
+    {
+      this.controllingPlanet = this.parked;
     }
     else
     {
@@ -1798,6 +1805,10 @@ class Player
     this.velocityComponents.set("AirRes",this.vel.multiplyScaler(airResistance*this.vel.magnitude()).negate().copy());
     this.vel = this.vel.subVector(this.vel.multiplyScaler(airResistance*this.vel.magnitude()));
     this.velocityComponents.set("SpCtrl",new Vector(0,0));
+    if(this.parked)
+    {
+      this.vel = new Vector(0,0);
+    }
   }
   updateVelocitySpace(planets)
   {
@@ -1883,6 +1894,14 @@ class Player
     if(this.controllingPlanet)
     {
       this.inAir = Vector.distance(this.loc,this.controllingPlanet.loc) > this.size+this.controllingPlanet.size+groundTouchError;
+      if(this.pPressed && this.parked)
+      {
+        this.parked = false;
+      }
+      else if(this.pPressed && !this.parked)
+      {
+        this.parked = this.controllingPlanet;
+      }
     }
     this.velocityComponents = [...this.velocityComponents];
     if(this.ePressed)
