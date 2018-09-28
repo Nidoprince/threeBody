@@ -752,7 +752,7 @@ setInterval(function() {
       },0)
     }
 
-    winning = (Object.values(players)).filter((x) => player != "dead" && x.inventory.filter((y) => y == "dragonball").length == 7).length > 0;
+    winning = (Object.values(players)).filter((x) => x != "dead" && x.inventory.filter((y) => y == "dragonball").length == 7).length > 0;
     if(!winning)
     {
       io.sockets.emit('state', [planets.map(compr.planetCompress),players,ships.map(compr.shipCompress),asteroids.map(compr.asteroidCompress),aliens.map(compr.alienCompress),items.map(compr.itemCompress),tears,currentNumbers]);
