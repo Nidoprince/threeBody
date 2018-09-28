@@ -498,7 +498,7 @@ class Item
 //Main way to travel between the stars.
 class Ship
 {
-  constructor(x,y,color,planets,type="baseRocket",size = 60,density=1,reality = 0)
+  constructor(x,y,color,planets,type="baseRocket",reality = 0,size = 60,density=1)
   {
     this.loc = new Vector(x,y);
     this.vel = new Vector(0,0);
@@ -1129,9 +1129,9 @@ class Ship
 //Land bound ships AKA Cars
 class Car extends Ship
 {
-  constructor(x,y,color,planets,type="SUV",size = 30,density = 1,reality = 0)
+  constructor(x,y,color,planets,type="SUV",reality = 0,size = 30,density = 1)
   {
-    super(x,y,color,planets,type,size,density,reality);
+    super(x,y,color,planets,type,reality,size,density);
     this.drivingOn = this.parked;
     this.fuelMax = 3000; //Smaller fuel tank than spaceships have.
     if(this.type == "tank")
@@ -1333,12 +1333,6 @@ class Player
       this.vel = this.controllingPlanet.vel.copy();
       this.inventory.push("iron");
       this.inventory.push("fuel");
-      this.inventory.push("iron");
-      this.inventory.push("fuel");
-      this.inventory.push("chronos");
-      this.inventory.push("chronos");
-      this.inventory.push("chronos");
-      this.inventory.push("chronos");
       //this.inventory.push("chaos");
       //this.inventory.push("omega");
       //this.inventory.push("omega");
@@ -1347,12 +1341,8 @@ class Player
     {
       this.loc = new Vector(x,y);
       this.vel = new Vector(0,0);
-      this.inventory.push("dragonball");
-      this.inventory.push("dragonball");
-      this.inventory.push("dragonball");
-      this.inventory.push("dragonball");
-      this.inventory.push("dragonball");
-      this.inventory.push("dragonball");
+      this.inventory.push("iron");
+      this.inventory.push("fuel+");
     }
     this.actingVel = new Vector(0,0);
     this.leftHeld = false;

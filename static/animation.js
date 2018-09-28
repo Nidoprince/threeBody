@@ -1025,12 +1025,13 @@ var scannerDrawer = function(player,asteroids,drawOn,x,y)
   {
     symbol = "D";
   }
+
   drawOn.fillText(symbol,x+15,y+50);
   asteroids = asteroids.filter((x) => x.reality == myPlayer.reality && x.contents == viewer.item.lookingFor);
   if(asteroids.length > 0)
   {
     let playerLoc = new Vector(player.loc.x,player.loc.y);
-    let maxScanningDistance = 50000;
+    let maxScanningDistance = 100000;
     let closestAsteroid = false;
     for(let asteroid of asteroids)
     {

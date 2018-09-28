@@ -91,7 +91,6 @@ var resetUniverse = function()
   //asteroids.push(new space.Asteroid(800,800,0,0.5,200,"chronos","pink"));
   aliens.push(new space.Flock(50,3,100,100,5,"pink",3000));
   //tears.push(new space.Wormhole(200,200,0,500,0,2,'rgba(0,255,255,0.2)',40));
-  items.push(new space.Item(110,110,"dragonball",0));
 
   //Add the dragonballs
   for(let i = 0; i<7; i++)
@@ -207,7 +206,7 @@ io.on('connection', function(socket) {
         {
           let index = player.inventory.indexOf("iron");
           player.inventory.splice(index,1);
-          ships.push(new space.Ship(player.loc.x,player.loc.y,player.color,planets.concat(asteroids)));
+          ships.push(new space.Ship(player.loc.x,player.loc.y,player.color,planets.concat(asteroids),"baseRocket",player.reality));
         }
       }
       if(data.build == "Scanner")
@@ -290,7 +289,7 @@ io.on('connection', function(socket) {
         {
           let index = player.inventory.indexOf("iron");
           player.inventory.splice(index,1);
-          ships.push(new space.Car(player.loc.x,player.loc.y,player.color,planets.concat(asteroids)));
+          ships.push(new space.Car(player.loc.x,player.loc.y,player.color,planets.concat(asteroids),"SUV",player.reality));
         }
       }
       if(data.build == "Hopper")
@@ -299,7 +298,7 @@ io.on('connection', function(socket) {
         {
           let index = player.inventory.indexOf("steel");
           player.inventory.splice(index,1);
-          ships.push(new space.Car(player.loc.x,player.loc.y,player.color,planets.concat(asteroids),"hopper"));
+          ships.push(new space.Car(player.loc.x,player.loc.y,player.color,planets.concat(asteroids),"hopper",player.reality));
         }
       }
       if(data.build == "Tank")
@@ -313,7 +312,7 @@ io.on('connection', function(socket) {
             index = player.inventory.indexOf("iron");
             player.inventory.splice(index,1);
           }
-          ships.push(new space.Car(player.loc.x,player.loc.y,player.color,planets.concat(asteroids),"tank"));
+          ships.push(new space.Car(player.loc.x,player.loc.y,player.color,planets.concat(asteroids),"tank",player.reality));
         }
       }
       if(data.build == "Tow Rocket")
@@ -325,7 +324,7 @@ io.on('connection', function(socket) {
             let index = player.inventory.indexOf("iron");
             player.inventory.splice(index,1);
           }
-          ships.push(new space.Ship(player.loc.x,player.loc.y,player.color,planets.concat(asteroids),"towRocket"));
+          ships.push(new space.Ship(player.loc.x,player.loc.y,player.color,planets.concat(asteroids),"towRocket",player.reality));
         }
       }
       if(data.build == "Mining Ship")
@@ -337,7 +336,7 @@ io.on('connection', function(socket) {
             let index = player.inventory.indexOf("iron");
             player.inventory.splice(index,1);
           }
-          ships.push(new space.Ship(player.loc.x,player.loc.y,player.color,planets.concat(asteroids),"miningShip"));
+          ships.push(new space.Ship(player.loc.x,player.loc.y,player.color,planets.concat(asteroids),"miningShip",player.reality));
         }
       }
       if(data.build == "Jump Ship")
@@ -348,7 +347,7 @@ io.on('connection', function(socket) {
           player.inventory.splice(index,1);
           index = player.inventory.indexOf("chronos");
           player.inventory.splice(index,1);
-          ships.push(new space.Ship(player.loc.x,player.loc.y,player.color,planets.concat(asteroids),"jumpShip"));
+          ships.push(new space.Ship(player.loc.x,player.loc.y,player.color,planets.concat(asteroids),"jumpShip",player.reality));
         }
       }
       if(data.build == "Reality Rocket")
@@ -362,7 +361,7 @@ io.on('connection', function(socket) {
             index = player.inventory.indexOf("chronos");
             player.inventory.splice(index,1);
           }
-          ships.push(new space.Ship(player.loc.x,player.loc.y,player.color,planets.concat(asteroids),"realityRocket"));
+          ships.push(new space.Ship(player.loc.x,player.loc.y,player.color,planets.concat(asteroids),"realityRocket",player.reality));
         }
       }
       if(data.build == "Capitol Ship")
@@ -381,7 +380,7 @@ io.on('connection', function(socket) {
               player.inventory.splice(index,1);
             }
           }
-          ships.push(new space.Ship(player.loc.x,player.loc.y,player.color,planets.concat(asteroids),"capitolShip"));
+          ships.push(new space.Ship(player.loc.x,player.loc.y,player.color,planets.concat(asteroids),"capitolShip",player.reality));
         }
       }
       if(data.build == "Refinery")
@@ -612,7 +611,7 @@ setInterval(function() {
       let contents;
       let color;
       let reality;
-      if(Math.random()*100 < 5)
+      if(Math.random()*100 < 25)
       {
         contents = "chronos";
         color = "pink";
