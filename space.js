@@ -1415,6 +1415,7 @@ class Player
     {
       this.inSpaceShip.removeDriver(this.id);
       this.inSpaceShip = false;
+      this.parked = false;
     }
     else
     {
@@ -2013,7 +2014,7 @@ class Player
     {
       for(let item of items)
       {
-        if(Vector.distance(this.loc,item.loc)<this.size+item.size && this.inventory.length < 8 && item.stillCorporeal)
+        if(Vector.distance(this.loc,item.loc)<this.size+item.size && this.inventory.length < 8 && item.stillCorporeal && !this.parked)
         {
           item.stillCorporeal = false;
           if(isNaN(this.inventory[this.inventory.length - 1]))
