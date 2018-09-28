@@ -117,6 +117,8 @@ io.on('connection', function(socket) {
     let colors = ["red","blue","yellow","green"];
     players[socket.id] = new space.Player(300,300,colors[faction],planets,socket.id);
     currentNumbers[colors[faction]].number+=1;
+    let player = players[socket.id];
+    ships.push(new space.Ship(player.loc.x,player.loc.y,player.color,planets));
   });
   socket.on('disconnect', function() {
     if(socket.id in players)

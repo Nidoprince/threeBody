@@ -1331,17 +1331,14 @@ class Player
     {
       this.loc = this.controllingPlanet.loc.addVector((new Vector(this.controllingPlanet.size,0)).rotate(Math.random()*Math.PI*2));
       this.vel = this.controllingPlanet.vel.copy();
-      this.inventory.push("iron");
       this.inventory.push("fuel");
-      //this.inventory.push("chaos");
-      //this.inventory.push("omega");
-      //this.inventory.push("omega");
+      this.inventory.push("fuel");
     }
     else
     {
       this.loc = new Vector(x,y);
       this.vel = new Vector(0,0);
-      this.inventory.push("iron");
+      this.inventory.push("fuel+");
       this.inventory.push("fuel+");
     }
     this.actingVel = new Vector(0,0);
