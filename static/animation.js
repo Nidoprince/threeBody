@@ -1057,6 +1057,8 @@ var helpDrawer = function(drawOn)
   drawOn.fillText("Find and collect all 7 dragonballs to summon shenron and make your wish.",100,540);
   drawOn.fillText("Fly into space to mine asteroids, then build better ships with the resources connected.",100,570);
   drawOn.fillText("Work together with your team to get your wish.",100,600);
+  drawOn.fillText("You can mine the grey bits on planets for fuel, and can mine asteroids for iron/chronos/dark.",100,630);
+  drawOn.fillText("If your ship isn't moving, don't forget to check that you have fuel, and to turn off your parking break.",100,660);
 }
 
 var scannerDrawer = function(player,asteroids,drawOn,x,y)
