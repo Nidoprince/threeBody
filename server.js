@@ -95,14 +95,14 @@ var resetUniverse = function()
   //Add the dragonballs
   for(let i = 0; i<7; i++)
   {
-    let rand1 = Math.floor(Math.random()*10);
+    let rand1 = Math.floor(Math.random()*5);
     for(let j = 0; j<rand1; j++)
     {
       items.push(new space.Item(Math.random()*200000-100000,Math.random()*200000-100000,"rock",Math.floor(Math.random()*1.3)));
     }
     items.push(new space.Item(Math.random()*200000-100000,Math.random()*200000-100000,"dragonball",Math.floor(Math.random()*1.3)));
   }
-  let fillUp = 77-items.length;
+  let fillUp = 42-items.length;
   for(let j = 0; j<fillUp; j++)
   {
     items.push(new space.Item(Math.random()*200000-100000,Math.random()*200000-100000,"rock",Math.floor(Math.random()*1.3)));

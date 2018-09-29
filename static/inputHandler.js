@@ -7,6 +7,7 @@ var playerControl = {
   m: false,
   p: false,
   t: false,
+  h: false,
   inventory: false,
   build: false,
   xGoal: false,
@@ -24,6 +25,7 @@ var playerControl = {
       m: false,
       p: false,
       t: false,
+      h: false,
       inventory: false,
       build: false,
       xGoal: false,
@@ -152,6 +154,7 @@ var trigger = {
   p: false,
   b: false,
   t: false,
+  h: false,
   tX: false,
   tY: false,
   i: false,
@@ -176,6 +179,7 @@ var trigger = {
     playerControl.inventory = false;
     playerControl.give = false;
     playerControl.take = false;
+    playerControl.h = false;
   }
 }
 
@@ -251,6 +255,10 @@ function touchHandler(event,touchType)
       if(trigger.tY > 700 && trigger.tX >= 50 && trigger.tX < 850)
       {
         playerControl.inventory = Math.floor((trigger.tX-50)/100)+1;
+      }
+      if(trigger.tY > 700 && trigger.tX > 1400)
+      {
+        playerControl.h = true;
       }
       if(trigger.tY < 100 && trigger.tX < 150)
       {
@@ -446,6 +454,9 @@ document.addEventListener('keydown', function(event) {
     case 81: //Q
       adminControls.q = true;
       break;
+    case 72: //H
+      trigger.h = true;
+      break;
     case 38: //Up Arrow
       viewer.up = true;
       break;
@@ -584,6 +595,13 @@ document.addEventListener('keyup', function(event) {
         playerControl.e = true;
       }
       trigger.e = false;
+      break;
+    case 72: //H
+      if(trigger.h)
+      {
+        playerControl.h = true;
+      }
+      trigger.h = false;
       break;
     case 77: //M
       playerControl.m = false;

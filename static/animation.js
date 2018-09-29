@@ -1006,6 +1006,59 @@ var parkDrawer = function(isParked,drawOn,x,y)
   }
 }
 
+var helpButtonDrawer = function(drawOn)
+{
+  drawOn.fillStyle = "orange";
+  drawOn.font = "bold 14px Arial";
+  drawOn.fillText("Touch or H for controls.",1420,775);
+}
+
+var helpDrawer = function(drawOn)
+{
+  drawOn.fillStyle = "darkgrey";
+  drawOn.fillRect(50,50,1500,700);
+  drawOn.fillStyle = "white";
+  drawOn.font = "bold 16px Arial";
+  drawOn.fillText("Controls",100,100);
+  drawOn.fillText("Movement",100,150);
+  drawOn.fillText("Enter or Exit Ship/Building",100,180);
+  drawOn.fillText("Activate Ship Ability",100,210);
+  drawOn.fillText("Mine",100,240);
+  drawOn.fillText("Park/Unpark",100,270);
+  drawOn.fillText("Zoom In and Out",100,300);
+  drawOn.fillText("Zoom Reset",100,330);
+  drawOn.fillText("Drop Items",100,360);
+  drawOn.fillText("Select Menu Option",100,390);
+  drawOn.fillText("Build Items",100,420);
+  drawOn.fillText("Keyboard",700,100);
+  drawOn.fillText("WASD",700,150);
+  drawOn.fillText("E",700,180);
+  drawOn.fillText("T",700,210);
+  drawOn.fillText("M",700,240);
+  drawOn.fillText("P",700,270);
+  drawOn.fillText("[ ]",700,300);
+  drawOn.fillText("\\",700,330);
+  drawOn.fillText("1-8",700,360);
+  drawOn.fillText("Enter",700,390);
+  drawOn.fillText("B",700,420);
+  drawOn.fillText("Touch",1000,100);
+  drawOn.fillText("Hold Destination",1000,150);
+  drawOn.fillText("Triple Touch",1000,180);
+  drawOn.fillText("Press Ability Button",1000,210);
+  drawOn.fillText("Hold Double Touch",1000,240);
+  drawOn.fillText("Press Park Button",1000,270);
+  drawOn.fillText("Pinch/Expand",1000,300);
+  drawOn.fillText("N/A",1000,330);
+  drawOn.fillText("Press Item",1000,360);
+  drawOn.fillText("Double Press Choice",1000,390);
+  drawOn.fillText("Click Upper Left Corner",1000,420);
+
+  drawOn.fillText("Goal",100,490);
+  drawOn.fillText("Find and collect all 7 dragonballs to summon shenron and make your wish.",100,540);
+  drawOn.fillText("Fly into space to mine asteroids, then build better ships with the resources connected.",100,570);
+  drawOn.fillText("Work together with your team to get your wish.",100,600);
+}
+
 var scannerDrawer = function(player,asteroids,drawOn,x,y)
 {
   drawOn.fillStyle = "grey";

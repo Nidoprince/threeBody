@@ -27,6 +27,17 @@ socket.on('message', function(data) {
 });
 
 setInterval(function() {
+  if(playerControl.h)
+  {
+    if(menuOpen == "help")
+    {
+      menuOpen = false;
+    }
+    else
+    {
+      menuOpen = "help";
+    }
+  }
   //Open or close any of the building menus;
   if(myPlayer && playerControl.e && myPlayer.controllingPlanet)
   {
@@ -645,4 +656,9 @@ socket.on('state',function(celestial) {
   {
     drawTouch(context);
   }
+  if(menuOpen == "help")
+  {
+    helpDrawer(context);
+  }
+  helpButtonDrawer(context);
 });
