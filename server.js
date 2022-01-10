@@ -655,6 +655,7 @@ setInterval(function() {
     {
       planets[id].updateVelocity(planets);
       planets[id].spawnFuel();
+      planets[id].spawnIronDeposit();
     }
     for (var id in planets)
     {

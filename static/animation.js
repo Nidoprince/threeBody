@@ -546,6 +546,14 @@ var planetDrawer = function(planet,drawOn)
     drawOn.arc((fuelLoc.x-viewer.x)/zoomMult+800,(fuelLoc.y-viewer.y)/zoomMult+400, planet.size*0.03/zoomMult,0, 2 * Math.PI);
     drawOn.fill();
   }
+  for(var iron of planet.ironDeposits)
+  {
+    drawOn.fillStyle = "firebrick";
+    drawOn.beginPath();
+    let ironLoc = (new Vector(planet.loc.x,planet.loc.y)).addVector((new Vector(0,-planet.size*0.99)).rotate(iron));
+    drawOn.arc((ironLoc.x-viewer.x)/zoomMult+800,(ironLoc.y-viewer.y)/zoomMult+400, planet.size*0.02/zoomMult,0, 2 * Math.PI);
+    drawOn.fill();
+  }
   buildingsDrawer(planet,drawOn);
   drawOn.fillStyle = planet.color;
   drawOn.beginPath();

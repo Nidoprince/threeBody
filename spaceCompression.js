@@ -8,6 +8,7 @@ var planetCompress = function(planet)
     color: planet.color,
     atmosphereColor: planet.atmosphereColor,
     fuelSources: planet.fuelSources,
+    ironDeposits: planet.ironDeposits,
     reality: planet.reality,
     buildings: planet.buildings
   }
@@ -21,6 +22,7 @@ var asteroidCompress = function(planet)
     color: planet.color,
     atmosphereColor: planet.atmosphereColor,
     fuelSources: planet.fuelSources,
+    ironDeposits: planet.ironDeposits,
     reality: planet.reality,
     buildings: planet.buildings,
     contents: planet.contents

@@ -1602,6 +1602,36 @@ class Player
   }
   minePlanet()
   {
+    this.controllingPlanet.ironDeposits = this.controllingPlanet.ironDeposits.filter(iron =>
+    {
+      if(Math.abs(iron-this.controllingPlanet.loc.direction(this.loc).angle()) < Math.PI/40)
+      {
+        if(this.inventory.length == 0 || isNaN(this.inventory[this.inventory.length-1]))
+        {
+          if(this.inventory.length < 8)
+          {
+            this.inventory.push(0);
+            this.currentlyLoading = "iron";
+          }
+        }
+        else if(this.currentlyLoading != "iron")
+        {
+          this.currentlyLoading = "iron";
+          this.inventory[this.inventory.length-1] = 0;
+        }
+        else if(this.inventory[this.inventory.length-1] < this.controllingPlanet.ironMineTime)
+        {
+          this.inventory[this.inventory.length-1]++;
+        }
+        else
+        {
+          this.inventory[this.inventory.length-1] = "iron";
+          this.currentlyLoading = false;
+          return false;
+        }
+      }
+      return true;
+    })
     this.controllingPlanet.fuelSources = this.controllingPlanet.fuelSources.filter(fuel =>
     {
       if(Math.abs(fuel-this.controllingPlanet.loc.direction(this.loc).angle()) < Math.PI/80)
@@ -2122,7 +2152,9 @@ class Planet
     this.atmosphereColor = atmosphereColor;
     this.reality = reality;
     this.fuelSources = [];
+    this.ironDeposits = [];
     this.mineTime = 200;
+    this.ironMineTime = 300;
     this.buildings = [];
   }
 
@@ -2136,6 +2168,14 @@ class Planet
     if(Math.random() < 0.0002*(10-this.fuelSources.length))
     {
       this.fuelSources.push(Math.random()*Math.PI*2);
+    }
+  }
+
+  spawnIronDeposit()
+  {
+    if(Math.random() < 0.00008*(5-this.ironDeposits.length))
+    {
+      this.ironDeposits.push(Math.random()*Math.PI*2)
     }
   }
 
