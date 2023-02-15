@@ -10,6 +10,7 @@ var compr = require("./spaceCompression.js");
 var dragon = require("./dragon.js");
 
 var app = express();
+var PORT = process.env.PORT || 5000;
 var server = http.Server(app);
 
 var lastUpdateTime = (new Date()).getTime();
@@ -45,8 +46,8 @@ app.get('/', function(req, res) {
 });
 
 //Starts the server.
-server.listen(process.env.PORT || 5000, function() {
-  console.log('Starting server on port 5000')
+server.listen(PORT, function() {
+  console.log(`Starting server on port ${PORT}`)
   resetUniverse();
 });
 
